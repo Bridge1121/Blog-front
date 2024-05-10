@@ -1,0 +1,29 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/home"
+        android:icon="@drawable/ic_home"
+        android:title="主页"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/edit"
+        android:icon="@drawable/edit"
+        android:title="写博客"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/draft"
+        android:icon="@drawable/draft"
+        android:title="草稿箱"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/collect"
+        android:icon="@drawable/collect"
+        android:title="收藏"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/exit"
+        android:icon="@drawable/exit"
+        android:title="退出登录"
+        app:showAsAction="always"/>
+
+</menu>

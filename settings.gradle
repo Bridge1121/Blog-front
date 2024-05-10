@@ -1,8 +1,10 @@
 pluginManagement {
     repositories {
-        gradlePluginPortal()
         google()
         mavenCentral()
+        gradlePluginPortal()
+
+
     }
 }
 dependencyResolutionManagement {
@@ -10,7 +12,13 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+
+        maven { url "https://gitee.com/AbnerAndroid/almighty/raw/master" }
+
     }
+
 }
+
+
 rootProject.name = "BlogApplication"
 include ':app'

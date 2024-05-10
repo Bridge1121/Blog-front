@@ -31,6 +31,8 @@ android {
     }
 }
 
+
+
 dependencies {
 
     implementation 'androidx.core:core-ktx:1.7.0'
@@ -47,5 +49,14 @@ dependencies {
     //添加okhttp3依赖
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     //拦截器
-    implementation "com.squareup.okhttp3:logging-interceptor:3.14.+"
+    implementation "com.squareup.okhttp3:logging-interceptor:3.10.0"
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+    implementation "androidx.viewpager2:viewpager2:1.0.0"
+
+    implementation 'com.vip:search:1.0.0'
+    implementation 'com.google.android.flexbox:flexbox:3.0.0'
+
+    //图片加载
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
 }
