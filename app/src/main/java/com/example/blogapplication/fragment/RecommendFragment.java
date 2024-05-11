@@ -1,7 +1,7 @@
 package com.example.blogapplication.fragment;
 
-import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,13 +11,20 @@ import android.widget.ListView;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
+import com.example.blogapplication.ApiService;
 import com.example.blogapplication.R;
+import com.example.blogapplication.ResponseResult;
+import com.example.blogapplication.RetrofitClient;
 import com.example.blogapplication.adapter.ArticleAdapter;
-import com.example.blogapplication.adapter.FragmentAdapter;
-import com.example.blogapplication.vo.ArticleDetailVo;
+import com.example.blogapplication.entity.Article;
+import com.example.blogapplication.entity.response.ArticleResponse;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class RecommendFragment extends Fragment implements ViewPager.OnPageChangeListener,View.OnClickListener{
 
@@ -27,7 +34,8 @@ public class RecommendFragment extends Fragment implements ViewPager.OnPageChang
     private Button buttonHot,buttonRecommend;
     private ListView article_listview;
     private ArticleAdapter articleAdapter;
-    private List<ArticleDetailVo> articles = new ArrayList<>();
+    private List<Article> articles = new ArrayList<>();
+    private ApiService apiService;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -59,37 +67,23 @@ public class RecommendFragment extends Fragment implements ViewPager.OnPageChang
     }
 
     private void initView(){
-        ArticleDetailVo articleDetailVo1 = new ArticleDetailVo();
-        articleDetailVo1.setContent("![Snipaste_20220228_224837.png](https://sg-blog-oss.oss-cn- beijing.aliyuncs.com/2022/08/28/f3938a0368c540ee909ba7f7079a829a.png)\\n\\n# 十大 \\n## 时代的");
-        articleDetailVo1.setSummary("啊实打实2");
-        articleDetailVo1.setViewCount(new Long(44));
-        articleDetailVo1.setTitle("委屈饿驱蚊器");
-        articleDetailVo1.setThumbnail("https://sg-blog-oss.oss-cn-beijing.aliyuncs.com/2022/08/28/7659aac2b74247fe8ebd9e054b916dbf.png");
-        articles.add(articleDetailVo1);
-        ArticleDetailVo articleDetailVo2 = new ArticleDetailVo();
-        articleDetailVo2.setContent("![Snipaste_20220228_224837.png](https://sg-blog-oss.oss-cn- beijing.aliyuncs.com/2022/08/28/f3938a0368c540ee909ba7f7079a829a.png)\\n\\n# 十大 \\n## 时代的");
-        articleDetailVo2.setSummary("啊实打实2333333333333");
-        articleDetailVo2.setViewCount(new Long(74));
-        articleDetailVo2.setTitle("hahahah");
-        articleDetailVo2.setThumbnail("https://sg-blog-oss.oss-cn-beijing.aliyuncs.com/2022/08/28/7659aac2b74247fe8ebd9e054b916dbf.png");
-        articles.add(articleDetailVo2);
-        ArticleDetailVo articleDetailVo3 = new ArticleDetailVo();
-        articleDetailVo3.setContent("![Snipaste_20220228_224837.png](https://sg-blog-oss.oss-cn- beijing.aliyuncs.com/2022/08/28/f3938a0368c540ee909ba7f7079a829a.png)\\n\\n# 十大 \\n## 时代的");
-        articleDetailVo3.setSummary("啊实打实2");
-        articleDetailVo3.setViewCount(new Long(104));
-        articleDetailVo3.setTitle("我是文章3333");
-        articleDetailVo3.setThumbnail("https://sg-blog-oss.oss-cn-beijing.aliyuncs.com/2022/08/28/7659aac2b74247fe8ebd9e054b916dbf.png");
-        articles.add(articleDetailVo3);
-        ArticleDetailVo articleDetailVo4 = new ArticleDetailVo();
-        articleDetailVo4.setContent("![Snipaste_20220228_224837.png](https://sg-blog-oss.oss-cn- beijing.aliyuncs.com/2022/08/28/f3938a0368c540ee909ba7f7079a829a.png)\\n\\n# 十大 \\n## 时代的");
-        articleDetailVo4.setSummary("啊实打实4444444");
-        articleDetailVo4.setViewCount(new Long(104));
-        articleDetailVo4.setTitle("我是文章4444444444444");
-        articleDetailVo4.setThumbnail("https://sg-blog-oss.oss-cn-beijing.aliyuncs.com/2022/08/28/7659aac2b74247fe8ebd9e054b916dbf.png");
-        articles.add(articleDetailVo4);
-        article_listview = view.findViewById(R.id.article_listview);
-        articleAdapter = new ArticleAdapter(getActivity(),  articles);
-        article_listview.setAdapter(articleAdapter);
+        apiService = RetrofitClient.getInstance(null).create(ApiService.class);
+        apiService.getRecommandArticleList(1,10).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
+            @Override
+            public void onResponse(Call<ResponseResult<ArticleResponse>> call, Response<ResponseResult<ArticleResponse>> response) {
+                articles = response.body().getData().getArticles();
+                article_listview = view.findViewById(R.id.article_listview);
+                articleAdapter = new ArticleAdapter(getActivity(),  articles);
+                article_listview.setAdapter(articleAdapter);
+            }
+
+            @Override
+            public void onFailure(Call<ResponseResult<ArticleResponse>> call, Throwable t) {
+                Log.e("推荐文章出错啦！！！",t.getMessage());
+
+            }
+        });
+
     }
 
 }

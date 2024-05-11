@@ -1,11 +1,12 @@
 package com.example.blogapplication;
 
 
-import com.example.blogapplication.entity.LoginResponse;
+import com.example.blogapplication.entity.Article;
 import com.example.blogapplication.entity.LoginUser;
 import com.example.blogapplication.vo.ArticleDetailVo;
+import com.example.blogapplication.entity.response.ArticleResponse;
 
-import org.json.JSONObject;
+import java.util.List;
 
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -34,4 +35,10 @@ public interface ApiService {
 
     @GET("article/{id}")
     Call<ResponseResult<ArticleDetailVo>> getArticleDetail(@Path("id") Long articleId);
+
+    @GET("article/articleList")
+    Call<ResponseResult<ArticleResponse>> getRecommandArticleList(@Query("pageNum") int pageNum, @Query("pageSize") int pageSize);
+
+    @GET("article/hotArticleList")
+    Call<ResponseResult<List<Article>>> getHotArticleList();
 }

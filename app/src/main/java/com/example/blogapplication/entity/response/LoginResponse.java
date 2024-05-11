@@ -1,4 +1,6 @@
-package com.example.blogapplication.entity;
+package com.example.blogapplication.entity.response;
+
+import com.example.blogapplication.entity.UserInfo;
 
 public class LoginResponse {
     private String token;

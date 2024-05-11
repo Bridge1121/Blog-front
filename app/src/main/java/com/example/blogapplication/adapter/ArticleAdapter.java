@@ -13,16 +13,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.blogapplication.R;
+import com.example.blogapplication.entity.Article;
 import com.example.blogapplication.vo.ArticleDetailVo;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 public class ArticleAdapter extends BaseAdapter{
-    private List<ArticleDetailVo> data;
+    private List<Article> data;
     private LayoutInflater layoutInflater;
     private Context context;
-    public ArticleAdapter(Context context,List<ArticleDetailVo> data){
+    public ArticleAdapter(Context context,List<Article> data){
         this.context=context;
         this.data=data;
         this.layoutInflater=LayoutInflater.from(context);
@@ -67,7 +68,7 @@ public class ArticleAdapter extends BaseAdapter{
             compoent= (Compoent) convertView.getTag();
         }
         //绑定数据
-        ArticleDetailVo article = data.get (position);
+        Article article = data.get (position);
         compoent.title.setText (article.getTitle());
         compoent.viewpoint.setText(article.getViewCount().toString());
         Picasso.get().load(article.getThumbnail()).into(compoent.thumbnail);

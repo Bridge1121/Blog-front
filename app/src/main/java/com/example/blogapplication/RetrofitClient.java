@@ -3,8 +3,10 @@ package com.example.blogapplication;
 import android.util.Log;
 
 import com.example.blogapplication.entity.LoginUser;
+import com.example.blogapplication.utils.ArticleDeserializer;
 import com.example.blogapplication.utils.DateDeserializer;
 import com.example.blogapplication.utils.LoginUserDeserializer;
+import com.example.blogapplication.entity.response.ArticleResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -64,6 +66,7 @@ public class RetrofitClient {
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(Date.class, new DateDeserializer())
                     .registerTypeAdapter(LoginUser.class, new LoginUserDeserializer())//每种类型只有最后注册的序列化器会生效
+                    .registerTypeAdapter(ArticleResponse.class,new ArticleDeserializer())
                     .create();
 
             retrofit = new Retrofit.Builder()

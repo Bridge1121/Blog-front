@@ -1,19 +1,12 @@
 package com.example.blogapplication;
 
-import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.blogapplication.ApiService;
-import com.example.blogapplication.AppHttpCodeEnum;
-import com.example.blogapplication.ResponseResult;
-import com.example.blogapplication.RetrofitClient;
-import com.example.blogapplication.entity.LoginResponse;
 import com.example.blogapplication.entity.LoginUser;
 import com.example.blogapplication.utils.Utils;
 
@@ -24,7 +17,6 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.http.Headers;
 
 public class LoginViewModel extends ViewModel {
 

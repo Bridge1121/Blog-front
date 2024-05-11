@@ -9,16 +9,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.blogapplication.R;
+import com.example.blogapplication.entity.Article;
 import com.example.blogapplication.vo.ArticleDetailVo;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 public class HotArticleAdapter extends BaseAdapter {
-    private List<ArticleDetailVo> data;
+    private List<Article> data;
     private LayoutInflater layoutInflater;
     private Context context;
-    public HotArticleAdapter(Context context,List<ArticleDetailVo> data){
+    public HotArticleAdapter(Context context,List<Article> data){
         this.context=context;
         this.data=data;
         this.layoutInflater=LayoutInflater.from(context);
@@ -61,7 +62,7 @@ public class HotArticleAdapter extends BaseAdapter {
             compoent= (Compoent) convertView.getTag();
         }
         //绑定数据
-        ArticleDetailVo article = data.get (i);
+        Article article = data.get (i);
         compoent.title.setText (article.getTitle());
         if(i<3){
             compoent.hot.setImageResource(R.drawable.hot);
