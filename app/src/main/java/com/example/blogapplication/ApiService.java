@@ -34,6 +34,9 @@ public interface ApiService {
     @GET("comment/commentList")
     Call<String> getCommentList(@Query("pageNum") int pageNum,@Query("pageSize") int pageSize,@Query("articleId") Long articleId);
 
+    @GET("article/searchArticle")
+    Call<ResponseResult<ArticleResponse>> searchArticle(@Query("pageNum") int pageNum,@Query("pageSize") int pageSize,@Query("content") String content);
+
     @GET("article/{id}")
     Call<ResponseResult<ArticleDetailVo>> getArticleDetail(@Path("id") Long articleId);
 

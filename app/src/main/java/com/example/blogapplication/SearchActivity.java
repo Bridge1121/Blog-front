@@ -3,18 +3,30 @@ package com.example.blogapplication;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.example.blogapplication.entity.Article;
+import com.example.blogapplication.entity.response.ArticleResponse;
 import com.vip.search.SearchBean;
 import com.vip.search.SearchLayout;
 import com.vip.search.SearchList;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SearchActivity extends AppCompatActivity {
+
+    private ApiService apiService;
+    private List<Article> articles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,8 +37,16 @@ public class SearchActivity extends AppCompatActivity {
         SearchList searchList = findViewById(R.id.search_list);
 
         searchLayout.setOnTextSearchListener(searchContent  -> {
+            //搜索内容改变
+            Toast.makeText(SearchActivity.this,searchContent,Toast.LENGTH_SHORT).show();
             return null;
-        }, searchContent -> {  searchList.doSearchContent(searchContent);
+        }, searchContent -> {
+            //键盘点击了搜索
+            Toast.makeText(SearchActivity.this,searchContent,Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(SearchActivity.this,ArticleListActivity.class);
+            intent.putExtra("content",searchContent);
+            startActivity(intent);
+            searchList.doSearchContent(searchContent);
             return null;
         });
 
@@ -35,11 +55,17 @@ public class SearchActivity extends AppCompatActivity {
         //热门搜索条目点击事件
         searchList.setOnHotItemClickListener((searchContent, position) -> {
             Toast.makeText(this, searchContent, Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(SearchActivity.this,ArticleListActivity.class);
+            intent.putExtra("content",searchContent);
+            startActivity(intent);
             return null;
         });
         //历史搜索条目点击事件
         searchList.setOnHistoryItemClickListener((searchContent, position) -> {
             Toast.makeText(this, searchContent, Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(SearchActivity.this,ArticleListActivity.class);
+            intent.putExtra("content",searchContent);
+            startActivity(intent);
             return null;
         });
     }
@@ -74,4 +100,6 @@ public class SearchActivity extends AppCompatActivity {
 
         return hotList;
     }
+
+
 }
