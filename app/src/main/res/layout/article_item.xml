@@ -30,6 +30,7 @@
                 android:id="@+id/content_thumbnail"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
+                android:maxLines="1"
                 android:ellipsize="end"
                 android:text="文章内容截取...."/>
             <LinearLayout

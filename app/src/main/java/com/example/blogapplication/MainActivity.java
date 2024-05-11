@@ -1,6 +1,7 @@
 package com.example.blogapplication;
 
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -27,19 +28,30 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.blogapplication.adapter.ContentPagerAdapter;
 import com.example.blogapplication.adapter.FragmentAdapter;
+import com.example.blogapplication.entity.LoginUser;
+import com.example.blogapplication.entity.User;
 import com.example.blogapplication.fragment.HotFragment;
 import com.example.blogapplication.fragment.RecommendFragment;
+import com.example.blogapplication.LoginActivity;
+import com.example.blogapplication.ui.login.LoginViewModelFactory;
+import com.example.blogapplication.utils.Utils;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,6 +62,10 @@ public class MainActivity extends AppCompatActivity {
     private List<Fragment> mFragmentList = new ArrayList<Fragment>();
     private FragmentAdapter mFragmentAdapter;
     private ImageButton search;
+    private CircleImageView iconImg;//头像
+    private TextView mail;
+    private TextView phone;
+    private TextView username;
 
     private ViewPager mPageVp;
     /**
@@ -74,6 +90,9 @@ public class MainActivity extends AppCompatActivity {
      */
     private int screenWidth;
 
+    private LoginViewModel loginViewModel;
+
+    @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,42 +101,133 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         mDrawerlayout = findViewById(R.id.drawerlayout);
         navigationView = findViewById(R.id.navigation_view);
+        View headerView = navigationView.getHeaderView(0);
         search = findViewById(R.id.img_search);
+        iconImg = headerView.findViewById(R.id.icon_avatar);
+        username = headerView.findViewById(R.id.username);
+        mail = headerView.findViewById(R.id.mailtext);
+        phone = headerView.findViewById(R.id.phoneNumber);
+        loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
+                .get(LoginViewModel.class);
         ActionBar actionBar = getSupportActionBar();
-
         if(actionBar != null){
             actionBar.setDisplayHomeAsUpEnabled(true);  //打开homeAsUp按钮
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);   //为这个按钮设置图片
-        }
 
+
+        }
+        //drawer菜单项点击事件
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
                 if (item.getItemId() == R.id.home){
-                    Toast.makeText(MainActivity.this, "跳转到我的主页", Toast.LENGTH_SHORT).show();
+                    if (Objects.isNull(Utils.getToken(MainActivity.this)) || Utils.getToken(MainActivity.this)==""){
+                        Toast.makeText(MainActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                        startActivity(intent);
+                    }else{
+                        Toast.makeText(MainActivity.this, "跳转到我的主页", Toast.LENGTH_SHORT).show();
+                    }
+
                 }
                 if (item.getItemId() == R.id.collect){
-                    Toast.makeText(MainActivity.this, "跳转到我的收藏", Toast.LENGTH_SHORT).show();
+                    if (Objects.isNull(Utils.getToken(MainActivity.this)) || Utils.getToken(MainActivity.this)==""){
+                        Toast.makeText(MainActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                        startActivity(intent);
+                    }else{
+                        Toast.makeText(MainActivity.this, "跳转到我的收藏", Toast.LENGTH_SHORT).show();
+                    }
+
                 }
-                if (item.getItemId()== R.id.exit){
+                if (item.getItemId()== R.id.exit){//退出登录
+                    if (Objects.isNull(Utils.getToken(MainActivity.this)) || Utils.getToken(MainActivity.this)==""){//未登录
+                        Toast.makeText(MainActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                        startActivity(intent);
+                    }else{//已登录
+                        loginViewModel.logout(getApplicationContext()).observe(MainActivity.this, new Observer<ResponseResult>() {
+                            @Override
+                            public void onChanged(ResponseResult responseResult) {
+                                if (responseResult.getCode()==0) {
+                                    // 退出登录成功
+                                    username.setText("未登录/点击登录");
+                                    iconImg.setImageResource(R.drawable.default_avatar);
+                                    phone.setText("");
+                                    mail.setText("");
+                                    Toast.makeText(MainActivity.this, "退出登录成功！！", Toast.LENGTH_SHORT).show();
+
+                                } else {
+                                    // 登录失败，处理错误信息
+                                    String errorMessage = responseResult.getMsg();
+                                    Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                                    Log.e("退出登录出错啦！！！",errorMessage);
+                                }
+                            }
+                        });
+                    }
                     Toast.makeText(MainActivity.this, "退出登录", Toast.LENGTH_SHORT).show();
                 }
                 if (item.getItemId() == R.id.draft){
-                    Toast.makeText(MainActivity.this, "跳转到我的草稿", Toast.LENGTH_SHORT).show();
+                    if (Objects.isNull(Utils.getToken(MainActivity.this)) || Utils.getToken(MainActivity.this)==""){
+                        Toast.makeText(MainActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                        startActivity(intent);
+                    }else{
+                        Toast.makeText(MainActivity.this, "跳转到我的草稿", Toast.LENGTH_SHORT).show();
+                    }
+
                 }
                 if (item.getItemId() == R.id.edit){
-                    Toast.makeText(MainActivity.this, "跳转到写博客", Toast.LENGTH_SHORT).show();
+                    if (Objects.isNull(Utils.getToken(MainActivity.this)) || Utils.getToken(MainActivity.this)==""){
+                        Toast.makeText(MainActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                        startActivity(intent);
+                    }else{
+                        Toast.makeText(MainActivity.this, "跳转到写博客", Toast.LENGTH_SHORT).show();
+                    }
+
                 }
                 return true;
             }
         });
 
+        //搜索图标点击事件
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this,SearchActivity.class);
                 Toast.makeText(MainActivity.this,"跳转到搜索页面",Toast.LENGTH_SHORT).show();
                 startActivity(intent);
+            }
+        });
+
+        //头像点击事件
+        iconImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (Utils.getToken(MainActivity.this)!=""){//已登录
+                    //todo 已登录就跳转到个人中心
+                }else{//未登录
+                    Toast.makeText(MainActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
+
+        username.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (Utils.getToken(MainActivity.this)!=""){//已登录
+                    //todo 已登录就跳转到个人中心
+                }else{//未登录
+                    Toast.makeText(MainActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -133,12 +243,23 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //drawer菜单键点击事件
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         //android.R.id.home：是HomeAsUp按钮的默认id
         if(item.getItemId() == android.R.id.home){
             mDrawerlayout.openDrawer(GravityCompat.START);  //点击按钮后打开这个滑动窗口
             Toast.makeText(MainActivity.this,"打开了drawer",Toast.LENGTH_SHORT).show();
+            User user = Utils.getUserInfo(MainActivity.this);
+            if (Utils.getToken(MainActivity.this)!="" && !Objects.isNull(Utils.getUserInfo(MainActivity.this))){//已登录
+                username.setText(user.getNickName());
+                Picasso.get().load(user.getAvatar()).into(iconImg);
+                phone.setText(user.getPhonenumber());
+                mail.setText(user.getEmail());
+            }else{//未登录
+                username.setText("未登录/点击登录");
+                iconImg.setImageResource(R.drawable.default_avatar);
+            }
         }
         return true;
     }

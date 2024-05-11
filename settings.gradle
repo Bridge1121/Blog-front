@@ -14,6 +14,7 @@ dependencyResolutionManagement {
         mavenCentral()
 
         maven { url "https://gitee.com/AbnerAndroid/almighty/raw/master" }
+        maven { url 'https://jitpack.io' }
 
     }
 

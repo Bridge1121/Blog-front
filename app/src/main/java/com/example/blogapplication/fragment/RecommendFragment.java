@@ -80,6 +80,13 @@ public class RecommendFragment extends Fragment implements ViewPager.OnPageChang
         articleDetailVo3.setTitle("我是文章3333");
         articleDetailVo3.setThumbnail("https://sg-blog-oss.oss-cn-beijing.aliyuncs.com/2022/08/28/7659aac2b74247fe8ebd9e054b916dbf.png");
         articles.add(articleDetailVo3);
+        ArticleDetailVo articleDetailVo4 = new ArticleDetailVo();
+        articleDetailVo4.setContent("![Snipaste_20220228_224837.png](https://sg-blog-oss.oss-cn- beijing.aliyuncs.com/2022/08/28/f3938a0368c540ee909ba7f7079a829a.png)\\n\\n# 十大 \\n## 时代的");
+        articleDetailVo4.setSummary("啊实打实4444444");
+        articleDetailVo4.setViewCount(new Long(104));
+        articleDetailVo4.setTitle("我是文章4444444444444");
+        articleDetailVo4.setThumbnail("https://sg-blog-oss.oss-cn-beijing.aliyuncs.com/2022/08/28/7659aac2b74247fe8ebd9e054b916dbf.png");
+        articles.add(articleDetailVo4);
         article_listview = view.findViewById(R.id.article_listview);
         articleAdapter = new ArticleAdapter(getActivity(),  articles);
         article_listview.setAdapter(articleAdapter);

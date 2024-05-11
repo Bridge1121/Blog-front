@@ -28,7 +28,7 @@ public class ArticleAdapter extends BaseAdapter{
         this.layoutInflater=LayoutInflater.from(context);
     }
 
-    public final class compoent{
+    public static final class Compoent{
         public TextView title;
         public TextView viewpoint;
         public ImageView thumbnail;
@@ -53,9 +53,9 @@ public class ArticleAdapter extends BaseAdapter{
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        compoent compoent=null;
+        Compoent compoent=null;
         if(convertView==null){
-            compoent=new compoent();
+            compoent=new Compoent();
             //获得组件，实例化组件
             convertView=layoutInflater.inflate(R.layout.article_item, null);
             compoent.title=convertView.findViewById(R.id.article_title);
@@ -64,7 +64,7 @@ public class ArticleAdapter extends BaseAdapter{
             compoent.articleThumb = convertView.findViewById (R.id.content_thumbnail);//文章内容截取
             convertView.setTag(compoent);
         }else{
-            compoent= (compoent) convertView.getTag();
+            compoent= (Compoent) convertView.getTag();
         }
         //绑定数据
         ArticleDetailVo article = data.get (position);

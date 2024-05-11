@@ -4,29 +4,43 @@
     android:layout_height="match_parent"
     android:padding="10dp">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/iconimg"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:src="@drawable/img"/>
+    <LinearLayout
+        android:id="@+id/userinfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/icon_avatar"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/default_avatar"/>
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:layout_marginLeft="20dp"
+            android:text="未登录/点击登录"
+            android:textSize="20sp"/>
+    </LinearLayout>
 
     <TextView
         android:id="@+id/mailtext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginTop="35dp"
-        android:text="s1793026645@126.com"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/userinfo"
         android:textSize="15sp" />
 
     <TextView
-        android:id="@+id/userText"
+        android:id="@+id/phoneNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/iconimg"
-        android:layout_marginTop="35dp"
+        android:layout_below="@+id/userinfo"
+        android:layout_marginTop="15dp"
         android:gravity="end"
-        android:text="twx"
         android:textSize="15sp" />
 
 </RelativeLayout>
