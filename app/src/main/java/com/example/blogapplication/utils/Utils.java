@@ -7,6 +7,24 @@ import com.example.blogapplication.entity.User;
 
 public class Utils {
 
+    public static void saveToken(Context context, String token) {
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("token", token);
+        editor.apply();
+    }
+
+    public static void saveUserInfo(Context context, User user) {
+
+        String userJson = user.toJson();
+        // 获取 SharedPreferences 对象并保存 User 对象的 JSON 字符串
+        SharedPreferences sharedPreferences = context.getSharedPreferences("user_info", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("user", userJson);
+        editor.apply();
+    }
+
     //获取token
     public static String getToken(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);

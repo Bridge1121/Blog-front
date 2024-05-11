@@ -31,7 +31,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText email;
     private RadioGroup genderGroup;
     private Button register;
-    private ProgressBar progressBar;
+    private ProgressBar loading;
     private ActivityRegisterBinding binding;
     private ApiService apiService;
 
@@ -47,9 +47,10 @@ public class RegisterActivity extends AppCompatActivity {
         email = binding.email;
         genderGroup = binding.rgGender;
         register = binding.register;
-        progressBar = binding.loading;
+        loading = binding.loading;
 
         register.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
                 apiService = RetrofitClient.getInstance(null).create(ApiService.class);

@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
     private int screenWidth;
 
     private LoginViewModel loginViewModel;
+    private CircleImageView avatar;
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -104,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
         View headerView = navigationView.getHeaderView(0);
         search = findViewById(R.id.img_search);
         iconImg = headerView.findViewById(R.id.icon_avatar);
+        avatar = findViewById(R.id.icon_avatar);
         username = headerView.findViewById(R.id.username);
         mail = headerView.findViewById(R.id.mailtext);
         phone = headerView.findViewById(R.id.phoneNumber);
@@ -154,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
                                     // 退出登录成功
                                     username.setText("未登录/点击登录");
                                     iconImg.setImageResource(R.drawable.default_avatar);
+                                    avatar.setImageResource(R.drawable.default_avatar);
                                     phone.setText("");
                                     mail.setText("");
                                     Toast.makeText(MainActivity.this, "退出登录成功！！", Toast.LENGTH_SHORT).show();
@@ -203,13 +206,33 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //头像点击事件
+        //drawer里的头像点击事件
         iconImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 if (Utils.getToken(MainActivity.this)!=""){//已登录
                     //todo 已登录就跳转到个人中心
+                    Intent intent = new Intent(MainActivity.this,UserInfoActivity.class);
+                    startActivity(intent);
+                }else{//未登录
+                    Toast.makeText(MainActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
+
+        //设置标题栏里的头像
+        Picasso.get().load(Utils.getUserInfo(getApplicationContext()).getAvatar()).into(avatar);
+        //标题栏里的头像点击事件
+        avatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (Utils.getToken(MainActivity.this)!=""){//已登录
+                    //已登录就是修改个人信息
+                    Intent intent = new Intent(MainActivity.this,UserInfoActivity.class);
+                    startActivity(intent);
                 }else{//未登录
                     Toast.makeText(MainActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MainActivity.this,LoginActivity.class);

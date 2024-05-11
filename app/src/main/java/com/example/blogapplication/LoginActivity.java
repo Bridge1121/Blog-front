@@ -19,6 +19,7 @@ import com.example.blogapplication.databinding.ActivityLoginBinding;
 import com.example.blogapplication.entity.LoginUser;
 import com.example.blogapplication.entity.User;
 import com.example.blogapplication.ui.login.LoginViewModelFactory;
+import com.example.blogapplication.utils.Utils;
 
 import androidx.lifecycle.Observer;
 
@@ -59,8 +60,8 @@ public class LoginActivity extends AppCompatActivity {
                         if (responseResult.getCode()==0) {
                             // 登录成功，处理登录用户数据
                             LoginUser loginUser = responseResult.getData();
-                            saveToken(LoginActivity.this, loginUser.getToken());
-                            saveUserInfo(LoginActivity.this,loginUser.getUser());
+                            Utils.saveToken(LoginActivity.this, loginUser.getToken());
+                            Utils.saveUserInfo(LoginActivity.this,loginUser.getUser());
                             Toast.makeText(LoginActivity.this, "登录成功！！", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this,MainActivity.class);
                             startActivity(intent);
@@ -85,21 +86,5 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void saveToken(Context context, String token) {
 
-        SharedPreferences sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("token", token);
-        editor.apply();
-    }
-
-    private void saveUserInfo(Context context, User user) {
-
-        String userJson = user.toJson();
-        // 获取 SharedPreferences 对象并保存 User 对象的 JSON 字符串
-        SharedPreferences sharedPreferences = context.getSharedPreferences("user_info", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("user", userJson);
-        editor.apply();
-    }
 }

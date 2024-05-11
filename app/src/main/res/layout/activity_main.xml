@@ -21,13 +21,18 @@
             android:background="@color/teal_700"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-
             <ImageButton
                 android:id="@+id/img_search"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:background="@drawable/search"
-                android:layout_marginLeft="250dp"/>
+                android:layout_marginLeft="240dp"/>
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/icon_avatar"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/default_avatar"/>
         </androidx.appcompat.widget.Toolbar>
 
         <include layout="@layout/activity_main_top_tab" />

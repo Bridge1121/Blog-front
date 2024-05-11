@@ -24,7 +24,7 @@ public class User  {
     //手机号
     private String phonenumber;
     //用户性别（0男，1女，2未知）
-    private String sex;
+    private char sex;
     //头像
     private String avatar;
     //创建人的用户id
@@ -37,6 +37,16 @@ public class User  {
     private Date updateTime;
     //删除标志（0代表未删除，1代表已删除）
     private Integer delFlag;
+
+    public User(String nickName, String email, char sex, String avatar) {
+        this.nickName = nickName;
+        this.email = email;
+        this.sex = sex;
+        this.avatar = avatar;
+    }
+
+    public User() {
+    }
 
     public Long getId() {
         return id;
@@ -102,11 +112,11 @@ public class User  {
         this.phonenumber = phonenumber;
     }
 
-    public String getSex() {
+    public char getSex() {
         return sex;
     }
 
-    public void setSex(String sex) {
+    public void setSex(char sex) {
         this.sex = sex;
     }
 

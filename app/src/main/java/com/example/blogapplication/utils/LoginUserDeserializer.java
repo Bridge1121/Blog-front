@@ -23,7 +23,7 @@ public class LoginUserDeserializer implements JsonDeserializer<LoginUser> {
         String email = userInfoObject.get("email").getAsString();
         int id = userInfoObject.get("id").getAsInt();
         String nickName = userInfoObject.get("nickName").getAsString();
-        String sex = userInfoObject.get("sex").getAsString();
+        char sex = userInfoObject.get("sex").getAsCharacter();
         
         User user = new User();
         user.setAvatar(avatar);
