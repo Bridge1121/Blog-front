@@ -26,8 +26,8 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class RetrofitClient {
 
-//    private static final String BASE_URL = "http://192.168.5.152:7777/";//学校
-    private static final String BASE_URL = "http://192.168.10.106:7777/";//家里
+    private static final String BASE_URL = "http://192.168.5.163:7777/";//学校
+//    private static final String BASE_URL = "http://192.168.10.106:7777/";//家里
     private static Retrofit retrofit;
     private static Retrofit tokenRetrofit;
 

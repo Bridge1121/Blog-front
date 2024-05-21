@@ -3,9 +3,7 @@ package com.example.blogapplication;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,9 +15,8 @@ import android.widget.Toast;
 
 import com.example.blogapplication.databinding.ActivityLoginBinding;
 import com.example.blogapplication.entity.LoginUser;
-import com.example.blogapplication.entity.User;
 import com.example.blogapplication.ui.login.LoginViewModelFactory;
-import com.example.blogapplication.utils.Utils;
+import com.example.blogapplication.utils.TokenUtils;
 
 import androidx.lifecycle.Observer;
 
@@ -60,8 +57,8 @@ public class LoginActivity extends AppCompatActivity {
                         if (responseResult.getCode()==0) {
                             // 登录成功，处理登录用户数据
                             LoginUser loginUser = responseResult.getData();
-                            Utils.saveToken(LoginActivity.this, loginUser.getToken());
-                            Utils.saveUserInfo(LoginActivity.this,loginUser.getUser());
+                            TokenUtils.saveToken(LoginActivity.this, loginUser.getToken());
+                            TokenUtils.saveUserInfo(LoginActivity.this,loginUser.getUser());
                             Toast.makeText(LoginActivity.this, "登录成功！！", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this,MainActivity.class);
                             startActivity(intent);

@@ -14,7 +14,7 @@ import com.example.blogapplication.adapter.ArticleAdapter;
 import com.example.blogapplication.databinding.ActivityArticleListBinding;
 import com.example.blogapplication.entity.Article;
 import com.example.blogapplication.entity.response.ArticleResponse;
-import com.example.blogapplication.utils.Utils;
+import com.example.blogapplication.utils.TokenUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -43,8 +43,8 @@ public class ArticleListActivity extends AppCompatActivity {
         searchListview = binding.searchListview;
         search = binding.imgSearch;
         avatar = binding.iconAvatar;
-        if (Utils.getToken(ArticleListActivity.this)!=""){//已登录
-            Picasso.get().load(Utils.getUserInfo(ArticleListActivity.this).getAvatar()).into(avatar);
+        if (TokenUtils.getToken(ArticleListActivity.this)!=""){//已登录
+            Picasso.get().load(TokenUtils.getUserInfo(ArticleListActivity.this).getAvatar()).into(avatar);
         }else{
             avatar.setImageResource(R.drawable.default_avatar);
         }
@@ -66,7 +66,7 @@ public class ArticleListActivity extends AppCompatActivity {
         avatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Utils.getToken(ArticleListActivity.this)!=""){//已登录
+                if (TokenUtils.getToken(ArticleListActivity.this)!=""){//已登录
                     //已登录就是修改个人信息
                     Intent intent = new Intent(ArticleListActivity.this,UserInfoActivity.class);
                     startActivity(intent);

@@ -20,8 +20,7 @@ import android.widget.RadioGroup;
 
 import com.example.blogapplication.databinding.ActivityUserInfoBinding;
 import com.example.blogapplication.entity.User;
-import com.example.blogapplication.entity.UserInfo;
-import com.example.blogapplication.utils.Utils;
+import com.example.blogapplication.utils.TokenUtils;
 import com.squareup.picasso.Picasso;
 
 import okhttp3.MediaType;
@@ -52,7 +51,7 @@ public class UserInfoActivity extends AppCompatActivity {
         finish = binding.editUserinfo;
         gender = binding.radioGroupGender;
         loading = binding.loading;
-        User userInfo = Utils.getUserInfo(getApplicationContext());
+        User userInfo = TokenUtils.getUserInfo(getApplicationContext());
         Picasso.get().load(userInfo.getAvatar()).into(avatar);
         email.setText(userInfo.getEmail());
         nickname.setText(userInfo.getNickName());
@@ -75,7 +74,7 @@ public class UserInfoActivity extends AppCompatActivity {
                 User user = new User(nickname.getText().toString(), email.getText().toString(), gender.getCheckedRadioButtonId() == R.id.radioButtonFemale ? '1' : '0', userInfo.getAvatar());
                 Log.i("UserInfo", user.toJson());
                 RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), user.toJson());
-                apiService = RetrofitClient.getTokenInstance(Utils.getToken(getApplicationContext())).create(ApiService.class);
+                apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
                 apiService.updateUserInfo(requestBody).enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
@@ -84,7 +83,7 @@ public class UserInfoActivity extends AppCompatActivity {
                         userInfo.setEmail(email.getText().toString());
                         userInfo.setNickName(nickname.getText().toString());
                         //todo 头像上传
-                        Utils.saveUserInfo(getApplicationContext(), userInfo);//更新保存的用户信息
+                        TokenUtils.saveUserInfo(getApplicationContext(), userInfo);//更新保存的用户信息
                         Intent intent = new Intent(UserInfoActivity.this, MainActivity.class);
                         startActivity(intent);
 

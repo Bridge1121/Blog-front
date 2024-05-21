@@ -8,8 +8,10 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.blogapplication.entity.LoginUser;
-import com.example.blogapplication.utils.Utils;
+import com.example.blogapplication.entity.response.CategoryResponse;
+import com.example.blogapplication.utils.TokenUtils;
 
+import java.util.List;
 import java.util.Objects;
 
 import okhttp3.MediaType;
@@ -53,7 +55,7 @@ public class LoginViewModel extends ViewModel {
 
     public LiveData<ResponseResult<Void>> logout(Context context) {
         // 获取保存的token
-        token = Utils.getToken(context);
+        token = TokenUtils.getToken(context);
         MutableLiveData<ResponseResult<Void>> logoutResult = new MutableLiveData<>();
         apiService = RetrofitClient.getInstance(token).create(ApiService.class);
 
@@ -63,9 +65,10 @@ public class LoginViewModel extends ViewModel {
             public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
                 if (response.isSuccessful()) {
                     // 退出登录成功
-                    Utils.deleteToken(context);
-                    if (!Objects.isNull(Utils.getUserInfo(context))){
-                        Utils.deleteUserInfo(context);
+                    TokenUtils.deleteToken(context);
+                    TokenUtils.deleteCategoryInfo(context);
+                    if (!Objects.isNull(TokenUtils.getUserInfo(context))){
+                        TokenUtils.deleteUserInfo(context);
                     }
                     logoutResult.setValue(new ResponseResult<>(0, "退出登录成功", null));
                 } else {

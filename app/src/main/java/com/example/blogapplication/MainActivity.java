@@ -5,19 +5,17 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,25 +24,19 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.blogapplication.adapter.ContentPagerAdapter;
 import com.example.blogapplication.adapter.FragmentAdapter;
-import com.example.blogapplication.entity.LoginUser;
 import com.example.blogapplication.entity.User;
+import com.example.blogapplication.entity.response.CategoryResponse;
 import com.example.blogapplication.fragment.HotFragment;
 import com.example.blogapplication.fragment.RecommendFragment;
-import com.example.blogapplication.LoginActivity;
 import com.example.blogapplication.ui.login.LoginViewModelFactory;
-import com.example.blogapplication.utils.Utils;
+import com.example.blogapplication.utils.TokenUtils;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -52,6 +44,9 @@ import java.util.List;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -92,6 +87,9 @@ public class MainActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
     private CircleImageView avatar;
+    private ApiService apiService;
+    private RetrofitClient retrofitClient;
+    List<CategoryResponse> categoryResponses = new ArrayList<>();
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -124,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
                 if (item.getItemId() == R.id.home){
-                    if (Objects.isNull(Utils.getToken(MainActivity.this)) || Utils.getToken(MainActivity.this)==""){
+                    if (Objects.isNull(TokenUtils.getToken(MainActivity.this)) || TokenUtils.getToken(MainActivity.this)==""){
                         Toast.makeText(MainActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(MainActivity.this,LoginActivity.class);
                         startActivity(intent);
@@ -134,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
 
                 }
                 if (item.getItemId() == R.id.collect){
-                    if (Objects.isNull(Utils.getToken(MainActivity.this)) || Utils.getToken(MainActivity.this)==""){
+                    if (Objects.isNull(TokenUtils.getToken(MainActivity.this)) || TokenUtils.getToken(MainActivity.this)==""){
                         Toast.makeText(MainActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(MainActivity.this,LoginActivity.class);
                         startActivity(intent);
@@ -144,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
 
                 }
                 if (item.getItemId()== R.id.exit){//退出登录
-                    if (Objects.isNull(Utils.getToken(MainActivity.this)) || Utils.getToken(MainActivity.this)==""){//未登录
+                    if (Objects.isNull(TokenUtils.getToken(MainActivity.this)) || TokenUtils.getToken(MainActivity.this)==""){//未登录
                         Toast.makeText(MainActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(MainActivity.this,LoginActivity.class);
                         startActivity(intent);
@@ -173,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "退出登录", Toast.LENGTH_SHORT).show();
                 }
                 if (item.getItemId() == R.id.draft){
-                    if (Objects.isNull(Utils.getToken(MainActivity.this)) || Utils.getToken(MainActivity.this)==""){
+                    if (Objects.isNull(TokenUtils.getToken(MainActivity.this)) || TokenUtils.getToken(MainActivity.this)==""){
                         Toast.makeText(MainActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(MainActivity.this,LoginActivity.class);
                         startActivity(intent);
@@ -183,12 +181,31 @@ public class MainActivity extends AppCompatActivity {
 
                 }
                 if (item.getItemId() == R.id.edit){
-                    if (Objects.isNull(Utils.getToken(MainActivity.this)) || Utils.getToken(MainActivity.this)==""){
+                    if (Objects.isNull(TokenUtils.getToken(MainActivity.this)) || TokenUtils.getToken(MainActivity.this)==""){
                         Toast.makeText(MainActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(MainActivity.this,LoginActivity.class);
                         startActivity(intent);
                     }else{
-                        Toast.makeText(MainActivity.this, "跳转到写博客", Toast.LENGTH_SHORT).show();
+                        apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
+                        apiService.getCategoryList(TokenUtils.getUserInfo(getApplicationContext()).getId().toString()).enqueue(new Callback<ResponseResult<List<CategoryResponse>>>() {
+                            @Override
+                            public void onResponse(Call<ResponseResult<List<CategoryResponse>>> call, Response<ResponseResult<List<CategoryResponse>>> response) {
+                                categoryResponses = response.body().getData();
+                                TokenUtils.saveUserCategory(getApplicationContext(),categoryResponses);
+                                Intent intent = new Intent(MainActivity.this,BlogEditActivity.class);
+                                Bundle bundle = new Bundle();
+                                bundle.putParcelableArrayList("categories", (ArrayList<? extends Parcelable>) categoryResponses);
+                                intent.putExtras(bundle);
+                                startActivity(intent);
+                                Toast.makeText(MainActivity.this, "跳转到写博客", Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResponseResult<List<CategoryResponse>>> call, Throwable t) {
+
+                            }
+                        });
+
                     }
 
                 }
@@ -211,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if (Utils.getToken(MainActivity.this)!=""){//已登录
+                if (TokenUtils.getToken(MainActivity.this)!=""){//已登录
                     //todo 已登录就跳转到个人中心
                     Intent intent = new Intent(MainActivity.this,UserInfoActivity.class);
                     startActivity(intent);
@@ -224,12 +241,18 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //设置标题栏里的头像
-        Picasso.get().load(Utils.getUserInfo(getApplicationContext()).getAvatar()).into(avatar);
+
+        if (TokenUtils.getUserInfo(getApplicationContext())!=null){
+            Picasso.get().load(TokenUtils.getUserInfo(getApplicationContext()).getAvatar()).into(avatar);
+        }else{//未登录就显示默认头像
+            avatar.setImageResource(R.drawable.default_avatar);
+        }
+
         //标题栏里的头像点击事件
         avatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Utils.getToken(MainActivity.this)!=""){//已登录
+                if (TokenUtils.getToken(MainActivity.this)!=""){//已登录
                     //已登录就是修改个人信息
                     Intent intent = new Intent(MainActivity.this,UserInfoActivity.class);
                     startActivity(intent);
@@ -244,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
         username.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Utils.getToken(MainActivity.this)!=""){//已登录
+                if (TokenUtils.getToken(MainActivity.this)!=""){//已登录
                     //todo 已登录就跳转到个人中心
                 }else{//未登录
                     Toast.makeText(MainActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
@@ -273,8 +296,8 @@ public class MainActivity extends AppCompatActivity {
         if(item.getItemId() == android.R.id.home){
             mDrawerlayout.openDrawer(GravityCompat.START);  //点击按钮后打开这个滑动窗口
             Toast.makeText(MainActivity.this,"打开了drawer",Toast.LENGTH_SHORT).show();
-            User user = Utils.getUserInfo(MainActivity.this);
-            if (Utils.getToken(MainActivity.this)!="" && !Objects.isNull(Utils.getUserInfo(MainActivity.this))){//已登录
+            User user = TokenUtils.getUserInfo(MainActivity.this);
+            if (TokenUtils.getToken(MainActivity.this)!="" && !Objects.isNull(TokenUtils.getUserInfo(MainActivity.this))){//已登录
                 username.setText(user.getNickName());
                 Picasso.get().load(user.getAvatar()).into(iconImg);
                 phone.setText(user.getPhonenumber());

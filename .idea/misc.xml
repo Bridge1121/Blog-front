@@ -3,22 +3,32 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/drawable/bg_dotted_line.xml" value="0.185" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/activity_article_list.xml" value="0.18704710144927536" />
+        <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/activity_blog_edit.xml" value="0.22" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/activity_login.xml" value="0.1" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/activity_login2.xml" value="0.20108695652173914" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/activity_main.xml" value="0.22" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/activity_main_top_tab.xml" value="0.22" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/activity_register.xml" value="0.21195652173913043" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/activity_search.xml" value="0.2427536231884058" />
+        <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/activity_select_category.xml" value="0.19427083333333334" />
+        <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/activity_show_art.xml" value="0.21302083333333333" />
+        <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/activity_spinner.xml" value="0.20885416666666667" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/activity_user_info.xml" value="0.16259057971014493" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/article_item.xml" value="0.22" />
+        <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/custom_spinner_item.xml" value="0.24739583333333334" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/fragment_content.xml" value="0.3" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/fragment_hot.xml" value="0.3" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/fragment_recommend.xml" value="0.3333333333333333" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/hot_article_item.xml" value="0.19429347826086957" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/nav_header.xml" value="0.13095238095238096" />
+        <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/newapp_pop_picture.xml" value="0.22760416666666666" />
+        <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/menu/menu_.xml" value="0.22760416666666666" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/menu/toolbar.xml" value="0.2989583333333333" />
+        <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1535" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/xml/nav_header.xml" value="0.14221014492753623" />
+        <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/imagepicker/ucrop/src/main/res/layout/activity_main.xml" value="0.20572916666666666" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/app/src/main/res/layout/activity_main.xml" value="0.3" />
       </map>
     </option>

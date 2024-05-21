@@ -1,58 +1,58 @@
 package com.example.blogapplication.utils;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.util.Base64;
 
-import com.example.blogapplication.entity.User;
+import java.io.ByteArrayOutputStream;
 
-public class Utils {
+/**
+ * Created by ZQiong on 2018/3/22.
+ */
 
-    public static void saveToken(Context context, String token) {
+public final class Utils {
 
-        SharedPreferences sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("token", token);
-        editor.apply();
+    private Utils() throws InstantiationException {
+        throw new InstantiationException("This class is not for instantiation");
     }
 
-    public static void saveUserInfo(Context context, User user) {
+    public static String toBase64(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] bytes = baos.toByteArray();
 
-        String userJson = user.toJson();
-        // 获取 SharedPreferences 对象并保存 User 对象的 JSON 字符串
-        SharedPreferences sharedPreferences = context.getSharedPreferences("user_info", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("user", userJson);
-        editor.apply();
+        return Base64.encodeToString(bytes, Base64.NO_WRAP);
     }
 
-    //获取token
-    public static String getToken(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-        return sharedPreferences.getString("token", "");
+    public static Bitmap toBitmap(Drawable drawable) {
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        }
+
+        int width = drawable.getIntrinsicWidth();
+        width = width > 0 ? width : 1;
+        int height = drawable.getIntrinsicHeight();
+        height = height > 0 ? height : 1;
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
     }
 
-    public static void deleteToken(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove("token");
-        editor.apply();
+    public static Bitmap decodeResource(Context context, int resId) {
+        return BitmapFactory.decodeResource(context.getResources(), resId);
     }
 
-    public static User getUserInfo(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("user_info", Context.MODE_PRIVATE);
-        String userJson = sharedPreferences.getString("user", "");
-
-        // 从 JSON 字符串解析为 User 对象
-        User user = User.fromJson(userJson);
-        return user;
+    public static long getCurrentTime() {
+        return System.currentTimeMillis();
     }
-
-    public static void deleteUserInfo(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("user_info", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove("user");
-    }
-
 
 
 }

@@ -4,7 +4,8 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
 
-
+        maven{ url 'https://maven.aliyun.com/repository/google'}
+        maven{ url 'https://maven.aliyun.com/repository/jcenter'}
     }
 }
 dependencyResolutionManagement {
@@ -15,6 +16,8 @@ dependencyResolutionManagement {
 
         maven { url "https://gitee.com/AbnerAndroid/almighty/raw/master" }
         maven { url 'https://jitpack.io' }
+        maven{ url 'https://maven.aliyun.com/repository/google'}
+        maven{ url 'https://maven.aliyun.com/repository/jcenter'}
 
     }
 
@@ -23,3 +26,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "BlogApplication"
 include ':app'
+include ':imagepicker'
+include ':app:imagepicker'
+include ':ucrop'

@@ -3,6 +3,7 @@ package com.example.blogapplication;
 
 import com.example.blogapplication.entity.Article;
 import com.example.blogapplication.entity.LoginUser;
+import com.example.blogapplication.entity.response.CategoryResponse;
 import com.example.blogapplication.vo.ArticleDetailVo;
 import com.example.blogapplication.entity.response.ArticleResponse;
 
@@ -48,4 +49,8 @@ public interface ApiService {
 
     @PUT("user/userInfo")
     Call<Void> updateUserInfo(@Body RequestBody requestBody);
+
+    @GET("/category/getCategoryList")
+    Call<ResponseResult<List<CategoryResponse>>> getCategoryList(@Query("userId") String userId);
+
 }
