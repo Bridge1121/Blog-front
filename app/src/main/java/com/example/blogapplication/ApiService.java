@@ -7,14 +7,18 @@ import com.example.blogapplication.entity.response.CategoryResponse;
 import com.example.blogapplication.vo.ArticleDetailVo;
 import com.example.blogapplication.entity.response.ArticleResponse;
 
+import java.io.File;
 import java.util.List;
 
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -23,13 +27,13 @@ public interface ApiService {
     @GET("link/getAllLink")
     Call<String> getAllLink();
 
-    @POST("/user/register")
+    @POST("user/register")
     Call<ResponseResult> register(@Body RequestBody requestBody);
 
-    @POST("/login")
+    @POST("login")
     Call<ResponseResult<LoginUser>> login(@Body RequestBody requestBody);
 
-    @POST("/logout")
+    @POST("logout")
     Call<ResponseResult> logout();
 
     @GET("comment/commentList")
@@ -50,7 +54,11 @@ public interface ApiService {
     @PUT("user/userInfo")
     Call<Void> updateUserInfo(@Body RequestBody requestBody);
 
-    @GET("/category/getCategoryList")
+    @GET("category/getCategoryList")
     Call<ResponseResult<List<CategoryResponse>>> getCategoryList(@Query("userId") String userId);
+
+    @Multipart
+    @POST("upload")
+    Call<ResponseResult<String>> uploadImg(@Part MultipartBody.Part img);
 
 }
