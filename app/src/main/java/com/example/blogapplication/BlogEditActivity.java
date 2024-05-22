@@ -9,24 +9,38 @@ import androidx.databinding.DataBindingUtil;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.blogapplication.adapter.CategorySpinnerAdapter;
 import com.example.blogapplication.databinding.ActivityBlogEditBinding;
+import com.example.blogapplication.dto.AddArticleDto;
+import com.example.blogapplication.entity.User;
 import com.example.blogapplication.entity.response.CategoryResponse;
 import com.example.blogapplication.utils.KeyBoardUtils;
 import com.example.blogapplication.utils.RichUtils;
@@ -39,8 +53,16 @@ import com.lzy.imagepicker.ui.ImageGridActivity;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yalantis.ucrop.UCropActivity;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class BlogEditActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -54,7 +76,15 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
     private int isFrom;//0:表示正常编辑  1:表示是重新编辑
 
     private Spinner spinner;
-    List<CategoryResponse> categoryResponses = new ArrayList<>();
+    private Long categoryId;
+    private List<CategoryResponse> categoryResponses = new ArrayList<>();
+
+    private ApiService apiService;
+
+    private String imgPath;
+    private Dialog dialog;
+    private View inflate;
+    private AddArticleDto addArticleDto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,9 +99,21 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
         binding.setOnClickListener(this);
         rxPermissions = new RxPermissions(this);
         spinner = binding.spinnerCategory;
-        CategorySpinner spinner = findViewById(R.id.spinner_category);
         categoryResponses = TokenUtils.getUserCategoryInfo(getApplicationContext());
-        spinner.setCategories(categoryResponses);
+        CategorySpinnerAdapter categorySpinnerAdapter = new CategorySpinnerAdapter(categoryResponses,getApplicationContext());
+        spinner.setAdapter(categorySpinnerAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                categoryId = new Long(categoryResponses.get(i).getId());
+                Toast.makeText(getApplicationContext(),categoryResponses.get(i).getName(),Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
         initPop();
         initEditor();
         if (isFrom == 1) {
@@ -274,24 +316,141 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
         });
     }
 
+
+    //加载图片(使用压缩读取技术)
+    private void showImage(String imagePath) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(imagePath, options);
+        options.inSampleSize = 1;
+        int side = 1000;//(int) getResources().getDimension(R.dimen.iv_personal_side);
+        int a = options.outWidth / side;
+        options.inSampleSize = a;
+        options.inJustDecodeBounds = false;
+        Bitmap bm = BitmapFactory.decodeFile(imagePath, options);
+        binding.imageViewthumbnail.setImageBitmap(bm);
+        imgPath = imagePath;
+
+    }
+
+    public void show(View view){
+        dialog = new Dialog(this,R.style.ActionSheetDialogStyle);
+        //填充对话框的布局
+        inflate = LayoutInflater.from(this).inflate(R.layout.dialog_save, null);
+        //初始化控件
+//        save = (TextView) inflate.findViewById(R.id.choosePhoto);
+//        takePhoto = (TextView) inflate.findViewById(R.id.takePhoto);
+        inflate.findViewById(R.id.save).setOnClickListener(this);
+        inflate.findViewById(R.id.publish).setOnClickListener(this);
+        //将布局设置给Dialog
+        dialog.setContentView(inflate);
+        //获取当前Activity所在的窗体
+        Window dialogWindow = dialog.getWindow();
+        //设置Dialog从窗体底部弹出
+        dialogWindow.setGravity( Gravity.BOTTOM);
+        //获得窗体的属性
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+        lp.y = 20;//设置Dialog距离底部的距离
+//       将属性设置给窗体
+        dialogWindow.setAttributes(lp);
+        dialog.show();//显示对话框
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.imageViewthumbnail://选择文章缩略图
+                Intent intent = new Intent(Intent.ACTION_PICK,
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, 1);
+
+                break;
+
+            case R.id.save://保存为草稿
+                apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
+                // 将 imagePath 转换为 File 对象
+                File imageFile = new File(imgPath);
+                RequestBody requestBody1 = RequestBody.create(MediaType.parse("image/*"), imageFile);
+                MultipartBody.Part filePart = MultipartBody.Part.createFormData("img", imageFile.getName(), requestBody1);
+                // 调用接口上传图片
+                apiService.uploadImg(filePart).enqueue(new Callback<ResponseResult<String>>() {
+                    @Override
+                    public void onResponse(Call<ResponseResult<String>> call, Response<ResponseResult<String>> response) {
+                        imgPath = response.body().getData();
+                        Toast.makeText(getApplicationContext(),"图片上传成功",Toast.LENGTH_SHORT);
+                        Log.i("imgpath!!!!!!!",imgPath);
+                        addArticleDto = new AddArticleDto(imgPath,"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","1","1");
+                        Log.i("articleInfo", addArticleDto.toJson());
+                        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
+                        apiService.add(requestBody).enqueue(new Callback<ResponseResult>() {
+                            @Override
+                            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                                Toast.makeText(BlogEditActivity.this, "保存草稿成功", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(BlogEditActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResponseResult> call, Throwable t) {
+                                Log.e("保存草稿出错啦！！！",t.getMessage());
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseResult<String>> call, Throwable t) {
+
+                    }
+                });
+
+                dialog.dismiss();
+                break;
+            case R.id.publish://发布文章
+                apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
+                // 将 imagePath 转换为 File 对象
+                File imageFile1 = new File(imgPath);
+                RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), imageFile1);
+                MultipartBody.Part filePart1 = MultipartBody.Part.createFormData("img", imageFile1.getName(), requestBody);
+                // 调用接口上传图片
+                apiService.uploadImg(filePart1).enqueue(new Callback<ResponseResult<String>>() {
+                    @Override
+                    public void onResponse(Call<ResponseResult<String>> call, Response<ResponseResult<String>> response) {
+                        imgPath = response.body().getData();
+                        Toast.makeText(getApplicationContext(),"图片上传成功",Toast.LENGTH_SHORT);
+                        Log.i("imgpath!!!!!!!",imgPath);
+                        addArticleDto = new AddArticleDto(imgPath,"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","0","1");
+                        Log.i("articleInfo", addArticleDto.toJson());
+                        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
+                        apiService.add(requestBody).enqueue(new Callback<ResponseResult>() {
+                            @Override
+                            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                                Toast.makeText(BlogEditActivity.this, "发布成功", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(BlogEditActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResponseResult> call, Throwable t) {
+                                Log.e("新增文章出错啦！！！",t.getMessage());
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseResult<String>> call, Throwable t) {
+
+                    }
+                });
+                dialog.dismiss();
+                break;
             case R.id.txt_finish:
                 finish();
                 break;
 
-            case R.id.txt_publish:
-
-                SharedPreferences sharedPreferences = getSharedPreferences("art", MODE_PRIVATE);
-                SharedPreferences.Editor edit = sharedPreferences.edit();
-                edit.putString("content", binding.richEditor.getHtml());
-                edit.putString("title", binding.editName.getText().toString().trim());
-                edit.commit();
-                Toast.makeText(this, "发布成功", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
-                finish();
+            case R.id.txt_publish://点击保存，打开弹窗
+                show(v);
                 break;
 
             case R.id.button_rich_do:
@@ -375,6 +534,17 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        //获取图片路径
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK && data != null) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumns = {MediaStore.Images.Media.DATA};
+            Cursor c = getContentResolver().query(selectedImage, filePathColumns, null, null, null);
+            c.moveToFirst();
+            int columnIndex = c.getColumnIndex(filePathColumns[0]);
+            String imagePath = c.getString(columnIndex);
+            showImage(imagePath);
+            c.close();
+        }
         if (resultCode == ImagePicker.RESULT_CODE_ITEMS) {
             if (requestCode == 104) {
                 selectImages.clear();

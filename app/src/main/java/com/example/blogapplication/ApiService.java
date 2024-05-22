@@ -1,6 +1,7 @@
 package com.example.blogapplication;
 
 
+import com.example.blogapplication.dto.AddArticleDto;
 import com.example.blogapplication.entity.Article;
 import com.example.blogapplication.entity.LoginUser;
 import com.example.blogapplication.entity.response.CategoryResponse;
@@ -50,6 +51,9 @@ public interface ApiService {
 
     @GET("article/hotArticleList")
     Call<ResponseResult<List<Article>>> getHotArticleList();
+
+    @POST("article/add")
+    Call<ResponseResult> add(@Body RequestBody requestBody);
 
     @PUT("user/userInfo")
     Call<Void> updateUserInfo(@Body RequestBody requestBody);

@@ -66,6 +66,12 @@ public class RecommendFragment extends Fragment implements ViewPager.OnPageChang
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        initView();
+    }
+
     private void initView(){
         apiService = RetrofitClient.getInstance(null).create(ApiService.class);
         apiService.getRecommandArticleList(1,10).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
