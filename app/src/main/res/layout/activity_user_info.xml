@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".UserInfoActivity"
+    android:background="@drawable/nav_header"
     android:orientation="vertical">
     <!-- 头像修改 -->
 <!--    <TextView-->
@@ -96,6 +97,7 @@
         android:layout_height="wrap_content"
         android:text="完成编辑"
         android:layout_gravity="center"
+        android:background="@color/main_pink_light"
         android:padding="16dp"/>
 
     <ProgressBar

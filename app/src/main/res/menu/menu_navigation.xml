@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu android:checkableBehavior="single"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:id="@+id/nav_group1" android:checkableBehavior="single">
+        <item
+            android:icon="@drawable/ic_home_black_24dp"
+            android:id="@+id/nav_home"
+            android:title="@string/nav_home"
+             />
+
+    </group>
+
+    <group android:id="@+id/nav_group2" android:checkableBehavior="single">
+        <item
+            android:icon="@drawable/ic_star_black_24dp"
+            android:id="@+id/nav_favorites"
+            android:title="@string/nav_favorites"
+            />
+
+        <item
+            android:icon="@drawable/ic_history_black_24dp"
+            android:id="@+id/nav_histories"
+            android:title="@string/nav_histories"
+             />
+
+        <item
+            android:icon="@drawable/ic_people_black_24dp"
+            android:id="@+id/nav_following"
+            android:title="@string/nav_following"
+            />
+        <item
+            android:icon="@drawable/ic_write_black_24dp"
+            android:id="@+id/nav_write"
+            android:title="@string/nav_write"
+             />
+
+        <item
+            android:icon="@drawable/ic_draft_black_24dp"
+            android:id="@+id/nav_draft"
+            android:title="@string/nav_draft"
+             />
+
+    </group>
+
+    <group android:id="@+id/nav_group3" android:checkableBehavior="single">
+
+
+        <item
+            android:icon="@drawable/ic_exit_black_24dp"
+            android:id="@+id/nav_exit"
+            android:orderInCategory="3"
+            android:title="@string/nav_exit"
+             />
+    </group>
+
+</menu>

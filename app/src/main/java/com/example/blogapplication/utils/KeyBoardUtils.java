@@ -1,14 +1,13 @@
 package com.example.blogapplication.utils;
 
-/**
- * Created by lihang on 2017/9/13.
- */
 
 import android.content.Context;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+
+import com.example.blogapplication.view.RichEditor;
 
 /**
  * 打开或关闭软键盘
@@ -32,8 +31,7 @@ public class KeyBoardUtils {
 
     /**
      * 关闭软键盘
-     *
-     * @param mEditText 输入框
+     *  @param mEditText 输入框
      * @param mContext  上下文
      */
     public static void closeKeybord(EditText mEditText, Context mContext) {

@@ -24,7 +24,11 @@
     <color name="black1b">#1b1b1b</color>
     <color name="grey_f2">#f2f2f2</color>
 
-    <color name="colorPrimary">#008577</color>
+<!--    <color name="colorPrimary">#008577</color>-->
+    <color name="colorPrimary">#df4277</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="main_black_grey">#6D6D6D</color>
+    <color name="text__white">#ffffffff</color>
+    <color name="main_pink_light">#df4277</color>
 </resources>

@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.blogapplication.R;
 import com.example.blogapplication.entity.Article;
@@ -19,60 +20,50 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class ArticleAdapter extends BaseAdapter{
+public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHolder> {
     private List<Article> data;
     private LayoutInflater layoutInflater;
     private Context context;
-    public ArticleAdapter(Context context,List<Article> data){
-        this.context=context;
-        this.data=data;
-        this.layoutInflater=LayoutInflater.from(context);
+
+    public ArticleAdapter(Context context, List<Article> data) {
+        this.context = context;
+        this.data = data;
+        this.layoutInflater = LayoutInflater.from(context);
     }
 
-    public static final class Compoent{
-        public TextView title;
-        public TextView viewpoint;
-        public ImageView thumbnail;
-        public TextView articleThumb;
-    }
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView title;
+        TextView viewpoint;
+        ImageView thumbnail;
+        TextView articleThumb;
 
-    @Override
-    public int getCount() {
-        return data.size();
-    }
-
-    @Override
-    public Object getItem(int i) {
-        return data.get(i);
-    }
-
-    @Override
-    public long getItemId(int i) {
-        return i;
+        public ViewHolder(View itemView) {
+            super(itemView);
+            title = itemView.findViewById(R.id.article_title);
+            viewpoint = itemView.findViewById(R.id.text_viewpoint);
+            thumbnail = itemView.findViewById(R.id.thumbnail);
+            articleThumb = itemView.findViewById(R.id.content_thumbnail);
+        }
     }
 
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        Compoent compoent=null;
-        if(convertView==null){
-            compoent=new Compoent();
-            //获得组件，实例化组件
-            convertView=layoutInflater.inflate(R.layout.article_item, null);
-            compoent.title=convertView.findViewById(R.id.article_title);
-            compoent.viewpoint = convertView.findViewById (R.id.text_viewpoint);
-            compoent.thumbnail=convertView.findViewById(R.id.thumbnail);//文章缩略图
-            compoent.articleThumb = convertView.findViewById (R.id.content_thumbnail);//文章内容截取
-            convertView.setTag(compoent);
-        }else{
-            compoent= (Compoent) convertView.getTag();
-        }
-        //绑定数据
-        Article article = data.get (position);
-        compoent.title.setText (article.getTitle());
-        compoent.viewpoint.setText(article.getViewCount().toString());
-        Picasso.get().load(article.getThumbnail()).into(compoent.thumbnail);
-        compoent.articleThumb.setText(article.getSummary());
-        return convertView;
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = layoutInflater.inflate(R.layout.article_item, parent, false);
+        return new ViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Article article = data.get(position);
+        holder.title.setText(article.getTitle());
+        holder.viewpoint.setText(String.valueOf(article.getViewCount()));
+        Picasso.get().load(article.getThumbnail()).into(holder.thumbnail);
+        holder.articleThumb.setText(article.getSummary());
+    }
+
+    @Override
+    public int getItemCount() {
+        return data.size();
     }
 }

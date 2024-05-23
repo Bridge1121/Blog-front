@@ -55,7 +55,7 @@ public interface ApiService {
     @POST("article/add")
     Call<ResponseResult> add(@Body RequestBody requestBody);
 
-    @PUT("user/userInfo")
+    @PUT("user/updateUserInfo")
     Call<Void> updateUserInfo(@Body RequestBody requestBody);
 
     @GET("category/getCategoryList")

@@ -3,13 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="horizontal">
 
 
     <ListView
         android:id="@+id/article_listview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+<!--    <com.yanzhenjie.recyclerview.SwipeRecyclerView-->
+<!--        android:id="@+id/article_recycler_view"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_centerVertical="true"-->
+<!--        android:layout_centerHorizontal="true"/>-->
 
 
 

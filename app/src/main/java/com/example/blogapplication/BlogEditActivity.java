@@ -367,6 +367,7 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
                 break;
 
             case R.id.save://保存为草稿
+                KeyBoardUtils.closeKeybord(binding.editName,getApplicationContext());
                 apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
                 // 将 imagePath 转换为 File 对象
                 File imageFile = new File(imgPath);

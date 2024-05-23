@@ -8,6 +8,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.blogapplication.R;
 import com.example.blogapplication.entity.Article;
 import com.example.blogapplication.vo.ArticleDetailVo;
@@ -15,60 +18,50 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class HotArticleAdapter extends BaseAdapter {
+public class HotArticleAdapter extends RecyclerView.Adapter<HotArticleAdapter.ViewHolder> {
     private List<Article> data;
     private LayoutInflater layoutInflater;
     private Context context;
-    public HotArticleAdapter(Context context,List<Article> data){
-        this.context=context;
-        this.data=data;
-        this.layoutInflater=LayoutInflater.from(context);
+
+    public HotArticleAdapter(Context context, List<Article> data) {
+        this.context = context;
+        this.data = data;
+        this.layoutInflater = LayoutInflater.from(context);
     }
 
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        TextView title;
+        ImageView hot;
+        TextView order;
 
-
-    public static final class Compoent{
-        public TextView title;
-        public ImageView hot;
-        public TextView order;
+        public ViewHolder(View itemView) {
+            super(itemView);
+            title = itemView.findViewById(R.id.article_title);
+            hot = itemView.findViewById(R.id.hot_fire);
+            order = itemView.findViewById(R.id.order);
+        }
     }
+
+    @NonNull
     @Override
-    public int getCount() {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = layoutInflater.inflate(R.layout.hot_article_item, parent, false);
+        return new ViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Article article = data.get(position);
+        holder.title.setText(article.getTitle());
+        if (position < 3) {
+            holder.hot.setImageResource(R.drawable.hot);
+        }
+
+        holder.order.setText(String.valueOf(position + 1));
+    }
+
+    @Override
+    public int getItemCount() {
         return data.size();
-    }
-
-    @Override
-    public Object getItem(int i) {
-        return data.get(i);
-    }
-
-    @Override
-    public long getItemId(int i) {
-        return i;
-    }
-
-    @Override
-    public View getView(int i, View convertView, ViewGroup viewGroup) {
-        Compoent compoent=null;
-        if(convertView==null){
-            compoent= new Compoent();
-            //获得组件，实例化组件
-            convertView=layoutInflater.inflate(R.layout.hot_article_item, null);
-            compoent.title=convertView.findViewById(R.id.article_title);
-            compoent.hot=convertView.findViewById(R.id.hot_fire);//文章热度
-            compoent.order = convertView.findViewById (R.id.order);//文章排名
-            convertView.setTag(compoent);
-        }else{
-            compoent= (Compoent) convertView.getTag();
-        }
-        //绑定数据
-        Article article = data.get (i);
-        compoent.title.setText (article.getTitle());
-        if(i<3){
-            compoent.hot.setImageResource(R.drawable.hot);
-        }
-
-        compoent.order.setText(i+1+"");
-        return convertView;
     }
 }

@@ -11,6 +11,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.lzy.imagepicker.R;
 
 import java.io.File;
@@ -29,22 +30,40 @@ public class GlideImageLoader implements ImageLoader {
     @Override
     public void displayImage(Activity activity, String path, ImageView imageView, int width, int height) {
 //        Uri.fromFile(new File(path))
-        Glide.with(activity)                             //配置上下文
-                .load(new File(path))      //设置图片路径(fix #8,文件名包含%符号 无法识别和显示)
-                .error(R.mipmap.default_error)           //设置错误图片
-                .placeholder(R.mipmap.default_error)     //设置占位图片
-                .diskCacheStrategy(DiskCacheStrategy.ALL)//缓存全尺寸
+//        Glide.with(activity)                             //配置上下文
+//                .load(new File(path))      //设置图片路径(fix #8,文件名包含%符号 无法识别和显示)
+//                .error(R.mipmap.default_error)           //设置错误图片
+//                .placeholder(R.mipmap.default_error)     //设置占位图片
+//                .diskCacheStrategy(DiskCacheStrategy.ALL)//缓存全尺寸
+//                .into(imageView);
+        RequestOptions options = new RequestOptions()
+                .error(R.mipmap.default_error)
+                .placeholder(R.mipmap.default_error)
+                .diskCacheStrategy(DiskCacheStrategy.ALL);
+
+        Glide.with(activity)
+                .load(Uri.fromFile(new File(path))) // 此处文件路径需要转换为 Uri 类型
+                .apply(options)
                 .into(imageView);
     }
 
 
     @Override
     public void displayImagePreview(Activity activity, String path, ImageView imageView, int width, int height) {
-        Glide.with(activity)                             //配置上下文
-                .load(new File(path))     //设置图片路径(fix #8,文件名包含%符号 无法识别和显示)
-                .error(R.mipmap.default_error)           //设置错误图片
-                .placeholder(R.mipmap.default_error)     //设置占位图片
-                .diskCacheStrategy(DiskCacheStrategy.ALL)//缓存全尺寸
+//        Glide.with(activity)                             //配置上下文
+//                .load(new File(path))     //设置图片路径(fix #8,文件名包含%符号 无法识别和显示)
+//                .error(R.mipmap.default_error)           //设置错误图片
+//                .placeholder(R.mipmap.default_error)     //设置占位图片
+//                .diskCacheStrategy(DiskCacheStrategy.ALL)//缓存全尺寸
+//                .into(imageView);
+        RequestOptions options = new RequestOptions()
+                .error(R.mipmap.default_error)
+                .placeholder(R.mipmap.default_error)
+                .diskCacheStrategy(DiskCacheStrategy.ALL);
+
+        Glide.with(activity)
+                .load(Uri.fromFile(new File(path))) // 此处文件路径需要转换为 Uri 类型
+                .apply(options)
                 .into(imageView);
     }
 

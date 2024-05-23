@@ -27,11 +27,14 @@ import androidx.databinding.DataBindingUtil;
 
 public class ShowArtActivity extends AppCompatActivity {
     ActivityShowArtBinding binding;
+    private ApiService apiService;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_show_art);
+        //获取要显示的文章信息
+        Intent intent = getIntent();
         SharedPreferences sharedPreferences = getSharedPreferences("art", MODE_PRIVATE);
         String title = sharedPreferences.getString("title", "title");
         String content = sharedPreferences.getString("content", "");

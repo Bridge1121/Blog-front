@@ -14,35 +14,56 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/teal_700"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-            <ImageButton
-                android:id="@+id/img_search"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:background="@drawable/search"
-                android:layout_marginLeft="240dp"/>
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/icon_avatar"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginLeft="10dp"
-                android:src="@drawable/default_avatar"/>
-        </androidx.appcompat.widget.Toolbar>
+<!--        <androidx.appcompat.widget.Toolbar-->
+<!--            android:id="@+id/toolbar"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="?attr/actionBarSize"-->
+<!--            android:background="@color/teal_700"-->
+<!--            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"-->
+<!--            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">-->
+<!--            <ImageButton-->
+<!--                android:id="@+id/img_search"-->
+<!--                android:layout_width="20dp"-->
+<!--                android:layout_height="20dp"-->
+<!--                android:background="@drawable/search"-->
+<!--                android:layout_marginLeft="240dp"/>-->
+<!--            <de.hdodenhof.circleimageview.CircleImageView-->
+<!--                android:id="@+id/icon_avatar"-->
+<!--                android:layout_width="30dp"-->
+<!--                android:layout_height="30dp"-->
+<!--                android:layout_marginLeft="10dp"-->
+<!--                android:src="@drawable/default_avatar"/>-->
+<!--        </androidx.appcompat.widget.Toolbar>-->
 
-        <include layout="@layout/activity_main_top_tab" />
+<!--        <include layout="@layout/activity_main_top_tab" />-->
 
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/id_page_vp"
+<!--        <androidx.viewpager.widget.ViewPager-->
+<!--            android:id="@+id/id_page_vp"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:layout_weight="1" >-->
+<!--        </androidx.viewpager.widget.ViewPager>-->
+        <com.github.florent37.materialviewpager.MaterialViewPager
+            android:id="@+id/materialViewPager"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" >
-        </androidx.viewpager.widget.ViewPager>
+            android:layout_height="match_parent"
+            app:viewpager_animatedHeaderImage="true"
+            app:viewpager_color="@color/colorPrimary"
+            app:viewpager_disableToolbar="false"
+            app:viewpager_displayToolbarWhenSwipe="true"
+            app:viewpager_enableToolbarElevation="true"
+            app:viewpager_headerAdditionalHeight="20dp"
+            app:viewpager_headerAlpha="1.0"
+            app:viewpager_headerHeight="200dp"
+            app:viewpager_hideLogoWithFade="false"
+            app:viewpager_hideToolbarAndTitle="false"
+            app:viewpager_logo="@layout/header_logo"
+            app:viewpager_logoMarginTop="100dp"
+            app:viewpager_pagerTitleStrip="@layout/material_view_pager_pagertitlestrip_newstand"
+            app:viewpager_parallaxHeaderFactor="1.5"
+            app:viewpager_transparentToolbar="true"
+
+            />
 
     </LinearLayout>
 
@@ -51,7 +72,15 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:headerLayout="@layout/nav_header"
-        app:menu="@menu/toolbar" /> <!-- 替换为您的菜单资源文件 -->
+        app:headerLayout="@layout/navigation_header"
+        app:itemTextColor="@color/selector_nav_menu_textcolor"
+        app:menu="@menu/menu_navigation" /> <!-- 替换为您的菜单资源文件 -->
+
+<!--    <com.google.android.material.navigation.NavigationView-->
+<!--        android:id="@+id/id_navigationview"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        app:itemTextColor="@color/selector_nav_menu_textcolor"-->
+<!--        android:layout_gravity="left" />-->
 
 </androidx.drawerlayout.widget.DrawerLayout>
