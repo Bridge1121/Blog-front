@@ -17,6 +17,8 @@ import android.webkit.WebViewClient;
 
 import com.example.blogapplication.databinding.ActivityShowArtBinding;
 import com.example.blogapplication.utils.RichUtils;
+import com.example.blogapplication.utils.TokenUtils;
+import com.example.blogapplication.vo.ArticleDetailVo;
 
 import java.util.ArrayList;
 
@@ -24,10 +26,16 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 
 public class ShowArtActivity extends AppCompatActivity {
     ActivityShowArtBinding binding;
     private ApiService apiService;
+    private Long articleId;
+    private ArticleDetailVo articleDetailVo;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,14 +43,28 @@ public class ShowArtActivity extends AppCompatActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_show_art);
         //获取要显示的文章信息
         Intent intent = getIntent();
-        SharedPreferences sharedPreferences = getSharedPreferences("art", MODE_PRIVATE);
-        String title = sharedPreferences.getString("title", "title");
-        String content = sharedPreferences.getString("content", "");
+        articleId = intent.getLongExtra("id",1);
+//        SharedPreferences sharedPreferences = getSharedPreferences("art", MODE_PRIVATE);
+//        String title = sharedPreferences.getString("title", "title");
+//        String content = sharedPreferences.getString("content", "");
+        apiService = RetrofitClient.getInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
+        apiService.getArticleDetail(articleId).enqueue(new Callback<ResponseResult<ArticleDetailVo>>() {
+            @Override
+            public void onResponse(Call<ResponseResult<ArticleDetailVo>> call, Response<ResponseResult<ArticleDetailVo>> response) {
+                articleDetailVo = response.body().getData();
+                initWebView(articleDetailVo.getContent());
+//                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//                getSupportActionBar().setTitle(articleDetailVo.getTitle());
 
+            }
+
+            @Override
+            public void onFailure(Call<ResponseResult<ArticleDetailVo>> call, Throwable t) {
+
+            }
+        });
 //        content = "上海专业用户上海专业用户上海专业用户上海专业用户上海专业用户<p></p><p><img src=\"https://greenvalley.oss-cn-shanghai.aliyuncs.com/patient/270f8cbc044b4400bdb098d67b72a859_160_160.png\" style=\"max-width:100%;\"></p>";
-        initWebView(content);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(title);
+
 
     }
 

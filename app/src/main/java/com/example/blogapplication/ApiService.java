@@ -3,10 +3,13 @@ package com.example.blogapplication;
 
 import com.example.blogapplication.dto.AddArticleDto;
 import com.example.blogapplication.entity.Article;
+import com.example.blogapplication.entity.Comment;
 import com.example.blogapplication.entity.LoginUser;
 import com.example.blogapplication.entity.response.CategoryResponse;
 import com.example.blogapplication.vo.ArticleDetailVo;
 import com.example.blogapplication.entity.response.ArticleResponse;
+import com.example.blogapplication.vo.PageVo;
+
 
 import java.io.File;
 import java.util.List;
@@ -38,7 +41,10 @@ public interface ApiService {
     Call<ResponseResult> logout();
 
     @GET("comment/commentList")
-    Call<String> getCommentList(@Query("pageNum") int pageNum,@Query("pageSize") int pageSize,@Query("articleId") Long articleId);
+    Call<ResponseResult<PageVo>> getCommentList(@Query("pageNum") int pageNum, @Query("pageSize") int pageSize, @Query("articleId") Long articleId);
+
+    @POST("comment")
+    Call<ResponseResult> addComment(@Body Comment comment);
 
     @GET("article/searchArticle")
     Call<ResponseResult<ArticleResponse>> searchArticle(@Query("pageNum") int pageNum,@Query("pageSize") int pageSize,@Query("content") String content);
@@ -64,5 +70,6 @@ public interface ApiService {
     @Multipart
     @POST("upload")
     Call<ResponseResult<String>> uploadImg(@Part MultipartBody.Part img);
+
 
 }

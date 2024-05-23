@@ -1,5 +1,6 @@
 package com.example.blogapplication.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import com.example.blogapplication.ApiService;
 import com.example.blogapplication.R;
 import com.example.blogapplication.ResponseResult;
 import com.example.blogapplication.RetrofitClient;
+import com.example.blogapplication.ShowArtActivity;
 import com.example.blogapplication.adapter.ArticleAdapter;
 import com.example.blogapplication.entity.Article;
 import com.example.blogapplication.entity.response.ArticleResponse;
@@ -89,6 +91,9 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     }
 
     private void onItemClick(int position) {
+        Intent intent = new Intent(getActivity(), ShowArtActivity.class);
+        intent.putExtra("id",articles.get(position).getId());
+        startActivity(intent);
         Toast.makeText(getActivity(),articles.get(position).getId().toString(),Toast.LENGTH_SHORT).show();
     }
 

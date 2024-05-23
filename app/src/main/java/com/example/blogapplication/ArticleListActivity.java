@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -40,12 +41,15 @@ public class ArticleListActivity extends AppCompatActivity {
     private List<Article> articles;
     private String searchContent;
     private ArticleAdapter articleAdapter;
+    private LinearLayout searchNoneLinearLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityArticleListBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        searchNoneLinearLayout = binding.searchNoneLinearlayout;
+        searchNoneLinearLayout.setVisibility(View.GONE);
         searchRecyclerView = binding.recyclerView;
         searchRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         searchRecyclerView.setHasFixedSize(true);
@@ -134,8 +138,14 @@ public class ArticleListActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponseResult<ArticleResponse>> call, Response<ResponseResult<ArticleResponse>> response) {
                 articles = response.body().getData().getArticles();
-                articleAdapter = new ArticleAdapter(ArticleListActivity.this,  articles);
-                searchRecyclerView.setAdapter(articleAdapter);
+                if (articles.size()==0){
+                    searchRecyclerView.setVisibility(View.GONE);
+                    searchNoneLinearLayout.setVisibility(View.VISIBLE);
+                }else{
+                    articleAdapter = new ArticleAdapter(articles,ArticleListActivity.this, searchContent);
+                    searchRecyclerView.setAdapter(articleAdapter);
+                }
+
             }
 
             @Override
