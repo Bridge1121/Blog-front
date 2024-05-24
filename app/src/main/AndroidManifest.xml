@@ -21,12 +21,17 @@
         android:theme="@style/AppTheme"
         tools:targetApi="31">
         <activity
+            android:name=".DraftListActivity"
+            android:theme="@style/CustomActionBarTheme"
+            android:exported="false" />
+        <activity
             android:name=".SelectCategoryActivity"
             android:exported="false" />
         <activity
             android:name=".ShowArtActivity"
             android:exported="false"
             android:screenOrientation="portrait"
+            android:theme="@style/CustomActionBarTheme"
             android:windowSoftInputMode="stateAlwaysHidden" /> <!-- <activity -->
         <!-- android:name="com.froalachttp.content.ContentLoaderActivity" -->
         <!-- android:configChanges="orientation|keyboardHidden|screenSize" -->

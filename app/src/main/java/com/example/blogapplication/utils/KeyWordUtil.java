@@ -23,19 +23,24 @@ public class KeyWordUtil {
      */
     public static SpannableString matcherSearchTitle(int color, String text, String keyword) {
         SpannableString s = new SpannableString(text);
-        keyword=escapeExprSpecialWord(keyword);
-        text=escapeExprSpecialWord(text);
-        //todo 实现不区分大小写匹配
-        if (text.contains(keyword)&&!TextUtils.isEmpty(keyword)){
+        keyword = escapeExprSpecialWord(keyword);
+        text = escapeExprSpecialWord(text);
+
+        // 将关键字和文本转换为小写形式
+        keyword = keyword.toLowerCase();
+        text = text.toLowerCase();
+
+        if (text.contains(keyword) && !TextUtils.isEmpty(keyword)) {
             try {
                 Pattern p = Pattern.compile(keyword);
-                Matcher m = p.matcher(s);
+                Matcher m = p.matcher(text);
                 while (m.find()) {
                     int start = m.start();
                     int end = m.end();
+                    // 在原始文本中应用颜色标记
                     s.setSpan(new ForegroundColorSpan(color), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
             }
         }
         return s;

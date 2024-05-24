@@ -53,8 +53,8 @@ public class ShowArtActivity extends AppCompatActivity {
             public void onResponse(Call<ResponseResult<ArticleDetailVo>> call, Response<ResponseResult<ArticleDetailVo>> response) {
                 articleDetailVo = response.body().getData();
                 initWebView(articleDetailVo.getContent());
-//                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//                getSupportActionBar().setTitle(articleDetailVo.getTitle());
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getSupportActionBar().setTitle(articleDetailVo.getTitle());
 
             }
 

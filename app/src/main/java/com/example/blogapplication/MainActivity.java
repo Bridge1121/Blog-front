@@ -355,6 +355,8 @@ public class MainActivity extends AppCompatActivity {
                             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                             startActivity(intent);
                         } else {
+                            Intent intent = new Intent(MainActivity.this,DraftListActivity.class);
+                            startActivity(intent);
                             Toast.makeText(MainActivity.this, "跳转到我的草稿", Toast.LENGTH_SHORT).show();
                         }
 

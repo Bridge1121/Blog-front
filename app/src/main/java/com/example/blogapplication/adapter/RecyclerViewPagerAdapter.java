@@ -23,7 +23,7 @@ public class RecyclerViewPagerAdapter extends RecyclerView.Adapter<RecyclerView.
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = null;
         view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.content_cardview, parent, false);
+                .inflate(R.layout.draft_item, parent, false);
  
         return new RecyclerView.ViewHolder(view) {
         };

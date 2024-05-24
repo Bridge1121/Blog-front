@@ -18,6 +18,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -55,11 +56,17 @@ public interface ApiService {
     @GET("article/articleList")
     Call<ResponseResult<ArticleResponse>> getRecommandArticleList(@Query("pageNum") int pageNum, @Query("pageSize") int pageSize);
 
+    @GET("article/draftList")
+    Call<ResponseResult<ArticleResponse>> draftArticleList(@Query("pageNum") Integer pageNum,@Query("pageSize") Integer pageSize,@Query("userId") Long userId);
+
     @GET("article/hotArticleList")
     Call<ResponseResult<List<Article>>> getHotArticleList();
 
     @POST("article/add")
     Call<ResponseResult> add(@Body RequestBody requestBody);
+
+    @DELETE("article/deleteArticle/{id}")
+    Call<ResponseResult> deleteArticle(@Path("id") Long id);
 
     @PUT("user/updateUserInfo")
     Call<Void> updateUserInfo(@Body RequestBody requestBody);
