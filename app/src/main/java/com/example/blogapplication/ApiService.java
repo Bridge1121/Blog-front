@@ -1,6 +1,7 @@
 package com.example.blogapplication;
 
 
+import com.example.blogapplication.comment.CustomCommentModel;
 import com.example.blogapplication.dto.AddArticleDto;
 import com.example.blogapplication.entity.Article;
 import com.example.blogapplication.entity.Comment;
@@ -35,6 +36,9 @@ public interface ApiService {
     @POST("user/register")
     Call<ResponseResult> register(@Body RequestBody requestBody);
 
+    @GET("user/getAvatar")
+    Call<ResponseResult<String>> getAvatar(@Query("userId") Long userId);
+
     @POST("login")
     Call<ResponseResult<LoginUser>> login(@Body RequestBody requestBody);
 
@@ -42,7 +46,7 @@ public interface ApiService {
     Call<ResponseResult> logout();
 
     @GET("comment/commentList")
-    Call<ResponseResult<PageVo>> getCommentList(@Query("pageNum") int pageNum, @Query("pageSize") int pageSize, @Query("articleId") Long articleId);
+    Call<ResponseResult<CustomCommentModel>> getCommentList(@Query("pageNum") int pageNum, @Query("pageSize") int pageSize, @Query("articleId") Long articleId);
 
     @POST("comment")
     Call<ResponseResult> addComment(@Body Comment comment);

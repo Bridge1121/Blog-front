@@ -32,6 +32,10 @@
             android:name=".SelectCategoryActivity"
             android:exported="false" />
         <activity
+            android:name=".comment.CustomUseInLocalActivity"
+            android:theme="@style/CustomActionBarTheme"
+            android:exported="false" />
+        <activity
             android:name=".ShowArtActivity"
             android:exported="false"
             android:screenOrientation="portrait"
