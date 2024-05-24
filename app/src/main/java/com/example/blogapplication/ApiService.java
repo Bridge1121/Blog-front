@@ -65,6 +65,9 @@ public interface ApiService {
     @POST("article/add")
     Call<ResponseResult> add(@Body RequestBody requestBody);
 
+    @PUT("article/updateArticle")
+    Call<ResponseResult> updateArticle(@Body RequestBody requestBody);
+
     @DELETE("article/deleteArticle/{id}")
     Call<ResponseResult> deleteArticle(@Path("id") Long id);
 

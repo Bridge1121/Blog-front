@@ -127,6 +127,11 @@ public class ShowArtActivity extends AppCompatActivity {
             case R.id.repet_editor:
                 Intent intent = new Intent(ShowArtActivity.this, BlogEditActivity.class);
                 intent.putExtra("isFrom", 1);
+                intent.putExtra("title",articleDetailVo.getTitle());
+                intent.putExtra("content",articleDetailVo.getContent());
+                intent.putExtra("thumbnail",articleDetailVo.getThumbnail());
+                intent.putExtra("categoryId",articleDetailVo.getCategoryId());
+                intent.putExtra("id",articleDetailVo.getId());
                 startActivity(intent);
                 finish();
                 return true;

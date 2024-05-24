@@ -52,6 +52,7 @@ import com.example.blogapplication.view.RichEditor;
 import com.lzy.imagepicker.ImagePicker;
 import com.lzy.imagepicker.bean.ImageItem;
 import com.lzy.imagepicker.ui.ImageGridActivity;
+import com.squareup.picasso.Picasso;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yalantis.ucrop.UCropActivity;
 
@@ -118,12 +119,25 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
         });
         initPop();
         initEditor();
-        if (isFrom == 1) {
-            SharedPreferences sharedPreferences = getSharedPreferences("art", MODE_PRIVATE);
-            String title = sharedPreferences.getString("title", "title");
-            String content = sharedPreferences.getString("content", "");
+        if (isFrom == 1) {//如果是重新编辑的话
+//            SharedPreferences sharedPreferences = getSharedPreferences("art", MODE_PRIVATE);
+//            String title = sharedPreferences.getString("title", "title");
+//            String content = sharedPreferences.getString("content", "");
+            String title = getIntent().getStringExtra("title");
+            String content = getIntent().getStringExtra("content");
+            String imgPath = getIntent().getStringExtra("thumbnail");
+            Long categoryId = getIntent().getLongExtra("categoryId",0);
+            for (int i = 0;i<categoryResponses.size();i++){
+                if (categoryResponses.get(i).getId()==categoryId){
+                    spinner.setSelection(i);
+                }
+            }
+
             binding.editName.setText(title);
             binding.richEditor.setHtml(content);
+            Picasso.get().load(imgPath).into(binding.imageViewthumbnail);
+            binding.txtPublish.setSelected(true);
+            binding.txtPublish.setEnabled(true);
         }
     }
 
@@ -358,6 +372,177 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
         dialog.show();//显示对话框
     }
 
+    //重新编辑且未编辑thumbnail时保存草稿
+    private void draftArticleAgain(){
+        apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
+        KeyBoardUtils.closeKeybord(binding.richEditor,getApplicationContext());
+        addArticleDto = new AddArticleDto(getIntent().getLongExtra("id",0),getIntent().getStringExtra("thumbnail"),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","1","1");
+        Log.i("articleInfo", addArticleDto.toJson());
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
+        apiService.updateArticle(requestBody).enqueue(new Callback<ResponseResult>() {
+            @Override
+            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                Toast.makeText(BlogEditActivity.this, "保存草稿成功", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(BlogEditActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onFailure(Call<ResponseResult> call, Throwable t) {
+                Log.e("保存草稿出错啦！！！",t.getMessage());
+            }
+        });
+    }
+
+    //初次编辑保存草稿
+    private void draftArticle(){
+        KeyBoardUtils.closeKeybord(binding.richEditor,getApplicationContext());
+        apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
+        // 将 imagePath 转换为 File 对象
+        File imageFile = new File(imgPath);
+        RequestBody requestBody1 = RequestBody.create(MediaType.parse("image/*"), imageFile);
+        MultipartBody.Part filePart = MultipartBody.Part.createFormData("img", imageFile.getName(), requestBody1);
+        // 调用接口上传图片
+        apiService.uploadImg(filePart).enqueue(new Callback<ResponseResult<String>>() {
+            @Override
+            public void onResponse(Call<ResponseResult<String>> call, Response<ResponseResult<String>> response) {
+                imgPath = response.body().getData();
+                Toast.makeText(getApplicationContext(),"图片上传成功",Toast.LENGTH_SHORT);
+                Log.i("imgpath!!!!!!!",imgPath);
+
+                if (isFrom==1){//重新编辑，调用更新接口
+                    addArticleDto = new AddArticleDto(addArticleDto.getId(),imgPath,"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","1","1");
+                    Log.i("articleInfo", addArticleDto.toJson());
+                    RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
+                    apiService.updateArticle(requestBody).enqueue(new Callback<ResponseResult>() {
+                        @Override
+                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                            Toast.makeText(BlogEditActivity.this, "保存草稿成功", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(BlogEditActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseResult> call, Throwable t) {
+                            Log.e("重新编辑草稿出错啦！！！",t.getMessage());
+                        }
+                    });
+                }else{//新增，调用新增接口
+                    addArticleDto = new AddArticleDto(imgPath,"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","1","1");
+                    Log.i("articleInfo", addArticleDto.toJson());
+                    RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
+                    apiService.add(requestBody).enqueue(new Callback<ResponseResult>() {
+                        @Override
+                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                            Toast.makeText(BlogEditActivity.this, "保存草稿成功", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(BlogEditActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseResult> call, Throwable t) {
+                            Log.e("保存草稿出错啦！！！",t.getMessage());
+                        }
+                    });
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseResult<String>> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void publishArticle(){
+        KeyBoardUtils.closeKeybord(binding.richEditor,getApplicationContext());
+        apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
+        // 将 imagePath 转换为 File 对象
+        File imageFile1 = new File(imgPath);
+        RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), imageFile1);
+        MultipartBody.Part filePart1 = MultipartBody.Part.createFormData("img", imageFile1.getName(), requestBody);
+        // 调用接口上传图片
+        apiService.uploadImg(filePart1).enqueue(new Callback<ResponseResult<String>>() {
+            @Override
+            public void onResponse(Call<ResponseResult<String>> call, Response<ResponseResult<String>> response) {
+                imgPath = response.body().getData();
+                Toast.makeText(getApplicationContext(),"图片上传成功",Toast.LENGTH_SHORT);
+                Log.i("imgpath!!!!!!!",imgPath);
+
+                if (isFrom==1){//重新编辑
+                    addArticleDto = new AddArticleDto(addArticleDto.getId(),imgPath,"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","0","1");
+                    Log.i("articleInfo", addArticleDto.toJson());
+                    RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
+                    apiService.updateArticle(requestBody).enqueue(new Callback<ResponseResult>() {
+                        @Override
+                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                            Toast.makeText(BlogEditActivity.this, "发布成功", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(BlogEditActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseResult> call, Throwable t) {
+                            Log.e("重新编辑文章出错啦！！！",t.getMessage());
+                        }
+                    });
+
+                }else{
+                    addArticleDto = new AddArticleDto(imgPath,"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","0","1");
+                    Log.i("articleInfo", addArticleDto.toJson());
+                    RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
+                    apiService.add(requestBody).enqueue(new Callback<ResponseResult>() {
+                        @Override
+                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                            Toast.makeText(BlogEditActivity.this, "发布成功", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(BlogEditActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseResult> call, Throwable t) {
+                            Log.e("新增文章出错啦！！！",t.getMessage());
+                        }
+                    });
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseResult<String>> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void publishArticleAgain(){
+        apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
+        KeyBoardUtils.closeKeybord(binding.richEditor,getApplicationContext());
+        addArticleDto = new AddArticleDto(getIntent().getLongExtra("id",0),getIntent().getStringExtra("thumbnail"),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","0","1");
+        Log.i("articleInfo", addArticleDto.toJson());
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
+        apiService.updateArticle(requestBody).enqueue(new Callback<ResponseResult>() {
+            @Override
+            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                Toast.makeText(BlogEditActivity.this, "发布成功", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(BlogEditActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onFailure(Call<ResponseResult> call, Throwable t) {
+                Log.e("新增文章出错啦！！！",t.getMessage());
+            }
+        });
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -369,83 +554,11 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
                 break;
 
             case R.id.save://保存为草稿
-                KeyBoardUtils.closeKeybord(binding.editName,getApplicationContext());
-                apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
-                // 将 imagePath 转换为 File 对象
-                File imageFile = new File(imgPath);
-                RequestBody requestBody1 = RequestBody.create(MediaType.parse("image/*"), imageFile);
-                MultipartBody.Part filePart = MultipartBody.Part.createFormData("img", imageFile.getName(), requestBody1);
-                // 调用接口上传图片
-                apiService.uploadImg(filePart).enqueue(new Callback<ResponseResult<String>>() {
-                    @Override
-                    public void onResponse(Call<ResponseResult<String>> call, Response<ResponseResult<String>> response) {
-                        imgPath = response.body().getData();
-                        Toast.makeText(getApplicationContext(),"图片上传成功",Toast.LENGTH_SHORT);
-                        Log.i("imgpath!!!!!!!",imgPath);
-                        addArticleDto = new AddArticleDto(imgPath,"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","1","1");
-                        Log.i("articleInfo", addArticleDto.toJson());
-                        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
-                        apiService.add(requestBody).enqueue(new Callback<ResponseResult>() {
-                            @Override
-                            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
-                                Toast.makeText(BlogEditActivity.this, "保存草稿成功", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(BlogEditActivity.this, MainActivity.class);
-                                startActivity(intent);
-                                finish();
-                            }
-
-                            @Override
-                            public void onFailure(Call<ResponseResult> call, Throwable t) {
-                                Log.e("保存草稿出错啦！！！",t.getMessage());
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onFailure(Call<ResponseResult<String>> call, Throwable t) {
-
-                    }
-                });
-
+                draftArticle();
                 dialog.dismiss();
                 break;
             case R.id.publish://发布文章
-                apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
-                // 将 imagePath 转换为 File 对象
-                File imageFile1 = new File(imgPath);
-                RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), imageFile1);
-                MultipartBody.Part filePart1 = MultipartBody.Part.createFormData("img", imageFile1.getName(), requestBody);
-                // 调用接口上传图片
-                apiService.uploadImg(filePart1).enqueue(new Callback<ResponseResult<String>>() {
-                    @Override
-                    public void onResponse(Call<ResponseResult<String>> call, Response<ResponseResult<String>> response) {
-                        imgPath = response.body().getData();
-                        Toast.makeText(getApplicationContext(),"图片上传成功",Toast.LENGTH_SHORT);
-                        Log.i("imgpath!!!!!!!",imgPath);
-                        addArticleDto = new AddArticleDto(imgPath,"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","0","1");
-                        Log.i("articleInfo", addArticleDto.toJson());
-                        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
-                        apiService.add(requestBody).enqueue(new Callback<ResponseResult>() {
-                            @Override
-                            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
-                                Toast.makeText(BlogEditActivity.this, "发布成功", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(BlogEditActivity.this, MainActivity.class);
-                                startActivity(intent);
-                                finish();
-                            }
-
-                            @Override
-                            public void onFailure(Call<ResponseResult> call, Throwable t) {
-                                Log.e("新增文章出错啦！！！",t.getMessage());
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onFailure(Call<ResponseResult<String>> call, Throwable t) {
-
-                    }
-                });
+                publishArticle();
                 dialog.dismiss();
                 break;
             case R.id.txt_finish:
@@ -460,82 +573,18 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
                         Toast.makeText(getApplicationContext(), "点击了第" + position + "个",
                                 Toast.LENGTH_SHORT).show();
                         if (position == 0){//发布文章
-                            KeyBoardUtils.closeKeybord(binding.editName,getApplicationContext());
-                            apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
-                            // 将 imagePath 转换为 File 对象
-                            File imageFile1 = new File(imgPath);
-                            RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), imageFile1);
-                            MultipartBody.Part filePart1 = MultipartBody.Part.createFormData("img", imageFile1.getName(), requestBody);
-                            // 调用接口上传图片
-                            apiService.uploadImg(filePart1).enqueue(new Callback<ResponseResult<String>>() {
-                                @Override
-                                public void onResponse(Call<ResponseResult<String>> call, Response<ResponseResult<String>> response) {
-                                    imgPath = response.body().getData();
-                                    Toast.makeText(getApplicationContext(),"图片上传成功",Toast.LENGTH_SHORT);
-                                    Log.i("imgpath!!!!!!!",imgPath);
-                                    addArticleDto = new AddArticleDto(imgPath,"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","0","1");
-                                    Log.i("articleInfo", addArticleDto.toJson());
-                                    RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
-                                    apiService.add(requestBody).enqueue(new Callback<ResponseResult>() {
-                                        @Override
-                                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
-                                            Toast.makeText(BlogEditActivity.this, "发布成功", Toast.LENGTH_SHORT).show();
-                                            Intent intent = new Intent(BlogEditActivity.this, MainActivity.class);
-                                            startActivity(intent);
-                                            finish();
-                                        }
-
-                                        @Override
-                                        public void onFailure(Call<ResponseResult> call, Throwable t) {
-                                            Log.e("新增文章出错啦！！！",t.getMessage());
-                                        }
-                                    });
-                                }
-
-                                @Override
-                                public void onFailure(Call<ResponseResult<String>> call, Throwable t) {
-
-                                }
-                            });
+                            if (imgPath==null){
+                                publishArticleAgain();
+                            }else{
+                                publishArticle();
+                            }
                         }
                         if (position==1){//保存为草稿
-                            KeyBoardUtils.closeKeybord(binding.editName,getApplicationContext());
-                            apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
-                            // 将 imagePath 转换为 File 对象
-                            File imageFile = new File(imgPath);
-                            RequestBody requestBody1 = RequestBody.create(MediaType.parse("image/*"), imageFile);
-                            MultipartBody.Part filePart = MultipartBody.Part.createFormData("img", imageFile.getName(), requestBody1);
-                            // 调用接口上传图片
-                            apiService.uploadImg(filePart).enqueue(new Callback<ResponseResult<String>>() {
-                                @Override
-                                public void onResponse(Call<ResponseResult<String>> call, Response<ResponseResult<String>> response) {
-                                    imgPath = response.body().getData();
-                                    Toast.makeText(getApplicationContext(),"图片上传成功",Toast.LENGTH_SHORT);
-                                    Log.i("imgpath!!!!!!!",imgPath);
-                                    addArticleDto = new AddArticleDto(imgPath,"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","1","1");
-                                    Log.i("articleInfo", addArticleDto.toJson());
-                                    RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
-                                    apiService.add(requestBody).enqueue(new Callback<ResponseResult>() {
-                                        @Override
-                                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
-                                            Toast.makeText(BlogEditActivity.this, "保存草稿成功", Toast.LENGTH_SHORT).show();
-                                            Intent intent = new Intent(BlogEditActivity.this, MainActivity.class);
-                                            startActivity(intent);
-                                            finish();
-                                        }
-
-                                        @Override
-                                        public void onFailure(Call<ResponseResult> call, Throwable t) {
-                                            Log.e("保存草稿出错啦！！！",t.getMessage());
-                                        }
-                                    });
-                                }
-
-                                @Override
-                                public void onFailure(Call<ResponseResult<String>> call, Throwable t) {
-
-                                }
-                            });
+                            if (imgPath==null){
+                                draftArticleAgain();
+                            }else{
+                                draftArticle();
+                            }
                         }
                     }
                 }).show();
@@ -590,7 +639,7 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
                     if (aBoolean) {
                         if (ActivityCompat.checkSelfPermission(BlogEditActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(BlogEditActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                             selectImage(104, selectImages);
-                            KeyBoardUtils.closeKeybord(binding.editName, BlogEditActivity.this);
+                            KeyBoardUtils.closeKeybord(binding.richEditor, BlogEditActivity.this);
                         }
                     } else {
                         Toast.makeText(BlogEditActivity.this, "相册需要此权限~", Toast.LENGTH_SHORT).show();

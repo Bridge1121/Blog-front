@@ -8,6 +8,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.example.blogapplication.view.RichEditor;
+import com.sendtion.xrichtext.RichTextEditor;
 
 /**
  * 打开或关闭软键盘
@@ -34,7 +35,7 @@ public class KeyBoardUtils {
      *  @param mEditText 输入框
      * @param mContext  上下文
      */
-    public static void closeKeybord(EditText mEditText, Context mContext) {
+    public static void closeKeybord(RichEditor mEditText, Context mContext) {
         if (mContext != null) {
             InputMethodManager imm = (InputMethodManager) mContext
                     .getSystemService(Context.INPUT_METHOD_SERVICE);

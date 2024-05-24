@@ -41,6 +41,18 @@ public class AddArticleDto {
         this.isComment = isComment;
     }
 
+    public AddArticleDto(Long id ,String thumbnail,String summary,String title, String content, Long categoryId, String isTop, String status, String isComment) {
+        this.id = id;
+        this.thumbnail=thumbnail;
+        this.summary = summary;
+        this.title = title;
+        this.content = content;
+        this.categoryId = categoryId;
+        this.isTop = isTop;
+        this.status = status;
+        this.isComment = isComment;
+    }
+
     // 序列化为 JSON 字符串
     public String toJson() {
         Gson gson = new Gson();

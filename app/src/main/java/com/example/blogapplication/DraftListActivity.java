@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -56,6 +57,7 @@ public class DraftListActivity extends AppCompatActivity {
     private int pageSize = 10;
     private boolean isLastPage = false;
     private SwipeRefreshLayout mRefreshLayout;
+    private static int i = 1;
 
 
     @Override
@@ -91,6 +93,9 @@ public class DraftListActivity extends AppCompatActivity {
             @Override
             public void onItemClick(View view, int position) {
                 // 设置item点击监听事件
+                Intent intent = new Intent(DraftListActivity.this,ShowArtActivity.class);
+                intent.putExtra("id",articles.get(position).getId());
+                startActivity(intent);
                 Toast.makeText(getApplicationContext(), articles.get(position).getTitle(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -209,6 +214,7 @@ public class DraftListActivity extends AppCompatActivity {
                 public void run() {
                     mRefreshLayout.setRefreshing(false);
                     loadData();
+                    Log.i("刷新之后的i为：",i+"");
                 }
             }, 1000); // 延时模拟请求服务器。
         }
@@ -221,7 +227,6 @@ public class DraftListActivity extends AppCompatActivity {
      * 使用下拉刷新
      * 第二次加载更多数据，有更多数据被加载
      */
-    int i = 1;
     private SwipeRecyclerView.LoadMoreListener mLoadMoreListener = new SwipeRecyclerView.LoadMoreListener() {
         @Override
         public void onLoadMore() {
@@ -229,13 +234,7 @@ public class DraftListActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     Toast.makeText(DraftListActivity.this, "" + i, Toast.LENGTH_SHORT).show();
-                    if (i == 1) {
-                        swipeRecyclerView.loadMoreFinish(false, false);
-                        i++;
-                    } else {
-                        swipeRecyclerView.loadMoreFinish(false, true);
-                        loadMoreItems();
-                    }
+                    loadMoreItems();
                 }
             }, 1000);//  延时1000ms，运行
         }
