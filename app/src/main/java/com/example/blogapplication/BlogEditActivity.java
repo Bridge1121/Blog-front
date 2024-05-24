@@ -55,6 +55,7 @@ import com.lzy.imagepicker.ui.ImageGridActivity;
 import com.squareup.picasso.Picasso;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yalantis.ucrop.UCropActivity;
+import com.yinglan.keyboard.HideUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -98,6 +99,7 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
 //            categoryResponses = bundle.getParcelableArrayList("categories");
 //        }
         binding = DataBindingUtil.setContentView(this, R.layout.activity_blog_edit);
+        HideUtil.init(BlogEditActivity.this);
         isFrom = getIntent().getIntExtra("isFrom", 0);
         binding.setOnClickListener(this);
         rxPermissions = new RxPermissions(this);
@@ -375,7 +377,7 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
     //重新编辑且未编辑thumbnail时保存草稿
     private void draftArticleAgain(){
         apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
-        KeyBoardUtils.closeKeybord(binding.richEditor,getApplicationContext());
+        HideUtil.hideSoftKeyboard(BlogEditActivity.this);
         addArticleDto = new AddArticleDto(getIntent().getLongExtra("id",0),getIntent().getStringExtra("thumbnail"),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","1","1");
         Log.i("articleInfo", addArticleDto.toJson());
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
@@ -397,7 +399,7 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
 
     //初次编辑保存草稿
     private void draftArticle(){
-        KeyBoardUtils.closeKeybord(binding.richEditor,getApplicationContext());
+        HideUtil.hideSoftKeyboard(BlogEditActivity.this);
         apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
         // 将 imagePath 转换为 File 对象
         File imageFile = new File(imgPath);
@@ -459,7 +461,7 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void publishArticle(){
-        KeyBoardUtils.closeKeybord(binding.richEditor,getApplicationContext());
+        HideUtil.hideSoftKeyboard(BlogEditActivity.this);
         apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
         // 将 imagePath 转换为 File 对象
         File imageFile1 = new File(imgPath);
@@ -523,7 +525,8 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
 
     private void publishArticleAgain(){
         apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
-        KeyBoardUtils.closeKeybord(binding.richEditor,getApplicationContext());
+//        KeyBoardUtils.closeKeybord(binding.richEditor,getApplicationContext());
+        HideUtil.hideSoftKeyboard(BlogEditActivity.this);
         addArticleDto = new AddArticleDto(getIntent().getLongExtra("id",0),getIntent().getStringExtra("thumbnail"),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","0","1");
         Log.i("articleInfo", addArticleDto.toJson());
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
@@ -566,6 +569,7 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
                 break;
 
             case R.id.txt_publish://点击保存，打开弹窗
+                HideUtil.hideSoftKeyboard(BlogEditActivity.this);
                 new AlertView("如何保存", null, "取消", null,
                         new String[]{"发布文章", "保存为草稿"},
                         this, AlertView.Style.ActionSheet, new OnItemClickListener(){

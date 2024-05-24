@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,10 +25,9 @@ import com.example.blogapplication.databinding.ActivityDraftListBinding;
 import com.example.blogapplication.entity.Article;
 import com.example.blogapplication.entity.response.ArticleResponse;
 import com.example.blogapplication.utils.TokenUtils;
-import com.example.blogapplication.vo.ArticleDetailVo;
 import com.github.florent37.materialviewpager.header.MaterialViewPagerHeaderDecorator;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.yanzhenjie.loading.LoadingView;
-import com.yanzhenjie.recyclerview.ExpandableAdapter;
 import com.yanzhenjie.recyclerview.OnItemClickListener;
 import com.yanzhenjie.recyclerview.OnItemMenuClickListener;
 import com.yanzhenjie.recyclerview.SwipeMenu;
@@ -47,6 +47,7 @@ import retrofit2.Response;
 public class DraftListActivity extends AppCompatActivity {
 
     private ActivityDraftListBinding binding;
+    private FloatingActionButton floatingActionButton;
 
     private SwipeRecyclerView swipeRecyclerView;
     private SwipeMenuCreator menuCreator;
@@ -60,13 +61,23 @@ public class DraftListActivity extends AppCompatActivity {
     private static int i = 1;
 
 
+    @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityDraftListBinding.inflate(getLayoutInflater());
+        floatingActionButton = binding.fabWrite;
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DraftListActivity.this,BlogEditActivity.class);
+                startActivity(intent);
+            }
+        });
         getSupportActionBar().setTitle("我的草稿");
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);//显示返回键
+
         swipeRecyclerView = binding.swiperRecycleview;
         swipeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         swipeRecyclerView.setHasFixedSize(true);
@@ -169,13 +180,13 @@ public class DraftListActivity extends AppCompatActivity {
 
 //        swipeRecyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
 
-        SwipeRecyclerView.LoadMoreListener mLoadMoreListener = new SwipeRecyclerView.LoadMoreListener() {
-            @Override
-            public void onLoadMore() {
-                loadMoreItems();
-            }
-        };
-        swipeRecyclerView.setLoadMoreListener(mLoadMoreListener); // 加载更多的监听。
+//        SwipeRecyclerView.LoadMoreListener mLoadMoreListener = new SwipeRecyclerView.LoadMoreListener() {
+//            @Override
+//            public void onLoadMore() {
+//                loadMoreItems();
+//            }
+//        };
+//        swipeRecyclerView.setLoadMoreListener(mLoadMoreListener); // 加载更多的监听。
 
 
         setContentView(binding.getRoot());
@@ -197,7 +208,7 @@ public class DraftListActivity extends AppCompatActivity {
         swipeRecyclerView.setLoadMoreView(loadMoreView); // 设置LoadMoreView更新监听。
         swipeRecyclerView.setLoadMoreListener(mLoadMoreListener);
 
-        // 请求服务器加载数据。
+        // 初始化，请求服务器加载数据。
         loadData();
     }
 
@@ -212,7 +223,6 @@ public class DraftListActivity extends AppCompatActivity {
             swipeRecyclerView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    mRefreshLayout.setRefreshing(false);
                     loadData();
                     Log.i("刷新之后的i为：",i+"");
                 }
@@ -230,6 +240,7 @@ public class DraftListActivity extends AppCompatActivity {
     private SwipeRecyclerView.LoadMoreListener mLoadMoreListener = new SwipeRecyclerView.LoadMoreListener() {
         @Override
         public void onLoadMore() {
+            //todo bug未解决：加载更多之后，再下拉刷新的话不能继续加载更多
             swipeRecyclerView.postDelayed(new Runnable() {
                 @Override
                 public void run() {

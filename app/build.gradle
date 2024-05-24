@@ -94,6 +94,12 @@ dependencies {
 
     implementation 'com.bigkoo:alertview:1.0.3'
 
+    implementation 'com.yinglan.keyboard:hidekeyboard:1.2.0'
+
+    //评论
+    implementation 'com.jidcoo.android.widget.commentview:CommentView:1.0.0'
+
+
 
 
 

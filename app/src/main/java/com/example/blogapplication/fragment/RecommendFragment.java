@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.blogapplication.ApiService;
+import com.example.blogapplication.ArticleDetailActivity;
 import com.example.blogapplication.R;
 import com.example.blogapplication.ResponseResult;
 import com.example.blogapplication.RetrofitClient;
@@ -91,7 +92,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     }
 
     private void onItemClick(int position) {
-        Intent intent = new Intent(getActivity(), ShowArtActivity.class);
+        Intent intent = new Intent(getActivity(), ArticleDetailActivity.class);
         intent.putExtra("id",articles.get(position).getId());
         startActivity(intent);
         Toast.makeText(getActivity(),articles.get(position).getId().toString(),Toast.LENGTH_SHORT).show();

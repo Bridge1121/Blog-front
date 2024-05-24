@@ -21,9 +21,13 @@
         android:theme="@style/AppTheme"
         tools:targetApi="31">
         <activity
-            android:name=".DraftListActivity"
+            android:name=".ArticleDetailActivity"
             android:theme="@style/CustomActionBarTheme"
             android:exported="false" />
+        <activity
+            android:name=".DraftListActivity"
+            android:exported="false"
+            android:theme="@style/CustomActionBarTheme" />
         <activity
             android:name=".SelectCategoryActivity"
             android:exported="false" />
