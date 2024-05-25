@@ -18,7 +18,12 @@ public class CustomCommentModel extends AbstractCommentModel<CustomCommentModel.
         return comments;
     }
 
+    public void setComments(List<CustomComment> comments) {
+        this.comments = comments;
+    }
+
     public class CustomComment extends CommentEnable {
+        private Long id;
         private Long articleId;
         private Long rootId;
         private String content;
@@ -28,12 +33,30 @@ public class CustomCommentModel extends AbstractCommentModel<CustomCommentModel.
         private Long createBy;
         private String createTime;
         private String userName;
+        private int prizes;//当前评论点赞数
         private List<CustomReply> replies;
 
 
 
 
         public CustomComment() {
+        }
+
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public int getPrizes() {
+            return prizes;
+        }
+
+        public void setPrizes(int prizes) {
+            this.prizes = prizes;
         }
 
         public Long getArticleId() {
@@ -117,17 +140,35 @@ public class CustomCommentModel extends AbstractCommentModel<CustomCommentModel.
         }
 
         public class CustomReply extends ReplyEnable {
+            private Long id;
             private Long articleId;
             private Long rootId;
             private String content;
-            private Long toCommentUserId;
-            private String toCommentUserName;
-            private Long toCommentId;
+            private Long toCommentUserId;//回复的评论的发表者id
+            private String toCommentUserName;//回复的评论的发表者用户名
+            private Long toCommentId;//回复的评论的id
             private Long createBy;
             private String createTime;
-            private String userName;
+            private String userName;//当前评论的发表者
+            private int prizes;//当前评论点赞数
 
             public CustomReply() {
+            }
+
+            public int getPrizes() {
+                return prizes;
+            }
+
+            public void setPrizes(int prizes) {
+                this.prizes = prizes;
+            }
+
+            public Long getId() {
+                return id;
+            }
+
+            public void setId(Long id) {
+                this.id = id;
             }
 
             public void setToCommentId(Long toCommentId) {

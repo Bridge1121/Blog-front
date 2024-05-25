@@ -99,6 +99,8 @@ dependencies {
     //评论
     implementation 'com.jidcoo.android.widget.commentview:CommentView:1.0.0'
 
+    implementation 'me.shaohui:bottomdialog:1.1.9'
+
 
 
 

@@ -10,6 +10,7 @@ import com.example.blogapplication.entity.response.CategoryResponse;
 import com.example.blogapplication.vo.ArticleDetailVo;
 import com.example.blogapplication.entity.response.ArticleResponse;
 import com.example.blogapplication.vo.PageVo;
+import com.example.blogapplication.vo.PagerRepliesEnableVo;
 
 
 import java.io.File;
@@ -47,6 +48,10 @@ public interface ApiService {
 
     @GET("comment/commentList")
     Call<ResponseResult<CustomCommentModel>> getCommentList(@Query("pageNum") int pageNum, @Query("pageSize") int pageSize, @Query("articleId") Long articleId);
+
+    @GET("comment/replyList")
+    Call<ResponseResult<PagerRepliesEnableVo>> getReplyList(@Query("pageNum") int pageNum, @Query("pageSize") int pageSize, @Query("commentId") Long commentId);
+
 
     @POST("comment")
     Call<ResponseResult> addComment(@Body Comment comment);

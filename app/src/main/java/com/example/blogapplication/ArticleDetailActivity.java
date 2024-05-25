@@ -25,6 +25,7 @@ import com.example.blogapplication.comment.CustomCommentViewHolder;
 import com.example.blogapplication.comment.CustomReplyViewHolder;
 import com.example.blogapplication.comment.CustomUseInLocalActivity;
 import com.example.blogapplication.comment.CustomViewStyleConfigurator;
+import com.example.blogapplication.comment.DefaultViewStyleConfigurator;
 import com.example.blogapplication.databinding.ActivityArticleDetailBinding;
 import com.example.blogapplication.utils.RichUtils;
 import com.example.blogapplication.utils.TokenUtils;
@@ -60,10 +61,19 @@ public class ArticleDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityArticleDetailBinding.inflate(getLayoutInflater());
-        commentView = binding.commentView;
+
+//        commentView = binding.commentView;
         //获取要显示的文章信息
         Intent intent = getIntent();
         articleId = intent.getLongExtra("id",1);
+        binding.commentAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ArticleDetailActivity.this,CommentActivity.class);
+                intent.putExtra("id",articleId);
+                startActivity(intent);
+            }
+        });
 //        SharedPreferences sharedPreferences = getSharedPreferences("art", MODE_PRIVATE);
 //        String title = sharedPreferences.getString("title", "title");
 //        String content = sharedPreferences.getString("content", "");
@@ -83,71 +93,30 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
             }
         });
-        commentView.setViewStyleConfigurator(new CustomViewStyleConfigurator(this));
+//        commentView.setViewStyleConfigurator(new DefaultViewStyleConfigurator(this));
         apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
         apiService.getCommentList(1,10,articleId).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
             @Override
             public void onResponse(Call<ResponseResult<CustomCommentModel>> call, Response<ResponseResult<CustomCommentModel>> response) {
                 customCommentModel = response.body().getData();
+                binding.commentCount.setText("共"+customCommentModel.getTotalDataSize()+"条热评");
+                binding.commentItemContent.setText(customCommentModel.getComments().get(0).getContent());
+                binding.commentItemTime.setText(customCommentModel.getComments().get(0).getCreateTime());
+                binding.prizes.setText(customCommentModel.getComments().get(0).getPrizes()+"");
+                binding.commentItemUserName.setText(customCommentModel.getComments().get(0).getUserName());
+                apiService.getAvatar(customCommentModel.getComments().get(0).getCreateBy()).enqueue(new Callback<ResponseResult<String>>() {
+                    @Override
+                    public void onResponse(Call<ResponseResult<String>> call, Response<ResponseResult<String>> response) {
+                        Picasso.get().load(response.body().getData()).into(binding.ico);
+                    }
 
-                commentView.callbackBuilder()
-                        //自定义评论布局(必须使用ViewHolder机制)--CustomCommentItemCallback<C> 泛型C为自定义评论数据类
-                        .customCommentItem(new CustomCommentItemCallback<CustomCommentModel.CustomComment>() {
-                            @Override
-                            public View buildCommentItem(int groupPosition, CustomCommentModel.CustomComment comment, LayoutInflater inflater, View convertView, ViewGroup parent) {
-                                //使用方法就像adapter里面的getView()方法一样
-                                final CustomCommentViewHolder holder;
-                                if(convertView==null){
-                                    //使用自定义布局
-                                    convertView=inflater.inflate(R.layout.custom_item_comment,parent,false);
-                                    holder=new CustomCommentViewHolder(convertView);
-                                    //必须使用ViewHolder机制
-                                    convertView.setTag(holder);
-                                }else {
-                                    holder= (CustomCommentViewHolder) convertView.getTag();
-                                }
-                                getAvatar(comment.getCreateBy());
-                                Picasso.get().load(imgPath).into(holder.ico);
-                                holder.prizes.setText("100");
-                                holder.userName.setText(comment.getUserName());
-                                holder.comment.setText(comment.getContent());
-                                return convertView;
-                            }
-                        })
-                        //自定义评论布局(必须使用ViewHolder机制）
-                        // 并且自定义ViewHolder类必须继承自com.jidcoo.android.widget.commentview.view.ViewHolder
-                        // --CustomReplyItemCallback<R> 泛型R为自定义回复数据类
-                        .customReplyItem((CustomReplyItemCallback<CustomCommentModel.CustomComment.CustomReply>) (groupPosition, childPosition, isLastReply, reply, inflater, convertView, parent) -> {
-                            //使用方法就像adapter里面的getView()方法一样
-                            //此类必须继承自com.jidcoo.android.widget.commentview.view.ViewHolder，否则报错
-                            CustomReplyViewHolder holder=null;
-                            //此类必须继承自com.jidcoo.android.widget.commentview.view.ViewHolder，否则报错
-                            if(convertView==null){
-                                //使用自定义布局
-                                convertView=inflater.inflate(R.layout.custom_item_reply,parent,false);
-                                holder=new CustomReplyViewHolder(convertView);
-                                //必须使用ViewHolder机制
-                                convertView.setTag(holder);
-                            }else {
-                                holder= (CustomReplyViewHolder) convertView.getTag();
-                            }
-                            holder.userName.setText(reply.getUserName());
-                            holder.reply.setText(reply.getContent());
-                            holder.prizes.setText("100");
-                            return convertView;
-                        })
-                        //下拉刷新回调
-                        .setOnPullRefreshCallback(new MyOnPullRefreshCallback())
-                        //评论、回复Item的点击回调（点击事件回调）
-                        .setOnItemClickCallback(new MyOnItemClickCallback())
-                        //回复数据加载更多回调（加载更多回复）
-                        .setOnReplyLoadMoreCallback(new MyOnReplyLoadMoreCallback())
-                        //上拉加载更多回调（加载更多评论数据）
-                        .setOnCommentLoadMoreCallback(new MyOnCommentLoadMoreCallback())
-                        //设置完成后必须调用CallbackBuilder的buildCallback()方法，否则设置的回调无效
-                        .buildCallback();
-                commentView.loadComplete(customCommentModel);
-//                load(1,1);
+                    @Override
+                    public void onFailure(Call<ResponseResult<String>> call, Throwable t) {
+                        Log.e("获取头像出错啦！！！",t.getMessage());
+                    }
+                });
+
+
             }
 
             @Override
@@ -183,7 +152,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         });
     }
 
-    private void getAvatar(Long userId){
+    private String getAvatar(Long userId){
         apiService = RetrofitClient.getInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
         apiService.getAvatar(userId).enqueue(new Callback<ResponseResult<String>>() {
             @Override
@@ -196,6 +165,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
                 Log.e("获取头像出错啦！！！",t.getMessage());
             }
         });
+        return imgPath;
     }
 
     /**
