@@ -6,6 +6,7 @@
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/drawable/background.xml" value="0.161" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/drawable/bg_dotted_line.xml" value="0.185" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/drawable/drag_button_bg.xml" value="0.1" />
+        <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/drawable/edittext_background.xml" value="0.103" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/activity_article_detail.xml" value="0.15443840579710144" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/activity_article_list.xml" value="0.18704710144927536" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/activity_blog_edit.xml" value="0.22" />
@@ -27,6 +28,8 @@
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/custom_item_reply.xml" value="0.17708333333333334" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/custom_spinner_item.xml" value="0.24739583333333334" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/custom_use.xml" value="0.1743659420289855" />
+        <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/dialog_comment.xml" value="0.15353260869565216" />
+        <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/dialog_reply.xml" value="0.16621376811594202" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/dialog_save.xml" value="0.2682291666666667" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/footer_layout.xml" value="0.3" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/fragment_content.xml" value="0.3" />

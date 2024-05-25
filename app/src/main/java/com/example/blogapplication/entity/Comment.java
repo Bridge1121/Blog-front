@@ -1,5 +1,8 @@
 package com.example.blogapplication.entity;
 
+import com.example.blogapplication.dto.AddArticleDto;
+import com.google.gson.Gson;
+
 import java.util.Date;
 
 /**
@@ -31,6 +34,27 @@ public class Comment  {
     private Date updateTime;
     //删除标志（0代表未删除，1代表已删除）
     private Integer delFlag;
+
+    public Comment(String type, Long articleId, Long rootId, String content, Long toCommentUserId, Long toCommentId) {
+        this.type = type;
+        this.articleId = articleId;
+        this.rootId = rootId;
+        this.content = content;
+        this.toCommentUserId = toCommentUserId;
+        this.toCommentId = toCommentId;
+    }
+
+    // 序列化为 JSON 字符串
+    public String toJson() {
+        Gson gson = new Gson();
+        return gson.toJson(this);
+    }
+
+    // 从 JSON 字符串解析为 User 对象
+    public static Comment fromJson(String json) {
+        Gson gson = new Gson();
+        return gson.fromJson(json, Comment.class);
+    }
 
     public Long getId() {
         return id;

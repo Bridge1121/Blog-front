@@ -99,7 +99,7 @@ dependencies {
     //评论
     implementation 'com.jidcoo.android.widget.commentview:CommentView:1.0.0'
 
-    implementation 'me.shaohui:bottomdialog:1.1.9'
+    implementation 'com.orhanobut:dialogplus:1.11@aar'//弹出框
 
 
 

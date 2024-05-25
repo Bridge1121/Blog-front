@@ -18,6 +18,9 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.blogapplication.comment.CustomCommentModel;
@@ -27,6 +30,7 @@ import com.example.blogapplication.comment.CustomUseInLocalActivity;
 import com.example.blogapplication.comment.CustomViewStyleConfigurator;
 import com.example.blogapplication.comment.DefaultViewStyleConfigurator;
 import com.example.blogapplication.databinding.ActivityArticleDetailBinding;
+import com.example.blogapplication.entity.Comment;
 import com.example.blogapplication.utils.RichUtils;
 import com.example.blogapplication.utils.TokenUtils;
 import com.example.blogapplication.vo.ArticleDetailVo;
@@ -37,10 +41,16 @@ import com.jidcoo.android.widget.commentview.callback.OnCommentLoadMoreCallback;
 import com.jidcoo.android.widget.commentview.callback.OnItemClickCallback;
 import com.jidcoo.android.widget.commentview.callback.OnPullRefreshCallback;
 import com.jidcoo.android.widget.commentview.callback.OnReplyLoadMoreCallback;
+import com.orhanobut.dialogplus.DialogPlus;
+import com.orhanobut.dialogplus.OnItemClickListener;
+import com.orhanobut.dialogplus.ViewHolder;
 import com.squareup.picasso.Picasso;
+import com.yinglan.keyboard.HideUtil;
 
 import java.util.ArrayList;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -98,24 +108,12 @@ public class ArticleDetailActivity extends AppCompatActivity {
         apiService.getCommentList(1,10,articleId).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
             @Override
             public void onResponse(Call<ResponseResult<CustomCommentModel>> call, Response<ResponseResult<CustomCommentModel>> response) {
-                customCommentModel = response.body().getData();
-                binding.commentCount.setText("共"+customCommentModel.getTotalDataSize()+"条热评");
-                binding.commentItemContent.setText(customCommentModel.getComments().get(0).getContent());
-                binding.commentItemTime.setText(customCommentModel.getComments().get(0).getCreateTime());
-                binding.prizes.setText(customCommentModel.getComments().get(0).getPrizes()+"");
-                binding.commentItemUserName.setText(customCommentModel.getComments().get(0).getUserName());
-                apiService.getAvatar(customCommentModel.getComments().get(0).getCreateBy()).enqueue(new Callback<ResponseResult<String>>() {
-                    @Override
-                    public void onResponse(Call<ResponseResult<String>> call, Response<ResponseResult<String>> response) {
-                        Picasso.get().load(response.body().getData()).into(binding.ico);
-                    }
+                if (response.body().getData() != null ) {
+                    customCommentModel = response.body().getData();
+                    binding.commentCount.setText("共"+customCommentModel.getTotalDataSize()+"条评论");
 
-                    @Override
-                    public void onFailure(Call<ResponseResult<String>> call, Throwable t) {
-                        Log.e("获取头像出错啦！！！",t.getMessage());
-                    }
-                });
 
+                }
 
             }
 
@@ -124,6 +122,52 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
             }
         });
+
+        binding.commentWrite.setOnClickListener(new View.OnClickListener() {//发表评论
+            @Override
+            public void onClick(View view) {
+                DialogPlus dialog = DialogPlus.newDialog(ArticleDetailActivity.this)
+                        .setContentHolder(new ViewHolder(R.layout.dialog_comment))
+                        .setPadding(16,16,16,16)
+                        .setExpanded(true)  // This will enable the expand feature, (similar to android L share dialog)
+                        .create();
+                dialog.show();
+                View holderView = dialog.getHolderView();
+                Button btnComment = holderView.findViewById(R.id.btnPostComment);
+                EditText content = holderView.findViewById(R.id.etComment);
+                btnComment.setOnClickListener(new View.OnClickListener() {//发表根评论
+                    @Override
+                    public void onClick(View view) {
+
+                        if (TokenUtils.getToken(ArticleDetailActivity.this) != ""){//已经登录才能发评论
+                            Comment comment = new Comment("0",articleId,new Long(-1),content.getText().toString(),new Long(-1),new Long(-1));
+                            RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), comment.toJson());
+                            apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
+                            apiService.addComment(requestBody).enqueue(new Callback<ResponseResult>() {
+                                @Override
+                                public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                                    Toast.makeText(view.getContext(), "发表评论成功",Toast.LENGTH_SHORT).show();
+                                    HideUtil.hideSoftKeyboard(view);
+                                    dialog.dismiss();
+                                }
+
+                                @Override
+                                public void onFailure(Call<ResponseResult> call, Throwable t) {
+
+                                }
+                            });
+                        }else{//未登录先登录
+                            Intent intent1 = new Intent(ArticleDetailActivity.this,LoginActivity.class);
+                            Toast.makeText(ArticleDetailActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
+                            startActivity(intent);
+                        }
+
+
+                    }
+                });
+            }
+        });
+
         setContentView(binding.getRoot());
     }
 

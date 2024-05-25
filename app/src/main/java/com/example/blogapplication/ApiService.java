@@ -54,7 +54,10 @@ public interface ApiService {
 
 
     @POST("comment")
-    Call<ResponseResult> addComment(@Body Comment comment);
+    Call<ResponseResult> addComment(@Body RequestBody requestBody);
+
+    @GET("comment/addPrize")
+    Call<ResponseResult> addPrize(@Query("commentId") Long commentId);
 
     @GET("article/searchArticle")
     Call<ResponseResult<ArticleResponse>> searchArticle(@Query("pageNum") int pageNum,@Query("pageSize") int pageSize,@Query("content") String content);

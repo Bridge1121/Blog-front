@@ -2,12 +2,17 @@ package com.example.blogapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.blogapplication.comment.CustomCommentModel;
@@ -26,11 +31,16 @@ import com.jidcoo.android.widget.commentview.callback.OnItemClickCallback;
 import com.jidcoo.android.widget.commentview.callback.OnPullRefreshCallback;
 import com.jidcoo.android.widget.commentview.callback.OnReplyLoadMoreCallback;
 import com.jidcoo.android.widget.commentview.view.CommentListView;
+import com.orhanobut.dialogplus.DialogPlus;
+import com.orhanobut.dialogplus.ViewHolder;
 import com.squareup.picasso.Picasso;
+import com.yinglan.keyboard.HideUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -44,7 +54,7 @@ public class CommentActivity extends AppCompatActivity {
     private Long articleId;
     private String imgPath;
     private boolean isFinished = false;
-    private int pageSize=10;
+    private int pageSize = 10;
     private List<CustomCommentModel.CustomComment.CustomReply> customReplies;
 
     @Override
@@ -54,9 +64,9 @@ public class CommentActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("当前全部评论");
         commentView = binding.commentView;
-        articleId = getIntent().getLongExtra("id",0);//获取当前查看评论文章的id
+        articleId = getIntent().getLongExtra("id", 0);//获取当前查看评论文章的id
         apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
-        apiService.getCommentList(1,10,articleId).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
+        apiService.getCommentList(1, 10, articleId).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
             @Override
             public void onResponse(Call<ResponseResult<CustomCommentModel>> call, Response<ResponseResult<CustomCommentModel>> response) {
                 customCommentModel = response.body().getData();
@@ -67,14 +77,14 @@ public class CommentActivity extends AppCompatActivity {
                             public View buildCommentItem(int groupPosition, CustomCommentModel.CustomComment comment, LayoutInflater inflater, View convertView, ViewGroup parent) {
                                 //使用方法就像adapter里面的getView()方法一样
                                 final CustomCommentViewHolder holder;
-                                if(convertView==null){
+                                if (convertView == null) {
                                     //使用自定义布局
-                                    convertView=inflater.inflate(R.layout.custom_item_comment,parent,false);
-                                    holder=new CustomCommentViewHolder(convertView);
+                                    convertView = inflater.inflate(R.layout.custom_item_comment, parent, false);
+                                    holder = new CustomCommentViewHolder(convertView);
                                     //必须使用ViewHolder机制
                                     convertView.setTag(holder);
-                                }else {
-                                    holder= (CustomCommentViewHolder) convertView.getTag();
+                                } else {
+                                    holder = (CustomCommentViewHolder) convertView.getTag();
                                 }
                                 apiService.getAvatar(comment.getCreateBy()).enqueue(new Callback<ResponseResult<String>>() {
                                     @Override
@@ -84,11 +94,11 @@ public class CommentActivity extends AppCompatActivity {
 
                                     @Override
                                     public void onFailure(Call<ResponseResult<String>> call, Throwable t) {
-                                        Log.e("获取头像出错啦！！！",t.getMessage());
+                                        Log.e("获取头像出错啦！！！", t.getMessage());
                                     }
                                 });
 
-                                holder.prizes.setText(comment.getPrizes()+"");
+                                holder.prizes.setText(comment.getPrizes() + "");
                                 holder.userName.setText(comment.getUserName());
                                 holder.comment.setText(comment.getContent());
                                 holder.time.setText(comment.getCreateTime());
@@ -101,16 +111,16 @@ public class CommentActivity extends AppCompatActivity {
                         .customReplyItem((CustomReplyItemCallback<CustomCommentModel.CustomComment.CustomReply>) (groupPosition, childPosition, isLastReply, reply, inflater, convertView, parent) -> {
                             //使用方法就像adapter里面的getView()方法一样
                             //此类必须继承自com.jidcoo.android.widget.commentview.view.ViewHolder，否则报错
-                            CustomReplyViewHolder holder=null;
+                            CustomReplyViewHolder holder = null;
                             //此类必须继承自com.jidcoo.android.widget.commentview.view.ViewHolder，否则报错
-                            if(convertView==null){
+                            if (convertView == null) {
                                 //使用自定义布局
-                                convertView=inflater.inflate(R.layout.custom_item_reply,parent,false);
-                                holder=new CustomReplyViewHolder(convertView);
+                                convertView = inflater.inflate(R.layout.custom_item_reply, parent, false);
+                                holder = new CustomReplyViewHolder(convertView);
                                 //必须使用ViewHolder机制
                                 convertView.setTag(holder);
-                            }else {
-                                holder= (CustomReplyViewHolder) convertView.getTag();
+                            } else {
+                                holder = (CustomReplyViewHolder) convertView.getTag();
                             }
                             CustomReplyViewHolder finalHolder = holder;
                             apiService.getAvatar(reply.getCreateBy()).enqueue(new Callback<ResponseResult<String>>() {
@@ -121,12 +131,12 @@ public class CommentActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onFailure(Call<ResponseResult<String>> call, Throwable t) {
-                                    Log.e("获取头像出错啦！！！",t.getMessage());
+                                    Log.e("获取头像出错啦！！！", t.getMessage());
                                 }
                             });
                             holder.userName.setText(reply.getUserName());
-                            holder.reply.setText(reply.getContent());
-                            holder.prizes.setText(reply.getPrizes()+"");
+                            holder.reply.setText("回复@" + reply.getToCommentUserName() + "：" + reply.getContent());
+                            holder.prizes.setText(reply.getPrizes() + "");
                             holder.time.setText(reply.getCreateTime());
                             return convertView;
                         })
@@ -151,17 +161,17 @@ public class CommentActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
     }
 
-    private void loadMoreData(int pageNum,int pageSize){
+    private void loadMoreData(int pageNum, int pageSize) {
         apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
-        apiService.getCommentList(pageNum,pageSize,articleId).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
+        apiService.getCommentList(pageNum, pageSize, articleId).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
             @Override
             public void onResponse(Call<ResponseResult<CustomCommentModel>> call, Response<ResponseResult<CustomCommentModel>> response) {
-                if (response.body().getData()!=null){
+                if (response.body().getData() != null) {
 //                    customCommentModel.getComments().addAll(response.body().getData().getComments());
                     customCommentModel = response.body().getData();
                     commentView.loadMoreComplete(customCommentModel);
                     isFinished = false;
-                }else{
+                } else {
                     isFinished = true;//评论加载完了
                     commentView.loadMoreComplete(customCommentModel);
                 }
@@ -170,17 +180,18 @@ public class CommentActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseResult<CustomCommentModel>> call, Throwable t) {
-                Log.e("加载更多评论出错啦！！！",t.getMessage());
+                Log.e("加载更多评论出错啦！！！", t.getMessage());
             }
         });
     }
 
-    private void loadMoreReplies(int pageNum, int pageSize, CustomCommentModel.CustomComment.CustomReply reply){
+    //加载更多回复
+    private void loadMoreReplies(int pageNum, int pageSize, CustomCommentModel.CustomComment.CustomReply reply) {
         apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
-        apiService.getReplyList(pageNum,pageSize,reply.getRootId()).enqueue(new Callback<ResponseResult<PagerRepliesEnableVo>>() {
+        apiService.getReplyList(pageNum, pageSize, reply.getRootId()).enqueue(new Callback<ResponseResult<PagerRepliesEnableVo>>() {
             @Override
             public void onResponse(Call<ResponseResult<PagerRepliesEnableVo>> call, Response<ResponseResult<PagerRepliesEnableVo>> response) {
-                if (response.body().getData()!=null){
+                if (response.body().getData() != null) {
 //                    customCommentModel.getComments().addAll(response.body().getData().getComments());
                     customReplies = response.body().getData().getReplies();
 //                    int index = 0;
@@ -230,9 +241,11 @@ public class CommentActivity extends AppCompatActivity {
                     customCommentModel1.getComments().get(0).setCurrentPage(response.body().getData().getCurrentPage());
                     customCommentModel1.getComments().get(0).setNextPage(response.body().getData().getNextPage());
                     customCommentModel1.getComments().get(0).setPrefPage(response.body().getData().getPrefPage());
+                    customCommentModel1.getComments().get(0).setTotalDataSize(response.body().getData().getTotalDataSize());
+                    customCommentModel1.getComments().get(0).setTotalPages(response.body().getData().getTotalPages());
                     commentView.loadMoreReplyComplete(customCommentModel1);
                     isFinished = false;
-                }else{
+                } else {
                     isFinished = true;//评论加载完了
                     commentView.loadMoreComplete(customCommentModel);
                 }
@@ -241,23 +254,23 @@ public class CommentActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseResult<PagerRepliesEnableVo>> call, Throwable t) {
-                Log.e("加载更多回复出错啦！！！",t.getMessage());
+                Log.e("加载更多回复出错啦！！！", t.getMessage());
             }
         });
     }
 
-
-    private void refreshComment(int pageNum,int pageSize){
+    //刷新评论
+    private void refreshComment(int pageNum, int pageSize) {
         apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
-        apiService.getCommentList(pageNum,pageSize,articleId).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
+        apiService.getCommentList(pageNum, pageSize, articleId).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
             @Override
             public void onResponse(Call<ResponseResult<CustomCommentModel>> call, Response<ResponseResult<CustomCommentModel>> response) {
-                if (response.body().getData()!=null){
+                if (response.body().getData() != null) {
 //                    customCommentModel.getComments().addAll(response.body().getData().getComments());
                     customCommentModel = response.body().getData();
                     commentView.refreshComplete(customCommentModel);
                     isFinished = false;
-                }else{
+                } else {
                     isFinished = true;//评论加载完了
                     commentView.refreshComplete(customCommentModel);
                 }
@@ -266,7 +279,7 @@ public class CommentActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseResult<CustomCommentModel>> call, Throwable t) {
-                Log.e("刷新评论出错啦！！！",t.getMessage());
+                Log.e("刷新评论出错啦！！！", t.getMessage());
             }
         });
     }
@@ -279,7 +292,7 @@ public class CommentActivity extends AppCompatActivity {
 
         @Override
         public void refreshing() {
-            refreshComment(1,10);
+            refreshComment(1, 10);
 
 
         }
@@ -303,8 +316,8 @@ public class CommentActivity extends AppCompatActivity {
         @Override
         public void loading(int currentPage, int willLoadPage, boolean isLoadedAllPages) {
             //因为测试数据写死了，所以这里的逻辑也是写死的
-            if (!isLoadedAllPages){
-                loadMoreData(willLoadPage,pageSize);
+            if (!isLoadedAllPages) {
+                loadMoreData(willLoadPage, pageSize);
             }
         }
 
@@ -312,7 +325,7 @@ public class CommentActivity extends AppCompatActivity {
         public void complete() {
             //加载完成后的操作
             if (isFinished) {
-                Toast.makeText(getApplicationContext(),"评论已全部加载完毕",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "评论已全部加载完毕", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -329,12 +342,12 @@ public class CommentActivity extends AppCompatActivity {
 
         @Override
         public void loading(CustomCommentModel.CustomComment.CustomReply reply, int willLoadPage) {
-            loadMoreReplies(willLoadPage,2,reply);
+            loadMoreReplies(willLoadPage, 2, reply);
         }
 
         @Override
         public void complete() {
-            Toast.makeText(CommentActivity.this,"没有更多回复了哦~",Toast.LENGTH_SHORT).show();
+            Toast.makeText(CommentActivity.this, "没有更多回复了哦~", Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -351,17 +364,190 @@ public class CommentActivity extends AppCompatActivity {
 
         @Override
         public void commentItemOnClick(int position, CustomCommentModel.CustomComment comment, View view) {
-            Toast.makeText(CommentActivity.this,"你点击的评论："+comment.getContent(),Toast.LENGTH_SHORT).show();
+            view.findViewById(R.id.comment_body).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(CommentActivity.this, "你点击的评论：" + comment.getContent(), Toast.LENGTH_SHORT).show();
+                    Long rootId = comment.getId();
+                    Long toCommentId = comment.getId();//当前回复的评论id
+                    Long toCommentUserId = comment.getCreateBy();//当前回复的评论发表者id
+
+                    DialogPlus dialog = DialogPlus.newDialog(CommentActivity.this)
+                            .setContentHolder(new ViewHolder(R.layout.dialog_reply))
+                            .setPadding(16, 16, 16, 16)
+                            .setExpanded(true)  // This will enable the expand feature, (similar to android L share dialog)
+                            .create();
+                    dialog.show();
+                    View holderView = dialog.getHolderView();
+                    TextView tvReply = holderView.findViewById(R.id.tv_reply);
+                    tvReply.setText("回复@"+comment.getUserName()+"的评论");
+                    Button btnComment = holderView.findViewById(R.id.btnPostComment);
+                    EditText content = holderView.findViewById(R.id.etComment);
+                    btnComment.setOnClickListener(new View.OnClickListener() {//发表根评论
+                        @Override
+                        public void onClick(View view) {
+
+                            Comment comment = new Comment("0", articleId, rootId, content.getText().toString(), toCommentUserId, toCommentId);
+                            RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), comment.toJson());
+                            apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
+                            apiService.addComment(requestBody).enqueue(new Callback<ResponseResult>() {
+                                @Override
+                                public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                                    Toast.makeText(view.getContext(), "回复评论成功", Toast.LENGTH_SHORT).show();
+                                    HideUtil.hideSoftKeyboard(view);
+                                    dialog.dismiss();
+
+                                }
+                                @Override
+                                public void onFailure(Call<ResponseResult> call, Throwable t) {
+
+                                }
+                            });
+
+
+                        }
+                    });
+                }
+            });
+
+            ImageView prizeIv = view.findViewById(R.id.comment_item_like);
+            TextView prize = view.findViewById(R.id.prizes);
+            prize.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    apiService.addPrize(comment.getId()).enqueue(new Callback<ResponseResult>() {
+                        @Override
+                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                            prizeIv.setColorFilter(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+                            int newprize = comment.getPrizes()+1;
+                            prize.setText(newprize+"");
+                            prize.setTextColor(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseResult> call, Throwable t) {
+                            Log.e("点赞评论出错啦！！！",t.getMessage());
+                        }
+                    });
+                }
+            });
+            prizeIv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    apiService.addPrize(comment.getId()).enqueue(new Callback<ResponseResult>() {
+                        @Override
+                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                            prizeIv.setColorFilter(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+                            int newprize = comment.getPrizes()+1;
+                            prize.setText(newprize+"");
+                            prize.setTextColor(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseResult> call, Throwable t) {
+                            Log.e("点赞评论出错啦！！！",t.getMessage());
+                        }
+                    });
+                }
+            });
+
         }
 
         @Override
         public void replyItemOnClick(int c_position, int r_position, CustomCommentModel.CustomComment.CustomReply reply, View view) {
-            Toast.makeText(CommentActivity.this,"你点击的回复："+reply.getContent(),Toast.LENGTH_SHORT).show();
+            view.findViewById(R.id.reply_body).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(CommentActivity.this, "你点击的评论：" + reply.getContent(), Toast.LENGTH_SHORT).show();
+                    Long rootId = reply.getRootId();
+                    Long toCommentId = reply.getId();//当前回复的评论id
+                    Long toCommentUserId = reply.getCreateBy();//当前回复的评论发表者id
+
+                    DialogPlus dialog = DialogPlus.newDialog(CommentActivity.this)
+                            .setContentHolder(new ViewHolder(R.layout.dialog_reply))
+                            .setPadding(16, 16, 16, 16)
+                            .setExpanded(true)  // This will enable the expand feature, (similar to android L share dialog)
+                            .create();
+                    dialog.show();
+                    View holderView = dialog.getHolderView();
+                    TextView tvReply = holderView.findViewById(R.id.tv_reply);
+                    tvReply.setText("回复@"+reply.getUserName()+"的评论");
+                    Button btnComment = holderView.findViewById(R.id.btnPostComment);
+                    EditText content = holderView.findViewById(R.id.etComment);
+                    btnComment.setOnClickListener(new View.OnClickListener() {//发表根评论
+                        @Override
+                        public void onClick(View view) {
+
+                            Comment comment = new Comment("0", articleId, rootId, content.getText().toString(), toCommentUserId, toCommentId);
+                            RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), comment.toJson());
+                            apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
+                            apiService.addComment(requestBody).enqueue(new Callback<ResponseResult>() {
+                                @Override
+                                public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                                    Toast.makeText(view.getContext(), "回复评论成功", Toast.LENGTH_SHORT).show();
+                                    HideUtil.hideSoftKeyboard(view);
+                                    dialog.dismiss();
+                                }
+                                @Override
+                                public void onFailure(Call<ResponseResult> call, Throwable t) {
+
+                                }
+                            });
+
+
+                        }
+                    });
+                }
+            });
+
+            ImageView prizeIv = view.findViewById(R.id.reply_item_like);
+            TextView prize = view.findViewById(R.id.prizes);
+            prizeIv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    apiService.addPrize(reply.getId()).enqueue(new Callback<ResponseResult>() {
+                        @Override
+                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                            prizeIv.setColorFilter(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+                            int newprize = reply.getPrizes()+1;
+                            prize.setText(newprize+"");
+                            prize.setTextColor(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseResult> call, Throwable t) {
+                            Log.e("点赞评论出错啦！！！",t.getMessage());
+                        }
+                    });
+                }
+            });
+            prize.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    apiService.addPrize(reply.getId()).enqueue(new Callback<ResponseResult>() {
+                        @Override
+                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                            prizeIv.setColorFilter(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+                            int newprize = reply.getPrizes()+1;
+                            prize.setText(newprize+"");
+                            prize.setTextColor(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseResult> call, Throwable t) {
+                            Log.e("点赞评论出错啦！！！",t.getMessage());
+                        }
+                    });
+                }
+            });
         }
     }
 
     String img = null;
-    private String getAvatar(Long userId){
+
+    private String getAvatar(Long userId) {
         apiService = RetrofitClient.getInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
         apiService.getAvatar(userId).enqueue(new Callback<ResponseResult<String>>() {
             @Override
@@ -371,7 +557,7 @@ public class CommentActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseResult<String>> call, Throwable t) {
-                Log.e("获取头像出错啦！！！",t.getMessage());
+                Log.e("获取头像出错啦！！！", t.getMessage());
             }
         });
         return img;

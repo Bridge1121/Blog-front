@@ -1,0 +1,41 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tv_reply"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="回复评论"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:paddingBottom="8dp" />
+
+    <EditText
+        android:id="@+id/etComment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:hint="请输入评论"
+        android:padding="12dp"
+        android:background="@drawable/edittext_background"
+        android:textSize="16sp"
+        android:textColor="@android:color/black"
+        android:inputType="textMultiLine"
+        android:maxLines="6"
+        android:scrollbars="vertical" />
+
+    <Button
+        android:id="@+id/btnPostComment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="发布评论"
+        android:textColor="@android:color/white"
+        android:background="@android:color/black"
+        android:layout_marginTop="16dp"
+        android:padding="12dp"
+        android:gravity="center" />
+
+</LinearLayout>
