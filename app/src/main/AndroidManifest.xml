@@ -20,6 +20,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="31">
+        <!--Image Selector Entry-->
+        <activity
+            android:configChanges="orientation|screenSize"
+            android:name="me.nereo.multi_image_selector.MultiImageSelectorActivity" />
+        <activity
+            android:name=".UserPostingActivity"
+            android:theme="@style/CustomActionBarTheme"
+            android:exported="false" />
         <activity
             android:name=".HomePageActivity"
             android:exported="false" />

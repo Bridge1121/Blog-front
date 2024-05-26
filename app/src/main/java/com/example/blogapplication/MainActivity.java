@@ -399,7 +399,8 @@ public class MainActivity extends AppCompatActivity {
                             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                             startActivity(intent);
                         }else{
-                            //todo 已经登录可以跳转到发布动态页面
+                            Intent intent = new Intent(MainActivity.this,UserPostingActivity.class);
+                            startActivity(intent);
                         }
                             break;
                 }

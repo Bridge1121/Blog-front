@@ -100,7 +100,7 @@ public class PostingsFragment extends Fragment implements View.OnClickListener {
     }
 
     /** Picasso 加载 */
-    private class PicassoImageLoader implements NineGridView.ImageLoader {
+    public class PicassoImageLoader implements NineGridView.ImageLoader {
 
         @Override
         public void onDisplayImage(Context context, ImageView imageView, String url) {

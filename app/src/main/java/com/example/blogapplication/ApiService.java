@@ -97,6 +97,13 @@ public interface ApiService {
     @POST("upload")
     Call<ResponseResult<String>> uploadImg(@Part MultipartBody.Part img);
 
+    @Multipart
+    @POST("uploadImages")
+    Call<ResponseResult<String>> uploadImages(@Part MultipartBody.Part[] imgs);
+
+
+    @POST("postings/create")
+    Call<ResponseResult> createUserPosting(@Body RequestBody requestBody);
 
     @GET("postings/list")
     Call<ResponseResult<UserPostingsResponse>> postingslist(@Query("pageNum") int pageNum, @Query("pageSize") int pageSize);
