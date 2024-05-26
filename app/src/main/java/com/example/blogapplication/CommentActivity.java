@@ -56,6 +56,8 @@ public class CommentActivity extends AppCompatActivity {
     private boolean isFinished = false;
     private int pageSize = 10;
     private List<CustomCommentModel.CustomComment.CustomReply> customReplies;
+    private int currentReplyPage = 1;
+    private int currentCommentPage = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +68,7 @@ public class CommentActivity extends AppCompatActivity {
         commentView = binding.commentView;
         articleId = getIntent().getLongExtra("id", 0);//获取当前查看评论文章的id
         apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
-        apiService.getCommentList(1, 10, articleId).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
+        apiService.getCommentList(1, 10, articleId,TokenUtils.getUserInfo(getApplicationContext()).getId()).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
             @Override
             public void onResponse(Call<ResponseResult<CustomCommentModel>> call, Response<ResponseResult<CustomCommentModel>> response) {
                 customCommentModel = response.body().getData();
@@ -97,7 +99,13 @@ public class CommentActivity extends AppCompatActivity {
                                         Log.e("获取头像出错啦！！！", t.getMessage());
                                     }
                                 });
-
+                                if (comment.isPraise()){//判断当前用户是否点赞过该评论
+                                    holder.prize.setColorFilter(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+                                    holder.prizes.setTextColor(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+                                }else{
+                                    holder.prize.setColorFilter(getResources().getColor(R.color.grey_1000));
+                                    holder.prizes.setTextColor(getResources().getColor(R.color.grey_1000));
+                                }
                                 holder.prizes.setText(comment.getPrizes() + "");
                                 holder.userName.setText(comment.getUserName());
                                 holder.comment.setText(comment.getContent());
@@ -134,6 +142,10 @@ public class CommentActivity extends AppCompatActivity {
                                     Log.e("获取头像出错啦！！！", t.getMessage());
                                 }
                             });
+                            if (reply.isPrize()){//判断当前用户是否点赞过该评论
+                                holder.prize.setColorFilter(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+                                holder.prizes.setTextColor(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+                            }
                             holder.userName.setText(reply.getUserName());
                             holder.reply.setText("回复@" + reply.getToCommentUserName() + "：" + reply.getContent());
                             holder.prizes.setText(reply.getPrizes() + "");
@@ -163,7 +175,7 @@ public class CommentActivity extends AppCompatActivity {
 
     private void loadMoreData(int pageNum, int pageSize) {
         apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
-        apiService.getCommentList(pageNum, pageSize, articleId).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
+        apiService.getCommentList(pageNum, pageSize, articleId,TokenUtils.getUserInfo(getApplicationContext()).getId()).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
             @Override
             public void onResponse(Call<ResponseResult<CustomCommentModel>> call, Response<ResponseResult<CustomCommentModel>> response) {
                 if (response.body().getData() != null) {
@@ -188,7 +200,7 @@ public class CommentActivity extends AppCompatActivity {
     //加载更多回复
     private void loadMoreReplies(int pageNum, int pageSize, CustomCommentModel.CustomComment.CustomReply reply) {
         apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
-        apiService.getReplyList(pageNum, pageSize, reply.getRootId()).enqueue(new Callback<ResponseResult<PagerRepliesEnableVo>>() {
+        apiService.getReplyList(pageNum, pageSize, reply.getRootId(),TokenUtils.getUserInfo(getApplicationContext()).getId()).enqueue(new Callback<ResponseResult<PagerRepliesEnableVo>>() {
             @Override
             public void onResponse(Call<ResponseResult<PagerRepliesEnableVo>> call, Response<ResponseResult<PagerRepliesEnableVo>> response) {
                 if (response.body().getData() != null) {
@@ -262,12 +274,13 @@ public class CommentActivity extends AppCompatActivity {
     //刷新评论
     private void refreshComment(int pageNum, int pageSize) {
         apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
-        apiService.getCommentList(pageNum, pageSize, articleId).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
+        apiService.getCommentList(pageNum, pageSize, articleId,TokenUtils.getUserInfo(getApplicationContext()).getId()).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
             @Override
             public void onResponse(Call<ResponseResult<CustomCommentModel>> call, Response<ResponseResult<CustomCommentModel>> response) {
                 if (response.body().getData() != null) {
 //                    customCommentModel.getComments().addAll(response.body().getData().getComments());
                     customCommentModel = response.body().getData();
+                    Log.i("点赞之后得到的数据：",customCommentModel.toJson(customCommentModel));
                     commentView.refreshComplete(customCommentModel);
                     isFinished = false;
                 } else {
@@ -285,6 +298,7 @@ public class CommentActivity extends AppCompatActivity {
     }
 
 
+
     /**
      * 下拉刷新回调类
      */
@@ -292,6 +306,8 @@ public class CommentActivity extends AppCompatActivity {
 
         @Override
         public void refreshing() {
+            currentCommentPage = 1;
+            currentReplyPage = 1;
             refreshComment(1, 10);
 
 
@@ -317,6 +333,7 @@ public class CommentActivity extends AppCompatActivity {
         public void loading(int currentPage, int willLoadPage, boolean isLoadedAllPages) {
             //因为测试数据写死了，所以这里的逻辑也是写死的
             if (!isLoadedAllPages) {
+                currentCommentPage = willLoadPage;
                 loadMoreData(willLoadPage, pageSize);
             }
         }
@@ -386,7 +403,7 @@ public class CommentActivity extends AppCompatActivity {
                     btnComment.setOnClickListener(new View.OnClickListener() {//发表根评论
                         @Override
                         public void onClick(View view) {
-
+                            loadMoreData(currentCommentPage,10);
                             Comment comment = new Comment("0", articleId, rootId, content.getText().toString(), toCommentUserId, toCommentId);
                             RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), comment.toJson());
                             apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
@@ -396,6 +413,7 @@ public class CommentActivity extends AppCompatActivity {
                                     Toast.makeText(view.getContext(), "回复评论成功", Toast.LENGTH_SHORT).show();
                                     HideUtil.hideSoftKeyboard(view);
                                     dialog.dismiss();
+                                    loadMoreData(currentCommentPage,10);
 
                                 }
                                 @Override
@@ -412,44 +430,94 @@ public class CommentActivity extends AppCompatActivity {
 
             ImageView prizeIv = view.findViewById(R.id.comment_item_like);
             TextView prize = view.findViewById(R.id.prizes);
-            prize.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    apiService.addPrize(comment.getId()).enqueue(new Callback<ResponseResult>() {
-                        @Override
-                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
-                            prizeIv.setColorFilter(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
-                            int newprize = comment.getPrizes()+1;
-                            prize.setText(newprize+"");
-                            prize.setTextColor(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
-
-                        }
-
-                        @Override
-                        public void onFailure(Call<ResponseResult> call, Throwable t) {
-                            Log.e("点赞评论出错啦！！！",t.getMessage());
-                        }
-                    });
-                }
-            });
+//            prize.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    if (comment.isPraise()){//已经点赞过，调用取消点赞接口
+//                        apiService.deletePrize(comment.getId(),TokenUtils.getUserInfo(getApplicationContext()).getId()).enqueue(new Callback<ResponseResult>() {
+//                            @Override
+//                            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+//                                prizeIv.setColorFilter(R.color.grey_1000);
+//                                int newprize = comment.getPrizes()-1;
+//                                prize.setText(newprize+"");
+//                                prize.setTextColor(getResources().getColor(R.color.grey_1000));
+//                                refreshComment(1,10);
+//                                Toast.makeText(CommentActivity.this,"取消点赞成功！",Toast.LENGTH_SHORT).show();
+//                            }
+//
+//                            @Override
+//                            public void onFailure(Call<ResponseResult> call, Throwable t) {
+//                                Log.e("取消点赞评论出错啦！！！",t.getMessage());
+//                            }
+//                        });
+//
+//                    }else{
+//                        apiService.addPrize(comment.getId(),TokenUtils.getUserInfo(getApplicationContext()).getId()).enqueue(new Callback<ResponseResult>() {
+//                            @Override
+//                            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+//                                prizeIv.setColorFilter(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+//                                int newprize = comment.getPrizes()+1;
+//                                prize.setText(newprize+"");
+//                                prize.setTextColor(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+//                                refreshComment(1,10);
+//                                Toast.makeText(CommentActivity.this,"点赞成功！",Toast.LENGTH_SHORT).show();
+//
+//                            }
+//
+//                            @Override
+//                            public void onFailure(Call<ResponseResult> call, Throwable t) {
+//                                Log.e("点赞评论出错啦！！！",t.getMessage());
+//                            }
+//                        });
+//                    }
+//
+//                }
+//            });
             prizeIv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    apiService.addPrize(comment.getId()).enqueue(new Callback<ResponseResult>() {
-                        @Override
-                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
-                            prizeIv.setColorFilter(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
-                            int newprize = comment.getPrizes()+1;
-                            prize.setText(newprize+"");
-                            prize.setTextColor(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+                    Log.i("是否点赞过!!!!",comment.isPraise()+"");
+                    if (comment.isPraise()){//已经点赞过，调用取消点赞接口
+                        apiService.deletePrize(comment.getId(),TokenUtils.getUserInfo(getApplicationContext()).getId()).enqueue(new Callback<ResponseResult>() {
+                            @Override
+                            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+//                                prizeIv.setColorFilter(R.color.grey_1000);
+//                                int newprize = comment.getPrizes()-1;
+//                                prize.setText(newprize+"");
+//                                prize.setTextColor(getResources().getColor(R.color.grey_1000));
 
-                        }
+                                List<CustomCommentModel.CustomComment> comments = customCommentModel.getComments();
+                                comments.get(position).setPraise(!comment.isPraise());
+                                refreshComment(currentCommentPage,10);
+                                Toast.makeText(CommentActivity.this,"取消点赞成功！",Toast.LENGTH_SHORT).show();
+                            }
 
-                        @Override
-                        public void onFailure(Call<ResponseResult> call, Throwable t) {
-                            Log.e("点赞评论出错啦！！！",t.getMessage());
-                        }
-                    });
+                            @Override
+                            public void onFailure(Call<ResponseResult> call, Throwable t) {
+                                Log.e("取消点赞评论出错啦！！！",t.getMessage());
+                            }
+                        });
+                    }else{
+                        apiService.addPrize(comment.getId(),TokenUtils.getUserInfo(getApplicationContext()).getId()).enqueue(new Callback<ResponseResult>() {
+                            @Override
+                            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+//                                prizeIv.setColorFilter(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+//                                int newprize = comment.getPrizes()+1;
+//                                prize.setText(newprize+"");
+//                                prize.setTextColor(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+                                List<CustomCommentModel.CustomComment> comments = customCommentModel.getComments();
+                                comments.get(position).setPraise(!comment.isPraise());
+                                refreshComment(currentCommentPage,10);
+                                Toast.makeText(CommentActivity.this,"点赞成功！",Toast.LENGTH_SHORT).show();
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResponseResult> call, Throwable t) {
+                                Log.e("点赞评论出错啦！！！",t.getMessage());
+                            }
+                        });
+                    }
                 }
             });
 
@@ -489,6 +557,7 @@ public class CommentActivity extends AppCompatActivity {
                                     Toast.makeText(view.getContext(), "回复评论成功", Toast.LENGTH_SHORT).show();
                                     HideUtil.hideSoftKeyboard(view);
                                     dialog.dismiss();
+                                    loadMoreReplies(currentReplyPage,2,reply);
                                 }
                                 @Override
                                 public void onFailure(Call<ResponseResult> call, Throwable t) {
@@ -507,41 +576,89 @@ public class CommentActivity extends AppCompatActivity {
             prizeIv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    apiService.addPrize(reply.getId()).enqueue(new Callback<ResponseResult>() {
-                        @Override
-                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
-                            prizeIv.setColorFilter(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
-                            int newprize = reply.getPrizes()+1;
-                            prize.setText(newprize+"");
-                            prize.setTextColor(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
-                        }
+                    if (reply.isPrize()){
+                        apiService.deletePrize(reply.getId(),TokenUtils.getUserInfo(getApplicationContext()).getId()).enqueue(new Callback<ResponseResult>() {
+                            @Override
+                            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                                prizeIv.setColorFilter(R.color.grey_1000);
+                                int newprize = reply.getPrizes()-1;
+                                prize.setText(newprize+"");
+                                prize.setTextColor(getResources().getColor(R.color.grey_1000));
+                                List<CustomCommentModel.CustomComment> comments = customCommentModel.getComments();
+                                comments.get(c_position).getReplies().get(r_position).setPrize(!reply.isPrize());
+//                                refreshComment(currentCommentPage,10);
+//                                loadMoreReplies(currentReplyPage,2,reply);
+                                Toast.makeText(CommentActivity.this,"取消点赞成功！",Toast.LENGTH_SHORT).show();
+                            }
 
-                        @Override
-                        public void onFailure(Call<ResponseResult> call, Throwable t) {
-                            Log.e("点赞评论出错啦！！！",t.getMessage());
-                        }
-                    });
+                            @Override
+                            public void onFailure(Call<ResponseResult> call, Throwable t) {
+                                Log.e("取消点赞评论出错啦！！！",t.getMessage());
+                            }
+                        });
+
+                    }else{
+                        apiService.addPrize(reply.getId(),TokenUtils.getUserInfo(getApplicationContext()).getId()).enqueue(new Callback<ResponseResult>() {
+                            @Override
+                            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                                prizeIv.setColorFilter(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+                                int newprize = reply.getPrizes()+1;
+                                prize.setText(newprize+"");
+                                prize.setTextColor(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+                                List<CustomCommentModel.CustomComment> comments = customCommentModel.getComments();
+                                comments.get(c_position).getReplies().get(r_position).setPrize(!reply.isPrize());
+//                                loadMoreReplies(currentReplyPage,2,reply);
+                                Toast.makeText(CommentActivity.this,"点赞成功！",Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResponseResult> call, Throwable t) {
+                                Log.e("点赞评论出错啦！！！",t.getMessage());
+                            }
+                        });
+                    }
+
                 }
             });
-            prize.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    apiService.addPrize(reply.getId()).enqueue(new Callback<ResponseResult>() {
-                        @Override
-                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
-                            prizeIv.setColorFilter(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
-                            int newprize = reply.getPrizes()+1;
-                            prize.setText(newprize+"");
-                            prize.setTextColor(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
-                        }
-
-                        @Override
-                        public void onFailure(Call<ResponseResult> call, Throwable t) {
-                            Log.e("点赞评论出错啦！！！",t.getMessage());
-                        }
-                    });
-                }
-            });
+//            prize.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    if (reply.isPrize()){
+//                        apiService.deletePrize(reply.getId(),TokenUtils.getUserInfo(getApplicationContext()).getId()).enqueue(new Callback<ResponseResult>() {
+//                            @Override
+//                            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+//                                prizeIv.setColorFilter(R.color.grey_1000);
+//                                int newprize = reply.getPrizes()-1;
+//                                prize.setText(newprize+"");
+//                                prize.setTextColor(getResources().getColor(R.color.grey_1000));
+//                                loadMoreData(1,10);
+//                            }
+//
+//                            @Override
+//                            public void onFailure(Call<ResponseResult> call, Throwable t) {
+//                                Log.e("取消点赞评论出错啦！！！",t.getMessage());
+//                            }
+//                        });
+//
+//                    }else{
+//                        apiService.addPrize(reply.getId(),TokenUtils.getUserInfo(getApplicationContext()).getId()).enqueue(new Callback<ResponseResult>() {
+//                            @Override
+//                            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+//                                prizeIv.setColorFilter(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+//                                int newprize = reply.getPrizes()+1;
+//                                prize.setText(newprize+"");
+//                                prize.setTextColor(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+//                                loadMoreData(1,10);
+//                            }
+//
+//                            @Override
+//                            public void onFailure(Call<ResponseResult> call, Throwable t) {
+//                                Log.e("点赞评论出错啦！！！",t.getMessage());
+//                            }
+//                        });
+//                    }
+//                }
+//            });
         }
     }
 

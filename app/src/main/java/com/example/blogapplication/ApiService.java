@@ -47,17 +47,20 @@ public interface ApiService {
     Call<ResponseResult> logout();
 
     @GET("comment/commentList")
-    Call<ResponseResult<CustomCommentModel>> getCommentList(@Query("pageNum") int pageNum, @Query("pageSize") int pageSize, @Query("articleId") Long articleId);
+    Call<ResponseResult<CustomCommentModel>> getCommentList(@Query("pageNum") int pageNum, @Query("pageSize") int pageSize, @Query("articleId") Long articleId,@Query("currentUserId") Long currentUserId);
 
     @GET("comment/replyList")
-    Call<ResponseResult<PagerRepliesEnableVo>> getReplyList(@Query("pageNum") int pageNum, @Query("pageSize") int pageSize, @Query("commentId") Long commentId);
+    Call<ResponseResult<PagerRepliesEnableVo>> getReplyList(@Query("pageNum") int pageNum, @Query("pageSize") int pageSize, @Query("commentId") Long commentId,@Query("currentUserId") Long currentUserId);
 
 
     @POST("comment")
     Call<ResponseResult> addComment(@Body RequestBody requestBody);
 
     @GET("comment/addPrize")
-    Call<ResponseResult> addPrize(@Query("commentId") Long commentId);
+    Call<ResponseResult> addPrize(@Query("commentId") Long commentId,@Query("currentUserId") Long currentUserId);
+
+    @DELETE("comment/deletePrize")
+    Call<ResponseResult> deletePrize(@Query("commentId") Long commentId,@Query("currentUserId") Long currentUserId);
 
     @GET("article/searchArticle")
     Call<ResponseResult<ArticleResponse>> searchArticle(@Query("pageNum") int pageNum,@Query("pageSize") int pageSize,@Query("content") String content);

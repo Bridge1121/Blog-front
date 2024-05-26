@@ -105,7 +105,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         });
 //        commentView.setViewStyleConfigurator(new DefaultViewStyleConfigurator(this));
         apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
-        apiService.getCommentList(1,10,articleId).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
+        apiService.getCommentList(1,10,articleId,TokenUtils.getUserInfo(getApplicationContext()).getId()).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
             @Override
             public void onResponse(Call<ResponseResult<CustomCommentModel>> call, Response<ResponseResult<CustomCommentModel>> response) {
                 if (response.body().getData() != null ) {
@@ -174,7 +174,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
     private void loadMoreData(int pageNum,int pageSize){
         apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
-        apiService.getCommentList(pageNum,pageSize,articleId).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
+        apiService.getCommentList(pageNum,pageSize,articleId,TokenUtils.getUserInfo(getApplicationContext()).getId()).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
             @Override
             public void onResponse(Call<ResponseResult<CustomCommentModel>> call, Response<ResponseResult<CustomCommentModel>> response) {
                 if (response.body().getData()!=null){

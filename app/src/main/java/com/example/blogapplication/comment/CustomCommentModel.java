@@ -2,6 +2,7 @@ package com.example.blogapplication.comment;
 
 import androidx.core.net.ParseException;
 
+import com.google.gson.Gson;
 import com.jidcoo.android.widget.commentview.model.AbstractCommentModel;
 import com.jidcoo.android.widget.commentview.model.CommentEnable;
 import com.jidcoo.android.widget.commentview.model.ReplyEnable;
@@ -12,6 +13,11 @@ import java.util.Date;
 
 public class CustomCommentModel extends AbstractCommentModel<CustomCommentModel.CustomComment> {
     private List<CustomComment> comments;
+
+    public String toJson(CustomCommentModel customCommentModel){
+        Gson gson = new Gson();
+        return gson.toJson(customCommentModel);
+    }
 
     @Override
     public List<CustomComment> getComments() {
@@ -34,6 +40,7 @@ public class CustomCommentModel extends AbstractCommentModel<CustomCommentModel.
         private String createTime;
         private String userName;
         private int prizes;//当前评论点赞数
+        private boolean praise;//当前评论是否被当前登录用户点赞
         private List<CustomReply> replies;
 
 
@@ -42,6 +49,13 @@ public class CustomCommentModel extends AbstractCommentModel<CustomCommentModel.
         public CustomComment() {
         }
 
+        public boolean isPraise() {
+            return praise;
+        }
+
+        public void setPraise(boolean praise) {
+            this.praise = praise;
+        }
 
         public Long getId() {
             return id;
@@ -151,8 +165,17 @@ public class CustomCommentModel extends AbstractCommentModel<CustomCommentModel.
             private String createTime;
             private String userName;//当前评论的发表者
             private int prizes;//当前评论点赞数
+            private boolean prize;//当前回复是否被当前登录用户点赞过
 
             public CustomReply() {
+            }
+
+            public boolean isPrize() {
+                return prize;
+            }
+
+            public void setPrize(boolean prize) {
+                this.prize = prize;
             }
 
             public int getPrizes() {
