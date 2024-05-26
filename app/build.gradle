@@ -101,6 +101,8 @@ dependencies {
 
     implementation 'com.orhanobut:dialogplus:1.11@aar'//弹出框
 
+    implementation 'com.lzy.widget:ninegridview:0.2.0'//展示用户动态的组件
+
 
 
 

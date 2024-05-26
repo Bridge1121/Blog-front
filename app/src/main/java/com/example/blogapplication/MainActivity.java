@@ -37,6 +37,7 @@ import com.example.blogapplication.adapter.FragmentAdapter;
 import com.example.blogapplication.entity.User;
 import com.example.blogapplication.entity.response.CategoryResponse;
 import com.example.blogapplication.fragment.HotFragment;
+import com.example.blogapplication.fragment.PostingsFragment;
 import com.example.blogapplication.fragment.RecommendFragment;
 import com.example.blogapplication.ui.login.LoginViewModelFactory;
 import com.example.blogapplication.utils.TokenUtils;
@@ -177,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
                     case 1://热门文章页面
                         return HotFragment.newInstance();
                     default:
-                        return RecyclerViewFragment.newInstance();
+                        return PostingsFragment.newInstance();
                 }
             }
 
@@ -213,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 if (TokenUtils.getToken(MainActivity.this) != "") {//已登录
-                    //todo 已登录就跳转到个人中心
+                    //todo 已登录就跳转到主页,主页还没写
                     Intent intent = new Intent(MainActivity.this, UserInfoActivity.class);
                     startActivity(intent);
                 } else {//未登录
@@ -305,7 +306,9 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                             startActivity(intent);
-                        } else {
+                        } else {//跳转到主页
+                            Intent intent = new Intent(MainActivity.this,HomePageActivity.class);
+                            startActivity(intent);
                             Toast.makeText(MainActivity.this, "跳转到我的主页", Toast.LENGTH_SHORT).show();
                         }
                         break;
@@ -390,7 +393,15 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         break;
-
+                    case R.id.nav_write_posting://跳转到发布动态
+                        if (Objects.isNull(TokenUtils.getToken(MainActivity.this)) || TokenUtils.getToken(MainActivity.this) == ""){
+                            Toast.makeText(MainActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                        }else{
+                            //todo 已经登录可以跳转到发布动态页面
+                        }
+                            break;
                 }
                 // Menu item点击后选中，并关闭Drawerlayout
                 menuItem.setChecked(true);

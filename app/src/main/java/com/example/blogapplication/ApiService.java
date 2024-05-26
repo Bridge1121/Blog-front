@@ -7,6 +7,7 @@ import com.example.blogapplication.entity.Article;
 import com.example.blogapplication.entity.Comment;
 import com.example.blogapplication.entity.LoginUser;
 import com.example.blogapplication.entity.response.CategoryResponse;
+import com.example.blogapplication.entity.response.UserPostingsResponse;
 import com.example.blogapplication.vo.ArticleDetailVo;
 import com.example.blogapplication.entity.response.ArticleResponse;
 import com.example.blogapplication.vo.PageVo;
@@ -96,5 +97,8 @@ public interface ApiService {
     @POST("upload")
     Call<ResponseResult<String>> uploadImg(@Part MultipartBody.Part img);
 
+
+    @GET("postings/list")
+    Call<ResponseResult<UserPostingsResponse>> postingslist(@Query("pageNum") int pageNum, @Query("pageSize") int pageSize);
 
 }

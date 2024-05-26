@@ -11,6 +11,7 @@
     <string name="nav_login_click_avatar">点击头像登录</string>
     <string name="nav_notifications">我的消息</string>
     <string name="nav_write">写博客</string>
+    <string name="nav_write_posting">发布动态</string>
     <!--    <string name="nav_offline_manager" translatable="false">离线缓存</string>-->
     <string name="nav_draft">草稿箱</string>
     <string name="nav_settings">设置与帮助</string>

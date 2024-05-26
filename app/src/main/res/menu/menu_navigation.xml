@@ -34,6 +34,11 @@
             android:id="@+id/nav_write"
             android:title="@string/nav_write"
              />
+        <item
+            android:icon="@drawable/ic_posting_black_24dp"
+            android:id="@+id/nav_write_posting"
+            android:title="@string/nav_write_posting"
+            />
 
         <item
             android:icon="@drawable/ic_draft_black_24dp"
