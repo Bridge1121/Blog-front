@@ -3,7 +3,7 @@ package com.example.blogapplication.entity;
 public class UserInfo {
     private String avatar;
     private String email;
-    private int id;
+    private Long id;
     private String nickName;
     private String sex;
     private boolean follow;//是否关注了该作者
@@ -32,11 +32,11 @@ public class UserInfo {
         this.email = email;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

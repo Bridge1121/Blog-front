@@ -189,15 +189,18 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
     // 加载更多是调用此方法 添加更多数据
     protected List<Article> createDataList() {
-        apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getContext())).create(ApiService.class);
+        apiService = RetrofitClient.getInstance(TokenUtils.getToken(getContext())).create(ApiService.class);
         apiService.getRecommandArticleList(1, 10).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
             @Override
             public void onResponse(Call<ResponseResult<ArticleResponse>> call, Response<ResponseResult<ArticleResponse>> response) {
-                articles = response.body().getData().getArticles();
-                articleAdapter = new ArticleAdapter(getContext(), articles);
-                mRecyclerView.setAdapter(articleAdapter);
-                articleAdapter.notifyDataSetChanged();
-                refreshLayout.setRefreshing(false);
+                if (response.body().getData()!=null){
+                    articles = response.body().getData().getArticles();
+                    articleAdapter = new ArticleAdapter(getContext(), articles);
+                    mRecyclerView.setAdapter(articleAdapter);
+                    articleAdapter.notifyDataSetChanged();
+                    refreshLayout.setRefreshing(false);
+                }
+
 
                 // 第一次加载数据：一定要掉用这个方法。
                 // 第一个参数：表示此次数据是否为空，假如你请求到的list为空(== null || list.size == 0)，那么这里就要true。
@@ -359,10 +362,13 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         apiService.getRecommandArticleList(1, 10).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
             @Override
             public void onResponse(Call<ResponseResult<ArticleResponse>> call, Response<ResponseResult<ArticleResponse>> response) {
-                articles = response.body().getData().getArticles();
-                totalPage = response.body().getData().getTotal()/10;
-                articleAdapter = new ArticleAdapter(getActivity(), articles);
-                mRecyclerView.setAdapter(articleAdapter);
+                if (response.body().getData()!=null){
+                    articles = response.body().getData().getArticles();
+                    totalPage = response.body().getData().getTotal()/10;
+                    articleAdapter = new ArticleAdapter(getActivity(), articles);
+                    mRecyclerView.setAdapter(articleAdapter);
+                }
+
             }
 
             @Override

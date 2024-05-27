@@ -21,9 +21,13 @@
         android:theme="@style/AppTheme"
         tools:targetApi="31">
         <activity
-            android:name=".UserPostingActivity"
+            android:name=".FollowersActivity"
             android:theme="@style/CustomActionBarTheme"
             android:exported="false" />
+        <activity
+            android:name=".UserPostingActivity"
+            android:exported="false"
+            android:theme="@style/CustomActionBarTheme" />
         <activity
             android:name=".HomePageActivity"
             android:exported="false" />

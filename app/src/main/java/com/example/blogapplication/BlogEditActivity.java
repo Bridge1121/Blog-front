@@ -105,20 +105,23 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
         rxPermissions = new RxPermissions(this);
         spinner = binding.spinnerCategory;
         categoryResponses = TokenUtils.getUserCategoryInfo(getApplicationContext());
-        CategorySpinnerAdapter categorySpinnerAdapter = new CategorySpinnerAdapter(categoryResponses,getApplicationContext());
-        spinner.setAdapter(categorySpinnerAdapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                categoryId = new Long(categoryResponses.get(i).getId());
-                Toast.makeText(getApplicationContext(),categoryResponses.get(i).getName(),Toast.LENGTH_SHORT).show();
-            }
+        if (categoryResponses!=null && categoryResponses.size()>0){
+            CategorySpinnerAdapter categorySpinnerAdapter = new CategorySpinnerAdapter(categoryResponses,getApplicationContext());
+            spinner.setAdapter(categorySpinnerAdapter);
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    categoryId = new Long(categoryResponses.get(i).getId());
+                    Toast.makeText(getApplicationContext(),categoryResponses.get(i).getName(),Toast.LENGTH_SHORT).show();
+                }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
 
-            }
-        });
+                }
+            });
+        }
+
         initPop();
         initEditor();
         if (isFrom == 1) {//如果是重新编辑的话

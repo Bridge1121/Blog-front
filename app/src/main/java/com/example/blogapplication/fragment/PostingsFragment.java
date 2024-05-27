@@ -207,7 +207,7 @@ public class PostingsFragment extends Fragment implements View.OnClickListener {
 
     // 加载更多是调用此方法 添加更多数据
     protected List<UserPostingsVo> createDataList() {
-        apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getContext())).create(ApiService.class);
+        apiService = RetrofitClient.getInstance(null).create(ApiService.class);
         apiService.postingslist(1, pageSize,TokenUtils.getUserInfo(getContext()).getId()).enqueue(new Callback<ResponseResult<UserPostingsResponse>>() {
             @Override
             public void onResponse(Call<ResponseResult<UserPostingsResponse>> call, Response<ResponseResult<UserPostingsResponse>> response) {

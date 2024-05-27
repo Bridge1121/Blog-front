@@ -404,6 +404,16 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(intent);
                         }
                             break;
+                    case R.id.nav_following:
+                        if (Objects.isNull(TokenUtils.getToken(MainActivity.this)) || TokenUtils.getToken(MainActivity.this) == ""){
+                            Toast.makeText(MainActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                        }else{
+                            Intent intent = new Intent(MainActivity.this,FollowersActivity.class);
+                            startActivity(intent);
+                        }
+                        break;
                 }
                 // Menu item点击后选中，并关闭Drawerlayout
                 menuItem.setChecked(true);

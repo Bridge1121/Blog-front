@@ -7,6 +7,7 @@ import com.example.blogapplication.entity.Article;
 import com.example.blogapplication.entity.Comment;
 import com.example.blogapplication.entity.LoginUser;
 import com.example.blogapplication.entity.response.CategoryResponse;
+import com.example.blogapplication.entity.response.UserInfoResponse;
 import com.example.blogapplication.entity.response.UserPostingsResponse;
 import com.example.blogapplication.vo.ArticleDetailVo;
 import com.example.blogapplication.entity.response.ArticleResponse;
@@ -44,6 +45,10 @@ public interface ApiService {
     @GET("user/follow")
     Call<ResponseResult> follow(@Query("userId")Long userId,@Query("followId")Long followId);
 
+    @GET("user/followerList")
+    Call<ResponseResult<UserInfoResponse>> followerList(@Query("pageNum")Integer pageNum, @Query("pageSize")Integer pageSize,@Query("userId") Long userId);
+
+
     @DELETE("user/cancelFollow")
     Call<ResponseResult> cancelFollow(@Query("userId")Long userId,@Query("followId")Long followId);
 
@@ -77,6 +82,7 @@ public interface ApiService {
 
     @GET("article/articleList")
     Call<ResponseResult<ArticleResponse>> getRecommandArticleList(@Query("pageNum") int pageNum, @Query("pageSize") int pageSize);
+
 
     @GET("article/draftList")
     Call<ResponseResult<ArticleResponse>> draftArticleList(@Query("pageNum") Integer pageNum,@Query("pageSize") Integer pageSize,@Query("userId") Long userId);
