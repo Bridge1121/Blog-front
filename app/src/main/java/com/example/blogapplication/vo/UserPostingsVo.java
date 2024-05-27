@@ -16,7 +16,17 @@ public class UserPostingsVo {
     private String avatar;//创建用户头像
     private String createTime;
 
+    private boolean praise;//判断当前用户是否对该动态点赞
+
     private int delFlag;
+
+    public boolean isPraise() {
+        return praise;
+    }
+
+    public void setPraise(boolean praise) {
+        this.praise = praise;
+    }
 
     public int getPraises() {
         return praises;

@@ -128,6 +128,9 @@ public class ArticleListActivity extends AppCompatActivity {
     }
 
     private void onItemClick(int position) {
+        Intent intent = new Intent(getApplicationContext(), ArticleDetailActivity.class);
+        intent.putExtra("id",articles.get(position).getId());
+        startActivity(intent);
         Toast.makeText(getApplicationContext(),articles.get(position).getId().toString(),Toast.LENGTH_SHORT).show();
     }
 

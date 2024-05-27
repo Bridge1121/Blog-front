@@ -103,6 +103,8 @@ dependencies {
 
     implementation 'com.lzy.widget:ninegridview:0.2.0'//展示用户动态的组件
 
+    implementation 'com.lcodecorex:tkrefreshlayout:1.0.7'//下拉刷新和加载更多
+
 
 
 

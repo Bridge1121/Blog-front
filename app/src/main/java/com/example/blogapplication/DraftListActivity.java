@@ -156,7 +156,6 @@ public class DraftListActivity extends AppCompatActivity {
             public boolean onItemMove(RecyclerView.ViewHolder srcHolder, RecyclerView.ViewHolder targetHolder) {
                 // 此方法在Item拖拽交换位置时被调用。
                 // 第一个参数是要交换为之的Item，第二个是目标位置的Item。
-
                 // 交换数据，并更新adapter。
                 int fromPosition = srcHolder.getAdapterPosition();
                 int toPosition = targetHolder.getAdapterPosition();
@@ -289,7 +288,7 @@ public class DraftListActivity extends AppCompatActivity {
     /**
      * 这是这个类的主角，如何自定义LoadMoreView。
      */
-    static final class DefineLoadMoreView extends LinearLayout implements SwipeRecyclerView.LoadMoreView, View.OnClickListener {
+    public static final class DefineLoadMoreView extends LinearLayout implements SwipeRecyclerView.LoadMoreView, View.OnClickListener {
 
         private LoadingView mLoadingView;  // 加载更多的动画
         private TextView mTvMessage;

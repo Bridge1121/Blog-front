@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,17 +59,22 @@ public class CommentActivity extends AppCompatActivity {
     private List<CustomCommentModel.CustomComment.CustomReply> customReplies;
     private int currentReplyPage = 1;
     private int currentCommentPage = 1;
+    private Long postingId;
+    private boolean isArticle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityCommentBinding.inflate(getLayoutInflater());
+        Intent intent = getIntent();
+        postingId = intent.getLongExtra("postingId",-1);
+        isArticle = postingId==-1?true:false;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("当前全部评论");
         commentView = binding.commentView;
         articleId = getIntent().getLongExtra("id", 0);//获取当前查看评论文章的id
         apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
-        apiService.getCommentList(1, 10, articleId,TokenUtils.getUserInfo(getApplicationContext()).getId()).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
+        apiService.getCommentList(1, 10, isArticle?articleId:postingId,TokenUtils.getUserInfo(getApplicationContext()).getId(),isArticle).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
             @Override
             public void onResponse(Call<ResponseResult<CustomCommentModel>> call, Response<ResponseResult<CustomCommentModel>> response) {
                 customCommentModel = response.body().getData();
@@ -175,7 +181,7 @@ public class CommentActivity extends AppCompatActivity {
 
     private void loadMoreData(int pageNum, int pageSize) {
         apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
-        apiService.getCommentList(pageNum, pageSize, articleId,TokenUtils.getUserInfo(getApplicationContext()).getId()).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
+        apiService.getCommentList(pageNum, pageSize, isArticle?articleId:postingId,TokenUtils.getUserInfo(getApplicationContext()).getId(),isArticle).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
             @Override
             public void onResponse(Call<ResponseResult<CustomCommentModel>> call, Response<ResponseResult<CustomCommentModel>> response) {
                 if (response.body().getData() != null) {
@@ -274,7 +280,7 @@ public class CommentActivity extends AppCompatActivity {
     //刷新评论
     private void refreshComment(int pageNum, int pageSize) {
         apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
-        apiService.getCommentList(pageNum, pageSize, articleId,TokenUtils.getUserInfo(getApplicationContext()).getId()).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
+        apiService.getCommentList(pageNum, pageSize, isArticle?articleId:postingId,TokenUtils.getUserInfo(getApplicationContext()).getId(),isArticle).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
             @Override
             public void onResponse(Call<ResponseResult<CustomCommentModel>> call, Response<ResponseResult<CustomCommentModel>> response) {
                 if (response.body().getData() != null) {
@@ -404,7 +410,7 @@ public class CommentActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View view) {
                             loadMoreData(currentCommentPage,10);
-                            Comment comment = new Comment("0", articleId, rootId, content.getText().toString(), toCommentUserId, toCommentId);
+                            Comment comment = new Comment(isArticle?"0":"1", isArticle?articleId:postingId, rootId, content.getText().toString(), toCommentUserId, toCommentId);
                             RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), comment.toJson());
                             apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
                             apiService.addComment(requestBody).enqueue(new Callback<ResponseResult>() {
@@ -544,11 +550,11 @@ public class CommentActivity extends AppCompatActivity {
                     tvReply.setText("回复@"+reply.getUserName()+"的评论");
                     Button btnComment = holderView.findViewById(R.id.btnPostComment);
                     EditText content = holderView.findViewById(R.id.etComment);
-                    btnComment.setOnClickListener(new View.OnClickListener() {//发表根评论
+                    btnComment.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
 
-                            Comment comment = new Comment("0", articleId, rootId, content.getText().toString(), toCommentUserId, toCommentId);
+                            Comment comment = new Comment(isArticle?"0":"1", isArticle?articleId:postingId, rootId, content.getText().toString(), toCommentUserId, toCommentId);
                             RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), comment.toJson());
                             apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
                             apiService.addComment(requestBody).enqueue(new Callback<ResponseResult>() {
@@ -681,11 +687,56 @@ public class CommentActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_comment, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
                 return true;
+            case R.id.comment:
+                DialogPlus dialog = DialogPlus.newDialog(CommentActivity.this)
+                        .setContentHolder(new com.orhanobut.dialogplus.ViewHolder(R.layout.dialog_comment))
+                        .setPadding(16,16,16,16)
+                        .setExpanded(true)  // This will enable the expand feature, (similar to android L share dialog)
+                        .create();
+                dialog.show();
+                View holderView = dialog.getHolderView();
+                Button btnComment = holderView.findViewById(R.id.btnPostComment);
+                EditText content = holderView.findViewById(R.id.etComment);
+                btnComment.setOnClickListener(new View.OnClickListener() {//发表根评论
+                    @Override
+                    public void onClick(View view) {
+                        if (TokenUtils.getToken(CommentActivity.this) != ""){//已经登录才能发评论
+                            Comment comment = new Comment(isArticle?"0":"1", isArticle?articleId:postingId,new Long(-1),content.getText().toString(),new Long(-1),new Long(-1));
+                            RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), comment.toJson());
+                            apiService.addComment(requestBody).enqueue(new Callback<ResponseResult>() {
+                                @Override
+                                public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                                    Toast.makeText(view.getContext(), "发表评论成功",Toast.LENGTH_SHORT).show();
+                                    HideUtil.hideSoftKeyboard(view);
+                                    dialog.dismiss();
+                                    refreshComment(1,10);
+                                }
+
+                                @Override
+                                public void onFailure(Call<ResponseResult> call, Throwable t) {
+
+                                }
+                            });
+                        }else{//未登录先登录
+                            Intent intent1 = new Intent(CommentActivity.this, LoginActivity.class);
+                            Toast.makeText(CommentActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
+                            startActivity(intent1);
+                        }
+
+
+                    }
+                });
 
             default:
                 return super.onOptionsItemSelected(item);
