@@ -41,6 +41,12 @@ public interface ApiService {
     @GET("user/getAvatar")
     Call<ResponseResult<String>> getAvatar(@Query("userId") Long userId);
 
+    @GET("user/follow")
+    Call<ResponseResult> follow(@Query("userId")Long userId,@Query("followId")Long followId);
+
+    @DELETE("user/cancelFollow")
+    Call<ResponseResult> cancelFollow(@Query("userId")Long userId,@Query("followId")Long followId);
+
     @POST("login")
     Call<ResponseResult<LoginUser>> login(@Body RequestBody requestBody);
 
@@ -66,8 +72,8 @@ public interface ApiService {
     @GET("article/searchArticle")
     Call<ResponseResult<ArticleResponse>> searchArticle(@Query("pageNum") int pageNum,@Query("pageSize") int pageSize,@Query("content") String content);
 
-    @GET("article/{id}")
-    Call<ResponseResult<ArticleDetailVo>> getArticleDetail(@Path("id") Long articleId);
+    @GET("article/{id}/{userId}")
+    Call<ResponseResult<ArticleDetailVo>> getArticleDetail(@Path("id") Long articleId,@Path("userId") Long currentUserId);
 
     @GET("article/articleList")
     Call<ResponseResult<ArticleResponse>> getRecommandArticleList(@Query("pageNum") int pageNum, @Query("pageSize") int pageSize);
@@ -113,5 +119,19 @@ public interface ApiService {
 
     @DELETE("postings/deletePrize")
     Call<ResponseResult> deletePostingPrize(@Query("postingId") Long commentId,@Query("currentUserId") Long currentUserId);
+
+    @GET("article/like")
+    Call<ResponseResult> like(@Query("articleId") Long articleId,@Query("userId") Long userId);
+
+    @DELETE("article/dislike")
+    Call<ResponseResult> dislike(@Query("articleId") Long articleId,@Query("userId") Long userId);
+
+    @GET("article/star")
+    Call<ResponseResult> star(@Query("articleId") Long articleId,@Query("userId") Long userId);
+
+    @DELETE("article/deleteStar")
+    Call<ResponseResult> deleteStar(@Query("articleId") Long articleId,@Query("userId") Long userId);
+
+
 
 }

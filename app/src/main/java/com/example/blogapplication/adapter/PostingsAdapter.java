@@ -131,7 +131,7 @@ public class PostingsAdapter extends RecyclerView.Adapter<PostingsAdapter.ViewHo
         }
         holder.praises.setText(userPostingsVo.getPraises()+"");
         holder.commentCount.setText(userPostingsVo.getComments()+"");
-        holder.comment.setOnClickListener(new View.OnClickListener() {
+        holder.comment.setOnClickListener(new View.OnClickListener() {//评论
             @Override
             public void onClick(View view) {
                 Intent intent1 = new Intent(context, CommentActivity.class);
@@ -139,7 +139,7 @@ public class PostingsAdapter extends RecyclerView.Adapter<PostingsAdapter.ViewHo
                 context.startActivity(intent1);
             }
         });
-
+        //todo 分享还没写！！！！
         holder.praise.setOnClickListener(new View.OnClickListener() {//给动态点赞
             @Override
             public void onClick(View view) {

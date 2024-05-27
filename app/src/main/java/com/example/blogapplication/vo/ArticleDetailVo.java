@@ -1,6 +1,8 @@
 package com.example.blogapplication.vo;
 
 
+import com.example.blogapplication.entity.UserInfo;
+
 import java.util.Date;
 
 public class ArticleDetailVo {
@@ -18,8 +20,56 @@ public class ArticleDetailVo {
     private String thumbnail;
     //访问量
     private Long viewCount;
+    //收藏数量
+    private Long stars;
+    //点赞数量
+    private Long praises;
+    private boolean praise;
+    private boolean star;
 
     private Date createTime;
+
+    private UserInfo author;
+
+    public boolean isPraise() {
+        return praise;
+    }
+
+    public void setPraise(boolean praise) {
+        this.praise = praise;
+    }
+
+    public boolean isStar() {
+        return star;
+    }
+
+    public void setStar(boolean star) {
+        this.star = star;
+    }
+
+    public Long getStars() {
+        return stars;
+    }
+
+    public void setStars(Long stars) {
+        this.stars = stars;
+    }
+
+    public Long getPraises() {
+        return praises;
+    }
+
+    public void setPraises(Long praises) {
+        this.praises = praises;
+    }
+
+    public UserInfo getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(UserInfo author) {
+        this.author = author;
+    }
 
     public Long getId() {
         return id;

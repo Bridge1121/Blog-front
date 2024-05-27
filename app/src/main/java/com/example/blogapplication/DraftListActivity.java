@@ -171,6 +171,7 @@ public class DraftListActivity extends AppCompatActivity {
                 // 从数据源移除该Item对应的数据，并刷新Adapter。
                 int position = srcHolder.getAdapterPosition();
                 Toast.makeText(getApplicationContext(), articles.get(position).getId().toString(), Toast.LENGTH_SHORT).show();
+                //todo 加一个弹窗让用户确认是否要删除
                 deleteDraft(position);
             }
         };

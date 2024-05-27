@@ -108,7 +108,7 @@ public class CustomUseInLocalActivity extends AppCompatActivity {
 //        String title = sharedPreferences.getString("title", "title");
 //        String content = sharedPreferences.getString("content", "");
          apiService = RetrofitClient.getInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
-         apiService.getArticleDetail(articleId).enqueue(new Callback<ResponseResult<ArticleDetailVo>>() {
+         apiService.getArticleDetail(articleId,TokenUtils.getUserInfo(CustomUseInLocalActivity.this).getId()).enqueue(new Callback<ResponseResult<ArticleDetailVo>>() {
              @Override
              public void onResponse(Call<ResponseResult<ArticleDetailVo>> call, Response<ResponseResult<ArticleDetailVo>> response) {
                  articleDetailVo = response.body().getData();

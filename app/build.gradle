@@ -105,6 +105,8 @@ dependencies {
 
     implementation 'com.lcodecorex:tkrefreshlayout:1.0.7'//下拉刷新和加载更多
 
+    implementation 'com.sackcentury:shinebutton:1.0.0' //好看的点赞收藏按钮
+
 
 
 

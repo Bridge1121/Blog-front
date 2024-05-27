@@ -18,7 +18,7 @@
     <color name="grey_600">#757575</color>
     <color name="grey_700">#616161</color>
     <color name="grey_800">#424242</color>
-    <color name="grey_900">#212121</color>
+    <color name="grey_900">#AAAAAA</color>
     <color name="grey_1000">#666666</color>
 
     <color name="green21">#0479CA</color>
@@ -39,4 +39,7 @@
     <color name="green_pressed">#30A070</color>
     <color name="purple_normal">#9932CC</color>
     <color name="purple_pressed">#9F79EE</color>
+
+    <color name="yellow">#FFD700</color>
+
 </resources>

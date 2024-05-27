@@ -6,8 +6,15 @@ public class UserInfo {
     private int id;
     private String nickName;
     private String sex;
+    private boolean follow;//是否关注了该作者
 
+    public boolean isFollow() {
+        return follow;
+    }
 
+    public void setFollow(boolean follow) {
+        this.follow = follow;
+    }
 
     public String getAvatar() {
         return avatar;

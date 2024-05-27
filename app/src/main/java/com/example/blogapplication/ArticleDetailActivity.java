@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +33,7 @@ import com.example.blogapplication.comment.CustomViewStyleConfigurator;
 import com.example.blogapplication.comment.DefaultViewStyleConfigurator;
 import com.example.blogapplication.databinding.ActivityArticleDetailBinding;
 import com.example.blogapplication.entity.Comment;
+import com.example.blogapplication.entity.UserInfo;
 import com.example.blogapplication.utils.RichUtils;
 import com.example.blogapplication.utils.TokenUtils;
 import com.example.blogapplication.vo.ArticleDetailVo;
@@ -44,11 +47,14 @@ import com.jidcoo.android.widget.commentview.callback.OnReplyLoadMoreCallback;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
 import com.orhanobut.dialogplus.ViewHolder;
+import com.sackcentury.shinebuttonlib.ShineButton;
 import com.squareup.picasso.Picasso;
 import com.yinglan.keyboard.HideUtil;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -58,6 +64,7 @@ import retrofit2.Response;
 public class ArticleDetailActivity extends AppCompatActivity {
     private ActivityArticleDetailBinding binding;
     private Long articleId;
+    private Long userId;
     private ApiService apiService;
     private ArticleDetailVo articleDetailVo;
     private CommentView commentView;
@@ -67,15 +74,161 @@ public class ArticleDetailActivity extends AppCompatActivity {
     private int pageSize = 10;
     private boolean isFinished = false;
 
+    private CircleImageView avatar;
+    private TextView authorName;
+    private TextView time;
+    private ShineButton praiseButton;
+    private ShineButton starButton;
+    private TextView starCount;
+    private TextView praiseCount;
+    private Button follow;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityArticleDetailBinding.inflate(getLayoutInflater());
-
-//        commentView = binding.commentView;
+        follow = binding.followButton;
         //获取要显示的文章信息
         Intent intent = getIntent();
         articleId = intent.getLongExtra("id",1);
+        userId = TokenUtils.getUserInfo(ArticleDetailActivity.this).getId();
+        apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(ArticleDetailActivity.this)).create(ApiService.class);
+        starCount = binding.starCount;
+        praiseCount = binding.praiseCount;
+        avatar = binding.authorAvatar;
+        authorName = binding.authorName;
+        time = binding.publishTime;
+        praiseButton = binding.praiseButton;
+        praiseButton.init(ArticleDetailActivity.this);
+        praiseButton.setOnClickListener(new View.OnClickListener() {//点赞还是取消
+            @Override
+            public void onClick(View view) {
+                if (articleDetailVo.isPraise()){//取消点赞
+                    apiService.dislike(articleId,userId).enqueue(new Callback<ResponseResult>() {
+                        @Override
+                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                            praiseButton.setBtnColor(Color.GRAY);
+                            praiseButton.setBtnFillColor(Color.GRAY);
+                            praiseCount.setText((int) (articleDetailVo.getPraises()-1)+"");
+                            articleDetailVo.setPraise(!articleDetailVo.isPraise());
+                            articleDetailVo.setPraises(articleDetailVo.getPraises()-1);
+                            praiseCount.setTextColor(Color.GRAY);
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseResult> call, Throwable t) {
+
+                        }
+                    });
+                }else{
+                    apiService.like(articleId,userId).enqueue(new Callback<ResponseResult>() {
+                        @Override
+                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                            praiseButton.setBtnColor(Color.RED);
+                            praiseButton.setBtnFillColor(Color.RED);
+                            praiseCount.setText((int) (articleDetailVo.getPraises()+1)+"");
+                            articleDetailVo.setPraise(!articleDetailVo.isPraise());
+                            articleDetailVo.setPraises(articleDetailVo.getPraises()+1);
+                            praiseCount.setTextColor(Color.RED);
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseResult> call, Throwable t) {
+
+                        }
+                    });
+                }
+
+            }
+        });
+        starButton = binding.starButton;
+        starButton.init(ArticleDetailActivity.this);
+        starButton.setOnClickListener(new View.OnClickListener() {//点赞还是取消
+            @Override
+            public void onClick(View view) {
+                if (articleDetailVo.isStar()){//取消收藏
+                    apiService.deleteStar(articleId,userId).enqueue(new Callback<ResponseResult>() {
+                        @Override
+                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                            starButton.setBtnColor(Color.GRAY);
+                            starButton.setBtnFillColor(Color.GRAY);
+                            starCount.setText((int) (articleDetailVo.getStars()-1)+"");
+                            articleDetailVo.setStar(!articleDetailVo.isStar());
+                            articleDetailVo.setStars(articleDetailVo.getStars()-1);
+                            starCount.setTextColor(Color.GRAY);
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseResult> call, Throwable t) {
+                            Log.e("取消收藏出错啦！！",t.getMessage());
+                        }
+                    });
+                }else{
+                    apiService.star(articleId,userId).enqueue(new Callback<ResponseResult>() {
+                        @Override
+                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                            starButton.setBtnColor(Color.RED);
+                            starButton.setBtnFillColor(Color.RED);
+                            starCount.setText((int) (articleDetailVo.getStars()+1)+"");
+                            articleDetailVo.setStar(!articleDetailVo.isStar());
+                            articleDetailVo.setStars(articleDetailVo.getStars()+1);
+                            starCount.setTextColor(Color.RED);
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseResult> call, Throwable t) {
+                            Log.e("收藏出错啦！！",t.getMessage());
+                        }
+                    });
+                }
+
+            }
+        });
+        avatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent1 = new Intent(ArticleDetailActivity.this,HomePageActivity.class);
+                intent1.putExtra("isMe",1);//0是我自己的主页1是别人的主页
+                startActivity(intent1);
+            }
+        });
+//        commentView = binding.commentView;
+        follow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (articleDetailVo.getAuthor().isFollow()){//取消关注
+                    apiService.cancelFollow(userId,new Long(articleDetailVo.getAuthor().getId())).enqueue(new Callback<ResponseResult>() {
+                        @Override
+                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                            follow.setBackgroundColor(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+                            follow.setText("关注");
+                            articleDetailVo.getAuthor().setFollow(!articleDetailVo.getAuthor().isFollow());
+                            Toast.makeText(ArticleDetailActivity.this,"取消关注成功！",Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseResult> call, Throwable t) {
+                            Log.e("取消关注出错啦！！",t.getMessage());
+                        }
+                    });
+                }else{//关注
+                    apiService.follow(userId,new Long(articleDetailVo.getAuthor().getId())).enqueue(new Callback<ResponseResult>() {
+                        @Override
+                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                            follow.setBackgroundColor(getResources().getColor(R.color.grey_400));
+                            follow.setText("已关注");
+                            articleDetailVo.getAuthor().setFollow(!articleDetailVo.getAuthor().isFollow());
+                            Toast.makeText(ArticleDetailActivity.this,"关注成功！",Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseResult> call, Throwable t) {
+                            Log.e("关注出错啦！！",t.getMessage());
+                        }
+                    });
+                }
+            }
+        });
         binding.commentAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,11 +240,28 @@ public class ArticleDetailActivity extends AppCompatActivity {
 //        SharedPreferences sharedPreferences = getSharedPreferences("art", MODE_PRIVATE);
 //        String title = sharedPreferences.getString("title", "title");
 //        String content = sharedPreferences.getString("content", "");
-        apiService = RetrofitClient.getInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
-        apiService.getArticleDetail(articleId).enqueue(new Callback<ResponseResult<ArticleDetailVo>>() {
+        apiService.getArticleDetail(articleId,TokenUtils.getUserInfo(ArticleDetailActivity.this).getId()).enqueue(new Callback<ResponseResult<ArticleDetailVo>>() {
             @Override
             public void onResponse(Call<ResponseResult<ArticleDetailVo>> call, Response<ResponseResult<ArticleDetailVo>> response) {
                 articleDetailVo = response.body().getData();
+                if (articleDetailVo.isPraise()){
+                    praiseButton.setBtnColor(Color.RED);
+                    praiseCount.setTextColor(Color.RED);
+                }
+                if (articleDetailVo.isStar()){
+                    starButton.setBtnColor(Color.RED);
+                    starCount.setTextColor(Color.RED);
+                }
+                UserInfo author = articleDetailVo.getAuthor();
+                if (author.isFollow()){
+                    follow.setBackgroundColor(getResources().getColor(R.color.grey_400));
+                    follow.setText("已关注");
+                }
+                authorName.setText(author.getNickName());
+                Picasso.get().load(author.getAvatar()).into(avatar);
+                time.setText("发布于"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(articleDetailVo.getCreateTime()));
+                starCount.setText(articleDetailVo.getStars()+"");
+                praiseCount.setText(articleDetailVo.getPraises()+"");
                 initWebView(articleDetailVo.getContent());
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 getSupportActionBar().setTitle(articleDetailVo.getTitle());
@@ -104,7 +274,6 @@ public class ArticleDetailActivity extends AppCompatActivity {
             }
         });
 //        commentView.setViewStyleConfigurator(new DefaultViewStyleConfigurator(this));
-        apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
         apiService.getCommentList(1,10,articleId,TokenUtils.getUserInfo(getApplicationContext()).getId(),true).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
             @Override
             public void onResponse(Call<ResponseResult<CustomCommentModel>> call, Response<ResponseResult<CustomCommentModel>> response) {
