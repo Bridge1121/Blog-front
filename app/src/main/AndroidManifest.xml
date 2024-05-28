@@ -20,6 +20,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="31">
+        <activity android:name="com.tencent.tauth.AuthActivity"
+            android:exported="false"/>
+        <activity android:name="me.shaohui.shareutil._ShareActivity"
+            android:exported="false"/>
+
         <activity
             android:name=".StarListActivity"
             android:theme="@style/CustomActionBarTheme"
@@ -41,11 +46,9 @@
             android:theme="@style/CustomActionBarTheme" />
         <activity
             android:name=".ArticleDetailActivity"
-            android:exported="false"
             android:theme="@style/CustomActionBarTheme" />
         <activity
             android:name=".DraftListActivity"
-            android:exported="false"
             android:theme="@style/CustomActionBarTheme" />
         <activity
             android:name=".SelectCategoryActivity"

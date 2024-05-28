@@ -212,7 +212,7 @@ public class PostingsFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onResponse(Call<ResponseResult<UserPostingsResponse>> call, Response<ResponseResult<UserPostingsResponse>> response) {
                 postingsVos = response.body().getData().getRows();
-                postingsAdapter = new PostingsAdapter(getContext(), postingsVos);
+                postingsAdapter = new PostingsAdapter(postingsVos,getContext(), getActivity().getSupportFragmentManager());
                 mRecyclerView.setAdapter(postingsAdapter);
                 postingsAdapter.notifyDataSetChanged();
                 refreshLayout.setRefreshing(false);

@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.blogapplication.ApiService;
@@ -25,8 +26,10 @@ import com.example.blogapplication.LoginActivity;
 import com.example.blogapplication.R;
 import com.example.blogapplication.ResponseResult;
 import com.example.blogapplication.RetrofitClient;
+import com.example.blogapplication.dialog.ShareBottomDialog;
 import com.example.blogapplication.entity.Article;
 import com.example.blogapplication.entity.Comment;
+import com.example.blogapplication.fragment.PostingsFragment;
 import com.example.blogapplication.utils.KeyWordUtil;
 import com.example.blogapplication.utils.TokenUtils;
 import com.example.blogapplication.vo.UserPostingsVo;
@@ -42,6 +45,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import me.shaohui.shareutil.ShareConfig;
+import me.shaohui.shareutil.ShareManager;
+import me.shaohui.shareutil.ShareUtil;
+import me.shaohui.shareutil.share.ShareListener;
+import me.shaohui.shareutil.share.SharePlatform;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -54,6 +62,7 @@ public class PostingsAdapter extends RecyclerView.Adapter<PostingsAdapter.ViewHo
     private Context context;
     private String searchContent;
     private ApiService apiService;
+    private FragmentManager fragmentManager;
 
     public PostingsAdapter(Context context, List<UserPostingsVo> data) {
         this.context = context;
@@ -61,11 +70,15 @@ public class PostingsAdapter extends RecyclerView.Adapter<PostingsAdapter.ViewHo
         this.layoutInflater = LayoutInflater.from(context);
     }
 
-    public PostingsAdapter(List<UserPostingsVo> data, Context context, String searchContent) {
+    public PostingsAdapter(List<UserPostingsVo> data, Context context, FragmentManager fragmentManager) {
         this.data = data;
         this.layoutInflater = LayoutInflater.from(context);
         this.context = context;
-        this.searchContent = searchContent;
+        this.fragmentManager = fragmentManager;
+    }
+
+    public PostingsAdapter(FragmentManager fragmentManager) {
+        this.fragmentManager = fragmentManager;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -98,6 +111,7 @@ public class PostingsAdapter extends RecyclerView.Adapter<PostingsAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
         View view = layoutInflater.inflate(R.layout.posting_item, parent, false);
 
         return new ViewHolder(view);
@@ -140,6 +154,16 @@ public class PostingsAdapter extends RecyclerView.Adapter<PostingsAdapter.ViewHo
             }
         });
         //todo 分享还没写！！！！
+        holder.share.setOnClickListener(new View.OnClickListener() {
+
+
+            @Override
+            public void onClick(View view) {
+                ShareBottomDialog dialog = new ShareBottomDialog();
+                dialog.show(fragmentManager);
+
+            }
+        });
         holder.praise.setOnClickListener(new View.OnClickListener() {//给动态点赞
             @Override
             public void onClick(View view) {
