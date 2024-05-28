@@ -11,6 +11,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -32,7 +33,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -89,6 +92,11 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
     private Dialog dialog;
     private View inflate;
     private AddArticleDto addArticleDto;
+    private AlertView mAlertViewExt;//窗口拓展
+    private EditText etName;//分类名称
+    private EditText etDescription;//分类名称
+    private InputMethodManager imm;
+    private CategorySpinnerAdapter categorySpinnerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,19 +107,77 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
 //            categoryResponses = bundle.getParcelableArrayList("categories");
 //        }
         binding = DataBindingUtil.setContentView(this, R.layout.activity_blog_edit);
+        apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
         HideUtil.init(BlogEditActivity.this);
         isFrom = getIntent().getIntExtra("isFrom", 0);
         binding.setOnClickListener(this);
         rxPermissions = new RxPermissions(this);
+        imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         spinner = binding.spinnerCategory;
         categoryResponses = TokenUtils.getUserCategoryInfo(getApplicationContext());
+        CategoryResponse categoryResponse = new CategoryResponse("新增分类","");
+        categoryResponses.add(categoryResponse);
         if (categoryResponses!=null && categoryResponses.size()>0){
-            CategorySpinnerAdapter categorySpinnerAdapter = new CategorySpinnerAdapter(categoryResponses,getApplicationContext());
+            categorySpinnerAdapter = new CategorySpinnerAdapter(categoryResponses,getApplicationContext());
             spinner.setAdapter(categorySpinnerAdapter);
             spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                     categoryId = new Long(categoryResponses.get(i).getId());
+                    if (categoryResponses.get(i).getName().equals("新增分类")){
+                        ViewGroup extView = (ViewGroup) LayoutInflater.from(BlogEditActivity.this).inflate(R.layout.add_new_category_form,null);
+                        etName = extView.findViewById(R.id.edit_name);
+                        etDescription = extView.findViewById(R.id.edit_description);
+                        etName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                            @Override
+                            public void onFocusChange(View view, boolean focus) {
+                                //输入框出来则往上移动
+                                boolean isOpen=imm.isActive();
+                                mAlertViewExt.setMarginBottom(isOpen&&focus ? 120 :0);
+                                System.out.println(isOpen);
+                            }
+                        });
+                        mAlertViewExt = new AlertView("新增分类", "请输入新增的文章类别信息：", "取消", null, new String[]{"完成"}, BlogEditActivity.this, AlertView.Style.Alert, new OnItemClickListener() {
+                            @Override
+                            public void onItemClick(Object o, int position) {
+                                if (o == mAlertViewExt && position!= AlertView.CANCELPOSITION){//点击确认
+                                    if (etName.getText().toString().equals("")){
+                                        Toast.makeText(BlogEditActivity.this,"类别名称不能为空！",Toast.LENGTH_SHORT).show();
+                                    } else if (etDescription.getText().toString().equals("")) {
+
+                                        Toast.makeText(BlogEditActivity.this,"类别描述信息不能为空！",Toast.LENGTH_SHORT).show();
+                                    }else{
+                                        //todo 调用新增分类接口
+                                        apiService.addCategory(etName.getText().toString(),TokenUtils.getUserInfo(getApplicationContext()).getId(),etDescription.getText().toString()).enqueue(new Callback<ResponseResult<Long>>() {
+                                            @Override
+                                            public void onResponse(Call<ResponseResult<Long>> call, Response<ResponseResult<Long>> response) {
+                                                if (response.body().getData()!=null){
+                                                    CategoryResponse categoryResponse1 = new CategoryResponse(response.body().getData().intValue(),etName.getText().toString(),etDescription.getText().toString());
+                                                    categoryResponses.add(categoryResponses.size()-1,categoryResponse1);
+                                                    categorySpinnerAdapter.notifyDataSetChanged();
+
+                                                }
+                                                Toast.makeText(BlogEditActivity.this,"新增分类成功！",Toast.LENGTH_SHORT).show();
+                                            }
+
+                                            @Override
+                                            public void onFailure(Call<ResponseResult<Long>> call, Throwable t) {
+                                                Log.e("新增文章分类出错啦！！",t.getMessage());
+                                            }
+                                        });
+                                    }
+                                }else{//取消
+                                    //关闭软键盘
+                                    imm.hideSoftInputFromWindow(etName.getWindowToken(),0);
+                                    //恢复位置
+                                    mAlertViewExt.setMarginBottom(0);
+                                }
+                            }
+                        });
+                        mAlertViewExt.addExtView(extView);
+                        mAlertViewExt.show();
+
+                    }
                     Toast.makeText(getApplicationContext(),categoryResponses.get(i).getName(),Toast.LENGTH_SHORT).show();
                 }
 
@@ -379,7 +445,7 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
 
     //重新编辑且未编辑thumbnail时保存草稿
     private void draftArticleAgain(){
-        apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
+
         HideUtil.hideSoftKeyboard(BlogEditActivity.this);
         addArticleDto = new AddArticleDto(getIntent().getLongExtra("id",0),getIntent().getStringExtra("thumbnail"),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","1","1");
         Log.i("articleInfo", addArticleDto.toJson());

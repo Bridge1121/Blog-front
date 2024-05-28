@@ -105,6 +105,9 @@ public interface ApiService {
     @GET("category/getCategoryList")
     Call<ResponseResult<List<CategoryResponse>>> getCategoryList(@Query("userId") String userId);
 
+    @GET("category/addCategory")
+    Call<ResponseResult<Long>> addCategory(@Query("name") String name,@Query("userId") Long userId,@Query("descriptipn") String description);
+
     @Multipart
     @POST("upload")
     Call<ResponseResult<String>> uploadImg(@Part MultipartBody.Part img);
@@ -137,6 +140,9 @@ public interface ApiService {
 
     @DELETE("article/deleteStar")
     Call<ResponseResult> deleteStar(@Query("articleId") Long articleId,@Query("userId") Long userId);
+
+    @GET("article/starList")
+    Call<ResponseResult<ArticleResponse>> starList(@Query("pageNum") Integer pageNum,@Query("pageSize") Integer pageSize,@Query("userId") Long userId);
 
 
 

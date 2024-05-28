@@ -140,7 +140,7 @@ public class ArticleListActivity extends AppCompatActivity {
         apiService.searchArticle(pageNum,pageSize,content).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
             @Override
             public void onResponse(Call<ResponseResult<ArticleResponse>> call, Response<ResponseResult<ArticleResponse>> response) {
-                articles = response.body().getData().getArticles();
+                articles = response.body().getData().getRows();
                 if (articles.size()==0){
                     searchRecyclerView.setVisibility(View.GONE);
                     searchNoneLinearLayout.setVisibility(View.VISIBLE);

@@ -20,6 +20,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bigkoo.alertview.AlertView;
+import com.bigkoo.alertview.OnDismissListener;
 import com.example.blogapplication.adapter.DraftAdapter;
 import com.example.blogapplication.databinding.ActivityDraftListBinding;
 import com.example.blogapplication.entity.Article;
@@ -59,6 +61,7 @@ public class DraftListActivity extends AppCompatActivity {
     private boolean isLastPage = false;
     private SwipeRefreshLayout mRefreshLayout;
     private static int i = 1;
+    private AlertView mAlertView;
 
 
     @SuppressLint("WrongViewCast")
@@ -169,10 +172,25 @@ public class DraftListActivity extends AppCompatActivity {
             public void onItemDismiss(RecyclerView.ViewHolder srcHolder) {//侧滑删除item
                 // 此方法在Item在侧滑删除时被调用。
                 // 从数据源移除该Item对应的数据，并刷新Adapter。
-                int position = srcHolder.getAdapterPosition();
-                Toast.makeText(getApplicationContext(), articles.get(position).getId().toString(), Toast.LENGTH_SHORT).show();
-                //todo 加一个弹窗让用户确认是否要删除
-                deleteDraft(position);
+                int position1 = srcHolder.getAdapterPosition();
+                Toast.makeText(getApplicationContext(), articles.get(position1).getId().toString(), Toast.LENGTH_SHORT).show();
+                mAlertView = new AlertView("确认", "确定删除该草稿吗？", "取消", new String[]{"确定"}, null, DraftListActivity.this, AlertView.Style.Alert, new com.bigkoo.alertview.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(Object o, int position) {
+                        if(o == mAlertView && position != AlertView.CANCELPOSITION){//点击的是弹窗,而且是非取消按钮
+                            deleteDraft(position1);
+                        }else{
+                            loadData();
+                        }
+                    }
+                }).setCancelable(true).setOnDismissListener(new OnDismissListener() {
+                    @Override
+                    public void onDismiss(Object o) {
+
+                    }
+                });
+                mAlertView.show();
+//                deleteDraft(position);
             }
         };
 
@@ -257,7 +275,7 @@ public class DraftListActivity extends AppCompatActivity {
         apiService.draftArticleList(1, 10, TokenUtils.getUserInfo(getApplicationContext()).getId()).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
             @Override
             public void onResponse(Call<ResponseResult<ArticleResponse>> call, Response<ResponseResult<ArticleResponse>> response) {
-                articles = response.body().getData().getArticles();
+                articles = response.body().getData().getRows();
                 adapter = new DraftAdapter(getApplicationContext(), articles);
                 swipeRecyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
@@ -285,6 +303,8 @@ public class DraftListActivity extends AppCompatActivity {
         articles = createDataList();
 
     }
+
+
 
     /**
      * 这是这个类的主角，如何自定义LoadMoreView。
@@ -406,7 +426,7 @@ public class DraftListActivity extends AppCompatActivity {
         apiService.draftArticleList(currentPage, pageSize, TokenUtils.getUserInfo(getApplicationContext()).getId()).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
             @Override
             public void onResponse(Call<ResponseResult<ArticleResponse>> call, Response<ResponseResult<ArticleResponse>> response) {
-                List<Article> moreArticles = response.body().getData().getArticles();
+                List<Article> moreArticles = response.body().getData().getRows();
 
                 if (moreArticles != null && moreArticles.size() > 0) {
                     articles.addAll(moreArticles); // 将新加载的数据添加到原有数据集合中

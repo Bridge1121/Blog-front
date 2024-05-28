@@ -51,7 +51,7 @@ public class ArticleDeserializer implements JsonDeserializer<ArticleResponse> {
 //
 //
         ArticleResponse articleResponse = new ArticleResponse();
-        articleResponse.setArticles(articles);
+        articleResponse.setRows(articles);
         articleResponse.setTotal(total);
 
 

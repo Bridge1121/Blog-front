@@ -320,6 +320,8 @@ public class MainActivity extends AppCompatActivity {
                             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                             startActivity(intent);
                         } else {
+                            Intent intent = new Intent(MainActivity.this, StarListActivity.class);
+                            startActivity(intent);
                             Toast.makeText(MainActivity.this, "跳转到我的收藏", Toast.LENGTH_SHORT).show();
                         }
 
@@ -359,9 +361,28 @@ public class MainActivity extends AppCompatActivity {
                             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                             startActivity(intent);
                         } else {
-                            Intent intent = new Intent(MainActivity.this,DraftListActivity.class);
-                            startActivity(intent);
-                            Toast.makeText(MainActivity.this, "跳转到我的草稿", Toast.LENGTH_SHORT).show();
+                            apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
+                            apiService.getCategoryList(TokenUtils.getUserInfo(getApplicationContext()).getId().toString()).enqueue(new Callback<ResponseResult<List<CategoryResponse>>>() {
+                                @Override
+                                public void onResponse(Call<ResponseResult<List<CategoryResponse>>> call, Response<ResponseResult<List<CategoryResponse>>> response) {
+                                    TokenUtils.deleteCategoryInfo(getApplicationContext());
+                                    categoryResponses = response.body().getData();
+                                    TokenUtils.saveUserCategory(getApplicationContext(), categoryResponses);
+                                    Intent intent = new Intent(MainActivity.this, DraftListActivity.class);
+//                                    Bundle bundle = new Bundle();
+//                                    bundle.putParcelableArrayList("categories", (ArrayList<? extends Parcelable>) categoryResponses);
+//                                    intent.putExtras(bundle);
+                                    startActivity(intent);
+                                    Toast.makeText(MainActivity.this, "跳转到我的草稿", Toast.LENGTH_SHORT).show();
+                                }
+
+                                @Override
+                                public void onFailure(Call<ResponseResult<List<CategoryResponse>>> call, Throwable t) {
+                                    Log.e("获取全部文章分类列表出错啦！！！",t.getMessage());
+
+                                }
+                            });
+
                         }
 
                         break;
@@ -375,18 +396,20 @@ public class MainActivity extends AppCompatActivity {
                             apiService.getCategoryList(TokenUtils.getUserInfo(getApplicationContext()).getId().toString()).enqueue(new Callback<ResponseResult<List<CategoryResponse>>>() {
                                 @Override
                                 public void onResponse(Call<ResponseResult<List<CategoryResponse>>> call, Response<ResponseResult<List<CategoryResponse>>> response) {
+                                    TokenUtils.deleteCategoryInfo(getApplicationContext());
                                     categoryResponses = response.body().getData();
                                     TokenUtils.saveUserCategory(getApplicationContext(), categoryResponses);
                                     Intent intent = new Intent(MainActivity.this, BlogEditActivity.class);
-                                    Bundle bundle = new Bundle();
-                                    bundle.putParcelableArrayList("categories", (ArrayList<? extends Parcelable>) categoryResponses);
-                                    intent.putExtras(bundle);
+//                                    Bundle bundle = new Bundle();
+//                                    bundle.putParcelableArrayList("categories", (ArrayList<? extends Parcelable>) categoryResponses);
+//                                    intent.putExtras(bundle);
                                     startActivity(intent);
                                     Toast.makeText(MainActivity.this, "跳转到写博客", Toast.LENGTH_SHORT).show();
                                 }
 
                                 @Override
                                 public void onFailure(Call<ResponseResult<List<CategoryResponse>>> call, Throwable t) {
+                                    Log.e("获取全部文章分类列表出错啦！！！",t.getMessage());
 
                                 }
                             });
