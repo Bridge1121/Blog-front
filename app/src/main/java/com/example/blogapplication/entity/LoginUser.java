@@ -2,9 +2,8 @@ package com.example.blogapplication.entity;
 
 
 
+import com.example.blogapplication.vo.UserInfoVo;
 import com.google.gson.Gson;
-
-import java.util.Collection;
 
 public class LoginUser {
     private User user;

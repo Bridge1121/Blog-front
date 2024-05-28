@@ -13,7 +13,7 @@
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/activity_comment.xml" value="0.17572463768115942" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/activity_draft_list.xml" value="0.1458966565349544" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/activity_followers.xml" value="0.12360688956433637" />
-        <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/activity_home_page.xml" value="0.1" />
+        <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/activity_home_page.xml" value="0.22" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/activity_login.xml" value="0.1" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/activity_login2.xml" value="0.20108695652173914" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/activity_main.xml" value="0.22" />
@@ -44,6 +44,7 @@
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/fragment_recommend.xml" value="0.3333333333333333" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/fragment_recyclerview.xml" value="0.18177083333333333" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/header_logo.xml" value="0.165234375" />
+        <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/header_logo2.xml" value="0.18478260869565216" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/hot_article_item.xml" value="0.19429347826086957" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/item_image.xml" value="0.15896739130434784" />
         <entry key="..\:/AndroidStudioProjects/BlogApplication/Blog-front/app/src/main/res/layout/loadmore_footer.xml" value="0.19746376811594202" />

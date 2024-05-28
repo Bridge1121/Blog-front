@@ -81,7 +81,7 @@ public interface ApiService {
     Call<ResponseResult<ArticleDetailVo>> getArticleDetail(@Path("id") Long articleId,@Path("userId") Long currentUserId);
 
     @GET("article/articleList")
-    Call<ResponseResult<ArticleResponse>> getRecommandArticleList(@Query("pageNum") int pageNum, @Query("pageSize") int pageSize);
+    Call<ResponseResult<ArticleResponse>> getRecommandArticleList(@Query("pageNum") int pageNum, @Query("pageSize") int pageSize,@Query("userId") Long userId);
 
 
     @GET("article/draftList")
@@ -119,6 +119,9 @@ public interface ApiService {
 
     @POST("postings/create")
     Call<ResponseResult> createUserPosting(@Body RequestBody requestBody);
+
+    @GET("postings/postingList")
+    Call<ResponseResult<UserPostingsResponse>> listByUserId(@Query("pageNum")Integer pageNum,@Query("pageSize")Integer pageSize, @Query("userId")Long userId);
 
     @GET("postings/list")
     Call<ResponseResult<UserPostingsResponse>> postingslist(@Query("pageNum") int pageNum, @Query("pageSize") int pageSize,@Query("currentUserId") Long currentUserId);

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -10,101 +10,51 @@
         android:orientation="vertical">
 
         <!-- 用户详细信息部分 -->
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal" >-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/tv_articles"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:gravity="center_horizontal"-->
+<!--                android:text="文章" />-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/tv_postings"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:gravity="center_horizontal"-->
+<!--                android:text="动态" />-->
+
+
+<!--        </LinearLayout>-->
+
+        <com.github.florent37.materialviewpager.MaterialViewPager
+            android:id="@+id/materialViewPager"
             android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:background="@drawable/nav_header"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            app:viewpager_animatedHeaderImage="true"
+            app:viewpager_color="@color/colorPrimary"
+            app:viewpager_disableToolbar="false"
+            app:viewpager_displayToolbarWhenSwipe="true"
+            app:viewpager_enableToolbarElevation="true"
+            app:viewpager_headerAdditionalHeight="20dp"
+            app:viewpager_headerAlpha="1.0"
+            app:viewpager_headerHeight="250dp"
+            app:viewpager_hideToolbarAndTitle="true"
+            app:viewpager_logo="@layout/header_logo2"
+            app:viewpager_logoMarginTop="10dp"
+            app:viewpager_pagerTitleStrip="@layout/material_view_pager_pagertitlestrip_newstand"
+            app:viewpager_parallaxHeaderFactor="1.5"
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/current_userAvater"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:background="@drawable/ic_default_avatar_grey_24dp"
-                app:civ_border_width="0dp"
-                app:civ_border_color="#FFFFFF"/>
-
-            <TextView
-                android:id="@+id/current_userName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textColor="@color/text__white"
-                android:textSize="16sp"
-                android:text="username"/>
-
-
-            <TextView
-                android:id="@+id/current_userEmail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:textColor="@color/text__white"
-                android:textSize="18sp"
-                android:text="1670741014@qq.com"/>
-            <!-- 关注人数和粉丝数量 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_margin="10dp"
-                android:gravity="center">
-
-                <TextView
-                    android:id="@+id/followers"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text__white"
-                    android:layout_marginRight="10dp"
-                    android:text="关注人数：100"
-                    android:textSize="14sp"/>
-
-                <TextView
-                    android:id="@+id/fans"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="粉丝数量：200"
-                    android:textColor="@color/text__white"
-                    android:textSize="14sp"/>
-            </LinearLayout>
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
-
-            <TextView
-                android:id="@+id/tv_articles"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:text="文章" />
-
-            <TextView
-                android:id="@+id/tv_postings"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:text="动态" />
-
-
-        </LinearLayout>
-
-
-        <!-- ViewPager部分 -->
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/view_pager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-
-        </androidx.viewpager.widget.ViewPager>
+            />
 
     </LinearLayout>
 
-</androidx.core.widget.NestedScrollView>
+</LinearLayout>

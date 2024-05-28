@@ -107,6 +107,11 @@ dependencies {
 
     implementation 'com.sackcentury:shinebutton:1.0.0' //好看的点赞收藏按钮
 
+    implementation 'com.ogaclejapan.smarttablayout:library:2.0.0@aar'
+
+
+    implementation 'com.ogaclejapan.smarttablayout:utils-v4:2.0.0@aar'
+
 
 
 

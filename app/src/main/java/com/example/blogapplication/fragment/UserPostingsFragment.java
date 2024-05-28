@@ -1,22 +1,18 @@
 package com.example.blogapplication.fragment;
 
 import android.content.Context;
-import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -24,24 +20,19 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.viewpager.widget.ViewPager;
 
 import com.example.blogapplication.ApiService;
-import com.example.blogapplication.ArticleDetailActivity;
 import com.example.blogapplication.DraftListActivity;
 import com.example.blogapplication.R;
 import com.example.blogapplication.ResponseResult;
 import com.example.blogapplication.RetrofitClient;
-import com.example.blogapplication.ShowArtActivity;
-import com.example.blogapplication.adapter.ArticleAdapter;
-import com.example.blogapplication.adapter.DraftAdapter;
-import com.example.blogapplication.comment.CustomUseInLocalActivity;
-import com.example.blogapplication.entity.Article;
-import com.example.blogapplication.entity.response.ArticleResponse;
+import com.example.blogapplication.adapter.PostingsAdapter;
+import com.example.blogapplication.entity.response.UserPostingsResponse;
 import com.example.blogapplication.utils.TokenUtils;
+import com.example.blogapplication.vo.UserPostingsVo;
 import com.github.florent37.materialviewpager.header.MaterialViewPagerHeaderDecorator;
-import com.lcodecore.tkrefreshlayout.RefreshListenerAdapter;
-import com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout;
+import com.lzy.ninegrid.NineGridView;
+import com.squareup.picasso.Picasso;
 import com.yanzhenjie.loading.LoadingView;
 import com.yanzhenjie.recyclerview.SwipeRecyclerView;
 
@@ -52,25 +43,27 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RecommendFragment extends Fragment implements View.OnClickListener {
+
+public class UserPostingsFragment extends Fragment implements View.OnClickListener {
 
     private View view;
     private SwipeRecyclerView mRecyclerView;
-    private ArticleAdapter articleAdapter;
-    private List<Article> articles = new ArrayList<>();
-    private ApiService apiService;
+    private PostingsAdapter postingsAdapter;
     private SwipeRefreshLayout refreshLayout;
     private int currentPage = 1;
     private int pageSize = 10;
-    private int totalPage;
+    private List<UserPostingsVo> postingsVos = new ArrayList<>();
+    private ApiService apiService;
+
 
     public static Fragment newInstance() {
-        return new RecommendFragment();
+        return new UserPostingsFragment();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_recyclerview, container, false);
+        NineGridView.setImageLoader(new PicassoImageLoader());//初始化图片加载器
         refreshLayout = view.findViewById(R.id.refreshLayout);
         mRecyclerView = view.findViewById(R.id.swiper_recycleview);
         loadMore();
@@ -114,15 +107,33 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         return view;
     }
 
+    /** Picasso 加载 */
+    public class PicassoImageLoader implements NineGridView.ImageLoader {
+
+        @Override
+        public void onDisplayImage(Context context, ImageView imageView, String url) {
+            Picasso.get().load(url)//
+                    .placeholder(R.drawable.default_img)//
+                    .error(R.drawable.default_img)//
+                    .into(imageView);
+        }
+
+        @Override
+        public Bitmap getCacheImage(String url) {
+            return null;
+        }
+    }
+
     private void onItemClick(int position) {
-        Intent intent = new Intent(getActivity(), ArticleDetailActivity.class);
-        intent.putExtra("id",articles.get(position).getId());
-        startActivity(intent);
-        Toast.makeText(getActivity(),articles.get(position).getId().toString(),Toast.LENGTH_SHORT).show();
+//        Intent intent = new Intent(getActivity(), ArticleDetailActivity.class);
+//        intent.putExtra("id",articles.get(position).getId());
+//        startActivity(intent);
+//        Toast.makeText(getActivity(),articles.get(position).getId().toString(),Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onClick(View v) {
+
         // Handle click events if needed
     }
 
@@ -188,19 +199,16 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     };
 
     // 加载更多是调用此方法 添加更多数据
-    protected List<Article> createDataList() {
-        apiService = RetrofitClient.getInstance(TokenUtils.getToken(getContext())).create(ApiService.class);
-        apiService.getRecommandArticleList(1, 10,null).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
+    protected List<UserPostingsVo> createDataList() {
+        apiService = RetrofitClient.getInstance(null).create(ApiService.class);
+        apiService.listByUserId(1, pageSize,TokenUtils.getUserInfo(getContext()).getId()).enqueue(new Callback<ResponseResult<UserPostingsResponse>>() {
             @Override
-            public void onResponse(Call<ResponseResult<ArticleResponse>> call, Response<ResponseResult<ArticleResponse>> response) {
-                if (response.body().getData()!=null){
-                    articles = response.body().getData().getRows();
-                    articleAdapter = new ArticleAdapter(getContext(), articles);
-                    mRecyclerView.setAdapter(articleAdapter);
-                    articleAdapter.notifyDataSetChanged();
-                    refreshLayout.setRefreshing(false);
-                }
-
+            public void onResponse(Call<ResponseResult<UserPostingsResponse>> call, Response<ResponseResult<UserPostingsResponse>> response) {
+                postingsVos = response.body().getData().getRows();
+                postingsAdapter = new PostingsAdapter(getContext(), postingsVos);
+                mRecyclerView.setAdapter(postingsAdapter);
+                postingsAdapter.notifyDataSetChanged();
+                refreshLayout.setRefreshing(false);
 
                 // 第一次加载数据：一定要掉用这个方法。
                 // 第一个参数：表示此次数据是否为空，假如你请求到的list为空(== null || list.size == 0)，那么这里就要true。
@@ -209,11 +217,11 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             }
 
             @Override
-            public void onFailure(Call<ResponseResult<ArticleResponse>> call, Throwable t) {
+            public void onFailure(Call<ResponseResult<UserPostingsResponse>> call, Throwable t) {
 
             }
         });
-        return articles;
+        return postingsVos;
     }
 
 
@@ -221,7 +229,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
      * 第一次加载数据。一定要掉用方法 mRecyclerView.loadMoreFinish(false, true); 不然刷新和加载更多失效
      */
     private void loadData() {
-        articles = createDataList();
+        postingsVos = createDataList();
 
     }
 
@@ -333,50 +341,45 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     private void loadMoreItems() {
         currentPage++; // 更新页数
 
-        apiService.getRecommandArticleList(currentPage, pageSize,null).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
+        apiService.listByUserId(currentPage, pageSize,TokenUtils.getUserInfo(getContext()).getId()).enqueue(new Callback<ResponseResult<UserPostingsResponse>>() {
             @Override
-            public void onResponse(Call<ResponseResult<ArticleResponse>> call, Response<ResponseResult<ArticleResponse>> response) {
-                List<Article> moreArticles = response.body().getData().getRows();
+            public void onResponse(Call<ResponseResult<UserPostingsResponse>> call, Response<ResponseResult<UserPostingsResponse>> response) {
+                List<UserPostingsVo> moreArticles = response.body().getData().getRows();
 
                 if (moreArticles != null && moreArticles.size() > 0) {
-                    articles.addAll(moreArticles); // 将新加载的数据添加到原有数据集合中
-                    articleAdapter.notifyDataSetChanged(); // 更新Adapter以显示新数据
+                    postingsVos.addAll(moreArticles); // 将新加载的数据添加到原有数据集合中
+                    postingsAdapter.notifyDataSetChanged(); // 更新Adapter以显示新数据
                     // 第一个参数：表示此次数据是否为空。
                     // 第二个参数：表示是否还有更多数据。
                     mRecyclerView.loadMoreFinish(false, true);
                 } else {
-                    articleAdapter.notifyDataSetChanged(); // 更新Adapter以显示新数据
+                    postingsAdapter.notifyDataSetChanged(); // 更新Adapter以显示新数据
                     mRecyclerView.loadMoreFinish(true, false);//没有更多数据了
                 }
             }
 
             @Override
-            public void onFailure(Call<ResponseResult<ArticleResponse>> call, Throwable t) {
+            public void onFailure(Call<ResponseResult<UserPostingsResponse>> call, Throwable t) {
                 Log.e("加载更多草稿出错啦！！！！", t.getMessage());
             }
         });
     }
 
     private void initView() {
-        apiService = RetrofitClient.getInstance(null).create(ApiService.class);
-        apiService.getRecommandArticleList(1, 10,null).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
+        apiService = RetrofitClient.getInstance(TokenUtils.getToken(getActivity())).create(ApiService.class);
+        apiService.listByUserId(1, 10,TokenUtils.getUserInfo(getContext()).getId()).enqueue(new Callback<ResponseResult<UserPostingsResponse>>() {
             @Override
-            public void onResponse(Call<ResponseResult<ArticleResponse>> call, Response<ResponseResult<ArticleResponse>> response) {
-                if (response.body().getData()!=null){
-                    articles = response.body().getData().getRows();
-                    totalPage = response.body().getData().getTotal()/10;
-                    articleAdapter = new ArticleAdapter(getActivity(), articles);
-                    mRecyclerView.setAdapter(articleAdapter);
-                }
-
+            public void onResponse(Call<ResponseResult<UserPostingsResponse>> call, Response<ResponseResult<UserPostingsResponse>> response) {
+                postingsVos = response.body().getData().getRows();
+                postingsAdapter = new PostingsAdapter(getActivity(), postingsVos);
+                mRecyclerView.setAdapter(postingsAdapter);
             }
 
             @Override
-            public void onFailure(Call<ResponseResult<ArticleResponse>> call, Throwable t) {
-                Log.e("推荐文章出错啦！！！", t.getMessage());
+            public void onFailure(Call<ResponseResult<UserPostingsResponse>> call, Throwable t) {
+                Log.e("查询动态出错啦！！！", t.getMessage());
             }
         });
     }
-
 
 }

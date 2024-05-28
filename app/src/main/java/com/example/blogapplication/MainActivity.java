@@ -147,15 +147,15 @@ public class MainActivity extends AppCompatActivity {
                     case 0:
                         return HeaderDesign.fromColorResAndUrl(
                                 com.github.florent37.materialviewpager.R.color.blue,
-                                "http://cdn1.tnwcdn.com/wp-content/blogs.dir/1/files/2014/06/wallpaper_51.jpg");
+                                "http://scy727740.hd-bkt.clouddn.com/2024/05/28/506996e138a64f26834b46f965e1f941.jpeg");
                     case 1:
                         return HeaderDesign.fromColorResAndUrl(
                                 com.github.florent37.materialviewpager.R.color.green,
-                                "https://fs01.androidpit.info/a/63/0e/android-l-wallpapers-630ea6-h900.jpg");
+                                "http://scy727740.hd-bkt.clouddn.com/2024/05/28/7c7e59aeb5e24e448f19c44df3293cd4.jpeg");
                     case 2:
                         return HeaderDesign.fromColorResAndUrl(
-                                com.github.florent37.materialviewpager.R.color.cyan,
-                                "http://www.droid-life.com/wp-content/uploads/2014/10/lollipop-wallpapers10.jpg");
+                                com.github.florent37.materialviewpager.R.color.purple,
+                                "http://scy727740.hd-bkt.clouddn.com/2024/05/28/f04d4f4e2cac4674a1c279b2bcfa21a9.jpeg");
                     case 3:
                         return HeaderDesign.fromColorResAndUrl(
                                 com.github.florent37.materialviewpager.R.color.red,
@@ -309,6 +309,7 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(intent);
                         } else {//跳转到主页
                             Intent intent = new Intent(MainActivity.this,HomePageActivity.class);
+                            intent.putExtra("isMe",0);
                             startActivity(intent);
                             Toast.makeText(MainActivity.this, "跳转到我的主页", Toast.LENGTH_SHORT).show();
                         }

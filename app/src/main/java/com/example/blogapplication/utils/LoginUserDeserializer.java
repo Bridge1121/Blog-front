@@ -2,6 +2,7 @@ package com.example.blogapplication.utils;
 
 import com.example.blogapplication.entity.LoginUser;
 import com.example.blogapplication.entity.User;
+import com.example.blogapplication.vo.UserInfoVo;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -24,6 +25,8 @@ public class LoginUserDeserializer implements JsonDeserializer<LoginUser> {
         int id = userInfoObject.get("id").getAsInt();
         String nickName = userInfoObject.get("nickName").getAsString();
         char sex = userInfoObject.get("sex").getAsCharacter();
+        Long fans = userInfoObject.get("fans").getAsLong();
+        Long followers = userInfoObject.get("followers").getAsLong();
         
         User user = new User();
         user.setAvatar(avatar);
@@ -31,6 +34,8 @@ public class LoginUserDeserializer implements JsonDeserializer<LoginUser> {
         user.setId(new Long(id));
         user.setNickName(nickName);
         user.setSex(sex);
+        user.setFans(fans);
+        user.setFollowers(followers);
         
         LoginUser loginUser = new LoginUser(user,token);
         

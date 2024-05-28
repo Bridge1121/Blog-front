@@ -3,18 +3,14 @@ package com.example.blogapplication.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +20,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.viewpager.widget.ViewPager;
 
 import com.example.blogapplication.ApiService;
 import com.example.blogapplication.ArticleDetailActivity;
@@ -32,16 +27,12 @@ import com.example.blogapplication.DraftListActivity;
 import com.example.blogapplication.R;
 import com.example.blogapplication.ResponseResult;
 import com.example.blogapplication.RetrofitClient;
-import com.example.blogapplication.ShowArtActivity;
 import com.example.blogapplication.adapter.ArticleAdapter;
-import com.example.blogapplication.adapter.DraftAdapter;
-import com.example.blogapplication.comment.CustomUseInLocalActivity;
 import com.example.blogapplication.entity.Article;
 import com.example.blogapplication.entity.response.ArticleResponse;
 import com.example.blogapplication.utils.TokenUtils;
 import com.github.florent37.materialviewpager.header.MaterialViewPagerHeaderDecorator;
-import com.lcodecore.tkrefreshlayout.RefreshListenerAdapter;
-import com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.yanzhenjie.loading.LoadingView;
 import com.yanzhenjie.recyclerview.SwipeRecyclerView;
 
@@ -52,7 +43,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RecommendFragment extends Fragment implements View.OnClickListener {
+public class ArticleFragment extends Fragment implements View.OnClickListener {
 
     private View view;
     private SwipeRecyclerView mRecyclerView;
@@ -65,12 +56,15 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     private int totalPage;
 
     public static Fragment newInstance() {
-        return new RecommendFragment();
+        return new ArticleFragment();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_recyclerview, container, false);
+
+
+
         refreshLayout = view.findViewById(R.id.refreshLayout);
         mRecyclerView = view.findViewById(R.id.swiper_recycleview);
         loadMore();
@@ -190,7 +184,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     // 加载更多是调用此方法 添加更多数据
     protected List<Article> createDataList() {
         apiService = RetrofitClient.getInstance(TokenUtils.getToken(getContext())).create(ApiService.class);
-        apiService.getRecommandArticleList(1, 10,null).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
+        apiService.getRecommandArticleList(1, 10,TokenUtils.getUserInfo(getContext()).getId()).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
             @Override
             public void onResponse(Call<ResponseResult<ArticleResponse>> call, Response<ResponseResult<ArticleResponse>> response) {
                 if (response.body().getData()!=null){
@@ -333,7 +327,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     private void loadMoreItems() {
         currentPage++; // 更新页数
 
-        apiService.getRecommandArticleList(currentPage, pageSize,null).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
+        apiService.getRecommandArticleList(currentPage, pageSize,TokenUtils.getUserInfo(getContext()).getId()).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
             @Override
             public void onResponse(Call<ResponseResult<ArticleResponse>> call, Response<ResponseResult<ArticleResponse>> response) {
                 List<Article> moreArticles = response.body().getData().getRows();
@@ -359,7 +353,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
     private void initView() {
         apiService = RetrofitClient.getInstance(null).create(ApiService.class);
-        apiService.getRecommandArticleList(1, 10,null).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
+        apiService.getRecommandArticleList(1, 10,TokenUtils.getUserInfo(getContext()).getId()).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
             @Override
             public void onResponse(Call<ResponseResult<ArticleResponse>> call, Response<ResponseResult<ArticleResponse>> response) {
                 if (response.body().getData()!=null){
