@@ -143,6 +143,16 @@ public class FollowersActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponseResult<UserInfoResponse>> call, Response<ResponseResult<UserInfoResponse>> response) {
                 userInfos = response.body().getData().getRows();
+                if (userInfos.size()==0){
+                    Toast.makeText(FollowersActivity.this,"您还没有关注用户哦~",Toast.LENGTH_SHORT).show();
+                }
+//                if (userInfos.size()==0){
+//                    binding.tvEmpty.setVisibility(View.VISIBLE);
+//                    swipeRecyclerView.setVisibility(View.GONE);
+//                }else{
+//                    binding.tvEmpty.setVisibility(View.GONE);
+//                    swipeRecyclerView.setVisibility(View.VISIBLE);
+//                }
                 adapter = new FollowerAdapter(FollowersActivity.this, userInfos);
                 swipeRecyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
@@ -271,6 +281,7 @@ public class FollowersActivity extends AppCompatActivity {
         public void onClick(View v) {
             if (mLoadMoreListener != null) mLoadMoreListener.onLoadMore();
         }
+
     }
 
 
@@ -294,12 +305,16 @@ public class FollowersActivity extends AppCompatActivity {
                 List<UserInfo> userInfos1 = response.body().getData().getRows();
 
                 if (userInfos1 != null && userInfos1.size() > 0) {
+//                    binding.tvEmpty.setVisibility(View.GONE);
+//                    swipeRecyclerView.setVisibility(View.VISIBLE);
                     userInfos.addAll(userInfos1); // 将新加载的数据添加到原有数据集合中
                     adapter.notifyDataSetChanged(); // 更新Adapter以显示新数据
                     // 第一个参数：表示此次数据是否为空。
                     // 第二个参数：表示是否还有更多数据。
                     swipeRecyclerView.loadMoreFinish(false, true);
                 } else {
+//                    binding.tvEmpty.setVisibility(View.VISIBLE);
+//                    swipeRecyclerView.setVisibility(View.GONE);
                     adapter.notifyDataSetChanged(); // 更新Adapter以显示新数据
                     swipeRecyclerView.loadMoreFinish(true, false);//没有更多数据了
                 }

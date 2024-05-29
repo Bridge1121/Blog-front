@@ -111,6 +111,7 @@ public class ArticleFragment extends Fragment implements View.OnClickListener {
     private void onItemClick(int position) {
         Intent intent = new Intent(getActivity(), ArticleDetailActivity.class);
         intent.putExtra("id",articles.get(position).getId());
+        intent.putExtra("isMe",0);//自己的主页
         startActivity(intent);
         Toast.makeText(getActivity(),articles.get(position).getId().toString(),Toast.LENGTH_SHORT).show();
     }

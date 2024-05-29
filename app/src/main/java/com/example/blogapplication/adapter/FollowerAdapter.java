@@ -16,8 +16,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bigkoo.alertview.AlertView;
+import com.bigkoo.alertview.OnDismissListener;
 import com.example.blogapplication.ApiService;
 import com.example.blogapplication.ArticleDetailActivity;
+import com.example.blogapplication.DraftListActivity;
 import com.example.blogapplication.R;
 import com.example.blogapplication.ResponseResult;
 import com.example.blogapplication.RetrofitClient;
@@ -38,6 +41,7 @@ public class FollowerAdapter extends RecyclerView.Adapter<FollowerAdapter.ViewHo
     private List<UserInfo> data;
     private LayoutInflater layoutInflater;
     private Context context;
+    private AlertView mAlertView;
 
     public FollowerAdapter(Context context,List<UserInfo> data) {
         this.data = data;
@@ -76,22 +80,36 @@ public class FollowerAdapter extends RecyclerView.Adapter<FollowerAdapter.ViewHo
             @Override
             public void onClick(View view) {
                 if (userInfo.isFollow()){//取消关注
-                    apiService.cancelFollow(TokenUtils.getUserInfo(context).getId(),new Long(userInfo.getId())).enqueue(new Callback<ResponseResult>() {
+                    mAlertView = new AlertView("确认", "确定取消关注该用户吗吗？", "取消", new String[]{"确定"}, null, context, AlertView.Style.Alert, new com.bigkoo.alertview.OnItemClickListener() {
                         @Override
-                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
-                            holder.followButton.setBackgroundColor(context.getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
-                            holder.followButton.setText("关注");
-                            userInfo.setFollow(!userInfo.isFollow());
-                            data.remove(position);
-                            notifyDataSetChanged();
-                            Toast.makeText(context,"取消关注成功！",Toast.LENGTH_SHORT).show();
-                        }
+                        public void onItemClick(Object o, int position) {
+                            if(o == mAlertView && position != AlertView.CANCELPOSITION){//点击的是弹窗,而且是非取消按钮
+                                apiService.cancelFollow(TokenUtils.getUserInfo(context).getId(),new Long(userInfo.getId())).enqueue(new Callback<ResponseResult>() {
+                                    @Override
+                                    public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                                        holder.followButton.setBackgroundColor(context.getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+                                        holder.followButton.setText("关注");
+                                        userInfo.setFollow(!userInfo.isFollow());
+                                        data.remove(position);
+                                        notifyDataSetChanged();
+                                        Toast.makeText(context,"取消关注成功！",Toast.LENGTH_SHORT).show();
+                                    }
 
+                                    @Override
+                                    public void onFailure(Call<ResponseResult> call, Throwable t) {
+                                        Log.e("取消关注出错啦！！",t.getMessage());
+                                    }
+                                });
+                            }
+                        }
+                    }).setCancelable(true).setOnDismissListener(new OnDismissListener() {
                         @Override
-                        public void onFailure(Call<ResponseResult> call, Throwable t) {
-                            Log.e("取消关注出错啦！！",t.getMessage());
+                        public void onDismiss(Object o) {
+
                         }
                     });
+                    mAlertView.show();
+
                 }
             }
         });

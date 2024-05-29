@@ -82,6 +82,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
     private TextView starCount;
     private TextView praiseCount;
     private Button follow;
+    private int isMe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +92,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         //获取要显示的文章信息
         Intent intent = getIntent();
         articleId = intent.getLongExtra("id",1);
+        isMe = intent.getIntExtra("isMe",-1);
         userId = TokenUtils.getUserInfo(ArticleDetailActivity.this).getId();
         apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(ArticleDetailActivity.this)).create(ApiService.class);
         starCount = binding.starCount;
@@ -188,11 +190,14 @@ public class ArticleDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent1 = new Intent(ArticleDetailActivity.this,HomePageActivity.class);
-                intent1.putExtra("isMe",1);//0是我自己的主页1是别人的主页
+                intent1.putExtra("isMe",isMe);//0是我自己的主页1是别人的主页
                 startActivity(intent1);
             }
         });
 //        commentView = binding.commentView;
+        if (isMe == 0){
+            follow.setVisibility(View.GONE);//如果是自己的文章就不显示关注用户按钮
+        }
         follow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
