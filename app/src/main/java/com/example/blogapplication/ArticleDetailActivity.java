@@ -1,6 +1,7 @@
 package com.example.blogapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
@@ -50,6 +51,7 @@ import com.orhanobut.dialogplus.OnItemClickListener;
 import com.orhanobut.dialogplus.ViewHolder;
 import com.sackcentury.shinebuttonlib.ShineButton;
 import com.squareup.picasso.Picasso;
+import com.yanzhenjie.recyclerview.SwipeRecyclerView;
 import com.yinglan.keyboard.HideUtil;
 
 import java.text.SimpleDateFormat;
@@ -61,9 +63,12 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import uk.co.imallan.jellyrefresh.JellyRefreshLayout;
+import uk.co.imallan.jellyrefresh.PullToRefreshLayout;
 
 public class ArticleDetailActivity extends AppCompatActivity {
     private ActivityArticleDetailBinding binding;
+    private SwipeRefreshLayout refreshLayout;
     private Long articleId;
     private Long userId;
     private ApiService apiService;
@@ -89,6 +94,15 @@ public class ArticleDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityArticleDetailBinding.inflate(getLayoutInflater());
+        refreshLayout = binding.refreshLayout;
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshLayout.setRefreshing(true);
+                initData();
+                refreshLayout.setRefreshing(false);
+            }
+        });
         follow = binding.followButton;
         //获取要显示的文章信息
         Intent intent = getIntent();
@@ -257,6 +271,58 @@ public class ArticleDetailActivity extends AppCompatActivity {
 //        SharedPreferences sharedPreferences = getSharedPreferences("art", MODE_PRIVATE);
 //        String title = sharedPreferences.getString("title", "title");
 //        String content = sharedPreferences.getString("content", "");
+        initData();
+
+        binding.commentWrite.setOnClickListener(new View.OnClickListener() {//发表评论
+            @Override
+            public void onClick(View view) {
+                DialogPlus dialog = DialogPlus.newDialog(ArticleDetailActivity.this)
+                        .setContentHolder(new ViewHolder(R.layout.dialog_comment))
+                        .setPadding(16,16,16,16)
+                        .setExpanded(true)  // This will enable the expand feature, (similar to android L share dialog)
+                        .create();
+                dialog.show();
+                View holderView = dialog.getHolderView();
+                Button btnComment = holderView.findViewById(R.id.btnPostComment);
+                EditText content = holderView.findViewById(R.id.etComment);
+                btnComment.setOnClickListener(new View.OnClickListener() {//发表根评论
+                    @Override
+                    public void onClick(View view) {
+
+                        if (TokenUtils.getToken(ArticleDetailActivity.this) != ""){//已经登录才能发评论
+                            Comment comment = new Comment("0",articleId,new Long(-1),content.getText().toString(),new Long(-1),new Long(-1));
+                            RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), comment.toJson());
+                            apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
+                            apiService.addComment(requestBody).enqueue(new Callback<ResponseResult>() {
+                                @Override
+                                public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                                    initData();
+                                    Toast.makeText(view.getContext(), "发表评论成功",Toast.LENGTH_SHORT).show();
+                                    HideUtil.hideSoftKeyboard(view);
+                                    dialog.dismiss();
+                                }
+
+                                @Override
+                                public void onFailure(Call<ResponseResult> call, Throwable t) {
+
+                                }
+                            });
+                        }else{//未登录先登录
+                            Intent intent1 = new Intent(ArticleDetailActivity.this,LoginActivity.class);
+                            Toast.makeText(ArticleDetailActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
+                            startActivity(intent);
+                        }
+
+
+                    }
+                });
+            }
+        });
+
+        setContentView(binding.getRoot());
+    }
+
+    private void initData() {
         apiService.getArticleDetail(articleId,TokenUtils.getUserInfo(ArticleDetailActivity.this).getId()).enqueue(new Callback<ResponseResult<ArticleDetailVo>>() {
             @Override
             public void onResponse(Call<ResponseResult<ArticleDetailVo>> call, Response<ResponseResult<ArticleDetailVo>> response) {
@@ -308,53 +374,6 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
             }
         });
-
-        binding.commentWrite.setOnClickListener(new View.OnClickListener() {//发表评论
-            @Override
-            public void onClick(View view) {
-                DialogPlus dialog = DialogPlus.newDialog(ArticleDetailActivity.this)
-                        .setContentHolder(new ViewHolder(R.layout.dialog_comment))
-                        .setPadding(16,16,16,16)
-                        .setExpanded(true)  // This will enable the expand feature, (similar to android L share dialog)
-                        .create();
-                dialog.show();
-                View holderView = dialog.getHolderView();
-                Button btnComment = holderView.findViewById(R.id.btnPostComment);
-                EditText content = holderView.findViewById(R.id.etComment);
-                btnComment.setOnClickListener(new View.OnClickListener() {//发表根评论
-                    @Override
-                    public void onClick(View view) {
-
-                        if (TokenUtils.getToken(ArticleDetailActivity.this) != ""){//已经登录才能发评论
-                            Comment comment = new Comment("0",articleId,new Long(-1),content.getText().toString(),new Long(-1),new Long(-1));
-                            RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), comment.toJson());
-                            apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
-                            apiService.addComment(requestBody).enqueue(new Callback<ResponseResult>() {
-                                @Override
-                                public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
-                                    Toast.makeText(view.getContext(), "发表评论成功",Toast.LENGTH_SHORT).show();
-                                    HideUtil.hideSoftKeyboard(view);
-                                    dialog.dismiss();
-                                }
-
-                                @Override
-                                public void onFailure(Call<ResponseResult> call, Throwable t) {
-
-                                }
-                            });
-                        }else{//未登录先登录
-                            Intent intent1 = new Intent(ArticleDetailActivity.this,LoginActivity.class);
-                            Toast.makeText(ArticleDetailActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
-                            startActivity(intent);
-                        }
-
-
-                    }
-                });
-            }
-        });
-
-        setContentView(binding.getRoot());
     }
 
 

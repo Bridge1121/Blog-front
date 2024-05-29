@@ -74,6 +74,11 @@ public class CommentActivity extends AppCompatActivity {
         commentView = binding.commentView;
         articleId = getIntent().getLongExtra("id", 0);//获取当前查看评论文章的id
         apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
+        initData();
+        setContentView(binding.getRoot());
+    }
+
+    private void initData() {
         apiService.getCommentList(1, 10, isArticle?articleId:postingId,TokenUtils.getUserInfo(getApplicationContext()).getId(),isArticle).enqueue(new Callback<ResponseResult<CustomCommentModel>>() {
             @Override
             public void onResponse(Call<ResponseResult<CustomCommentModel>> call, Response<ResponseResult<CustomCommentModel>> response) {
@@ -176,8 +181,8 @@ public class CommentActivity extends AppCompatActivity {
 
             }
         });
-        setContentView(binding.getRoot());
     }
+
 
     private void loadMoreData(int pageNum, int pageSize) {
         apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
@@ -314,7 +319,7 @@ public class CommentActivity extends AppCompatActivity {
         public void refreshing() {
             currentCommentPage = 1;
             currentReplyPage = 1;
-            refreshComment(1, 10);
+            refreshComment(currentCommentPage,pageSize);
 
 
         }
@@ -409,7 +414,7 @@ public class CommentActivity extends AppCompatActivity {
                     btnComment.setOnClickListener(new View.OnClickListener() {//发表根评论
                         @Override
                         public void onClick(View view) {
-                            loadMoreData(currentCommentPage,10);
+                            initData();
                             Comment comment = new Comment(isArticle?"0":"1", isArticle?articleId:postingId, rootId, content.getText().toString(), toCommentUserId, toCommentId);
                             RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), comment.toJson());
                             apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
@@ -419,7 +424,7 @@ public class CommentActivity extends AppCompatActivity {
                                     Toast.makeText(view.getContext(), "回复评论成功", Toast.LENGTH_SHORT).show();
                                     HideUtil.hideSoftKeyboard(view);
                                     dialog.dismiss();
-                                    loadMoreData(currentCommentPage,10);
+                                    initData();
 
                                 }
                                 @Override
@@ -563,7 +568,8 @@ public class CommentActivity extends AppCompatActivity {
                                     Toast.makeText(view.getContext(), "回复评论成功", Toast.LENGTH_SHORT).show();
                                     HideUtil.hideSoftKeyboard(view);
                                     dialog.dismiss();
-                                    loadMoreReplies(currentReplyPage,2,reply);
+                                    initData();
+//                                    loadMoreReplies(currentReplyPage,2,reply);
                                 }
                                 @Override
                                 public void onFailure(Call<ResponseResult> call, Throwable t) {
