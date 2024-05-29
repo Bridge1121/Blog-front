@@ -6,6 +6,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.net.http.SslError;
 import android.os.Build;
@@ -27,6 +28,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.blogapplication.broadcastreceiver.CommentReceiver;
+import com.example.blogapplication.broadcastreceiver.LikeReceiver;
 import com.example.blogapplication.comment.CustomCommentModel;
 import com.example.blogapplication.comment.CustomCommentViewHolder;
 import com.example.blogapplication.comment.CustomReplyViewHolder;
@@ -67,8 +70,6 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import uk.co.imallan.jellyrefresh.JellyRefreshLayout;
-import uk.co.imallan.jellyrefresh.PullToRefreshLayout;
 
 public class ArticleDetailActivity extends AppCompatActivity {
     private ActivityArticleDetailBinding binding;
@@ -99,6 +100,15 @@ public class ArticleDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityArticleDetailBinding.inflate(getLayoutInflater());
+        //注册广播
+        LikeReceiver likeReceiver = new LikeReceiver();
+        IntentFilter filter = new IntentFilter("com.example.ACTION_LIKE");
+        registerReceiver(likeReceiver, filter);
+
+        CommentReceiver commentReceiver = new CommentReceiver();
+        IntentFilter filter1 = new IntentFilter("com.example.ACTION_COMMENT");
+        registerReceiver(commentReceiver,filter1);
+
         flexboxLayout = binding.flexboxLayout;
         refreshLayout = binding.refreshLayout;
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -147,6 +157,11 @@ public class ArticleDetailActivity extends AppCompatActivity {
                     apiService.like(articleId,userId).enqueue(new Callback<ResponseResult>() {
                         @Override
                         public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                            // 在点赞操作中发送广播
+                            Intent likeIntent = new Intent("com.example.ACTION_LIKE");
+                            likeIntent.putExtra("author", articleDetailVo.getAuthor().getId());
+                            likeIntent.putExtra("articleId",articleId);
+                            sendBroadcast(likeIntent);
                             praiseButton.setBtnColor(Color.RED);
                             praiseButton.setBtnFillColor(Color.RED);
                             praiseCount.setText((int) (articleDetailVo.getPraises()+1)+"");
@@ -271,6 +286,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(ArticleDetailActivity.this,CommentActivity.class);
                 intent.putExtra("id",articleId);
+                intent.putExtra("authorId",articleDetailVo.getAuthor().getId());
                 startActivity(intent);
             }
         });
@@ -307,6 +323,10 @@ public class ArticleDetailActivity extends AppCompatActivity {
                                     Toast.makeText(view.getContext(), "发表评论成功",Toast.LENGTH_SHORT).show();
                                     HideUtil.hideSoftKeyboard(view);
                                     dialog.dismiss();
+                                    Intent commentIntent = new Intent("com.example.ACTION_COMMENT");
+                                    commentIntent.putExtra("author", articleDetailVo.getAuthor().getId());
+                                    commentIntent.putExtra("articleId",articleId);
+                                    sendBroadcast(commentIntent);
                                 }
 
                                 @Override

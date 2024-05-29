@@ -3,6 +3,7 @@ package com.example.blogapplication;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.blogapplication.broadcastreceiver.CommentReceiver;
 import com.example.blogapplication.comment.CustomCommentModel;
 import com.example.blogapplication.comment.CustomCommentViewHolder;
 import com.example.blogapplication.comment.CustomReplyViewHolder;
@@ -53,6 +55,7 @@ public class CommentActivity extends AppCompatActivity {
     private CommentView commentView;
     private CustomCommentModel customCommentModel;
     private Long articleId;
+    private Long authorId;
     private String imgPath;
     private boolean isFinished = false;
     private int pageSize = 10;
@@ -66,7 +69,11 @@ public class CommentActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityCommentBinding.inflate(getLayoutInflater());
+        CommentReceiver commentReceiver = new CommentReceiver();
+        IntentFilter filter1 = new IntentFilter("com.example.ACTION_COMMENT");
+        registerReceiver(commentReceiver,filter1);
         Intent intent = getIntent();
+        authorId = intent.getLongExtra("authorId",0);
         postingId = intent.getLongExtra("postingId",-1);
         isArticle = postingId==-1?true:false;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -425,6 +432,10 @@ public class CommentActivity extends AppCompatActivity {
                                     HideUtil.hideSoftKeyboard(view);
                                     dialog.dismiss();
                                     initData();
+                                    Intent commentIntent = new Intent("com.example.ACTION_COMMENT");
+                                    commentIntent.putExtra("author", authorId);
+                                    commentIntent.putExtra("articleId",articleId);
+                                    sendBroadcast(commentIntent);
 
                                 }
                                 @Override
@@ -569,6 +580,10 @@ public class CommentActivity extends AppCompatActivity {
                                     HideUtil.hideSoftKeyboard(view);
                                     dialog.dismiss();
                                     initData();
+                                    Intent commentIntent = new Intent("com.example.ACTION_COMMENT");
+                                    commentIntent.putExtra("author", authorId);
+                                    commentIntent.putExtra("articleId",articleId);
+                                    sendBroadcast(commentIntent);
 //                                    loadMoreReplies(currentReplyPage,2,reply);
                                 }
                                 @Override

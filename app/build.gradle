@@ -121,7 +121,8 @@ dependencies {
 
     implementation 'me.shaohui:bottomdialog:1.1.9'
 
-    implementation 'com.github.allan1st:JellyRefreshLayout:2.0'
+
+    implementation 'com.github.tapadoo:alerter:7.2.4'
 
 
 
