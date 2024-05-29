@@ -54,17 +54,21 @@ public class ArticleFragment extends Fragment implements View.OnClickListener {
     private int currentPage = 1;
     private int pageSize = 10;
     private int totalPage;
+    private Long userId;
 
-    public static Fragment newInstance() {
-        return new ArticleFragment();
+    public static Fragment newInstance(Bundle bundle) {
+        ArticleFragment articleFragment = new ArticleFragment();
+        articleFragment.setArguments(bundle);
+        return articleFragment;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_recyclerview, container, false);
-
-
-
+        Bundle bundle = getArguments();
+        if (bundle!=null){
+            userId = bundle.getLong("userId");
+        }
         refreshLayout = view.findViewById(R.id.refreshLayout);
         mRecyclerView = view.findViewById(R.id.swiper_recycleview);
         loadMore();
@@ -185,7 +189,7 @@ public class ArticleFragment extends Fragment implements View.OnClickListener {
     // 加载更多是调用此方法 添加更多数据
     protected List<Article> createDataList() {
         apiService = RetrofitClient.getInstance(TokenUtils.getToken(getContext())).create(ApiService.class);
-        apiService.getRecommandArticleList(1, 10,TokenUtils.getUserInfo(getContext()).getId()).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
+        apiService.getRecommandArticleList(1, 10,userId).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
             @Override
             public void onResponse(Call<ResponseResult<ArticleResponse>> call, Response<ResponseResult<ArticleResponse>> response) {
                 if (response.body().getData()!=null){
@@ -328,7 +332,7 @@ public class ArticleFragment extends Fragment implements View.OnClickListener {
     private void loadMoreItems() {
         currentPage++; // 更新页数
 
-        apiService.getRecommandArticleList(currentPage, pageSize,TokenUtils.getUserInfo(getContext()).getId()).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
+        apiService.getRecommandArticleList(currentPage, pageSize,userId).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
             @Override
             public void onResponse(Call<ResponseResult<ArticleResponse>> call, Response<ResponseResult<ArticleResponse>> response) {
                 List<Article> moreArticles = response.body().getData().getRows();
@@ -354,7 +358,7 @@ public class ArticleFragment extends Fragment implements View.OnClickListener {
 
     private void initView() {
         apiService = RetrofitClient.getInstance(null).create(ApiService.class);
-        apiService.getRecommandArticleList(1, 10,TokenUtils.getUserInfo(getContext()).getId()).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
+        apiService.getRecommandArticleList(1, 10,userId).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
             @Override
             public void onResponse(Call<ResponseResult<ArticleResponse>> call, Response<ResponseResult<ArticleResponse>> response) {
                 if (response.body().getData()!=null){

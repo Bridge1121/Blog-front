@@ -16,13 +16,16 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.blogapplication.databinding.ActivityHomePageBinding;
 import com.example.blogapplication.entity.FragmentInfo;
 import com.example.blogapplication.entity.User;
 import com.example.blogapplication.fragment.ArticleFragment;
 import com.example.blogapplication.fragment.PostingsFragment;
+import com.example.blogapplication.fragment.UserPostingsFragment;
 import com.example.blogapplication.utils.TokenUtils;
 import com.github.florent37.materialviewpager.MaterialViewPager;
 import com.github.florent37.materialviewpager.header.HeaderDesign;
@@ -36,6 +39,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HomePageActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -47,16 +53,21 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
     private TextView followers;
     private TextView fans;
     private MaterialViewPager mViewPager;
+    private Button followButton;
+    private ApiService apiService;
     static final int TAPS = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityHomePageBinding.inflate(getLayoutInflater());
-        mViewPager = binding.materialViewPager;
+        apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(HomePageActivity.this)).create(ApiService.class);
 
+        mViewPager = binding.materialViewPager;
+        mViewPager.getToolbar().setVisibility(View.GONE);
         View headerLogo = mViewPager.findViewById(R.id.header);
         // 从headerLogo布局中找到对应的子组件
+        followButton = headerLogo.findViewById(R.id.follow_button);
         username = headerLogo.findViewById(R.id.current_userName);
         email = headerLogo.findViewById(R.id.current_userEmail);
         avatar = headerLogo.findViewById(R.id.current_userAvater);
@@ -70,13 +81,72 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
         setContentView(binding.getRoot());
         Intent intent = getIntent();
         isMe = intent.getIntExtra("isMe",-1);//0是1不是
+        Bundle bundle = new Bundle();
+
         if (isMe == 0){//自己的主页
+            followButton.setVisibility(View.GONE);
             User userInfo = TokenUtils.getUserInfo(getApplicationContext());
             Picasso.get().load(userInfo.getAvatar()).into(avatar);
             username.setText(userInfo.getNickName());
             email.setText(userInfo.getEmail());
             followers.setText("关注："+userInfo.getFollowers().toString());
             fans.setText("粉丝："+userInfo.getFans().toString());
+            bundle.putLong("userId",TokenUtils.getUserInfo(HomePageActivity.this).getId());
+        }else{//不是自己的主页就要展示传过来的用户信息
+            followButton.setVisibility(View.VISIBLE);
+            final boolean[] isFollow = {intent.getBooleanExtra("authorFollow", false)};
+            if (isFollow[0]){
+                followButton.setBackgroundColor(getResources().getColor(R.color.grey_400));
+                followButton.setText("已关注");
+            }
+            Picasso.get().load(intent.getStringExtra("authorAvatar")).into(avatar);
+            username.setText(intent.getStringExtra("authorNickName"));
+            email.setText(intent.getStringExtra("authorEmail"));
+            followers.setText("关注："+intent.getLongExtra("authorFollowers", 0));
+            fans.setText("粉丝："+intent.getLongExtra("authorFans", 0));
+            bundle.putLong("userId",intent.getLongExtra("authorId", 0));
+            final Long[] fansCount = {intent.getLongExtra("authorFans", 0)};
+            followButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.e("isFollow!!!",isFollow[0]+"");
+                    if (isFollow[0]){//取消关注
+                        apiService.cancelFollow(TokenUtils.getUserInfo(HomePageActivity.this).getId(),intent.getLongExtra("authorId", 0)).enqueue(new Callback<ResponseResult>() {
+                            @Override
+                            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                                followButton.setBackgroundColor(getResources().getColor(com.github.florent37.materialviewpager.R.color.red));
+                                followButton.setText("关注");
+                                isFollow[0] = false;
+                                fansCount[0] = fansCount[0] -1;
+                                fans.setText("粉丝："+fansCount[0]);
+                                Toast.makeText(HomePageActivity.this,"取消关注成功！",Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResponseResult> call, Throwable t) {
+                                Log.e("取消关注出错啦！！",t.getMessage());
+                            }
+                        });
+                    }else{//关注
+                        apiService.follow(TokenUtils.getUserInfo(HomePageActivity.this).getId(),intent.getLongExtra("authorId", 0)).enqueue(new Callback<ResponseResult>() {
+                            @Override
+                            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                                followButton.setBackgroundColor(getResources().getColor(R.color.grey_400));
+                                followButton.setText("已关注");
+                                isFollow[0] = true;
+                                fansCount[0] = fansCount[0] +1;
+                                fans.setText("粉丝："+fansCount[0]);
+                                Toast.makeText(HomePageActivity.this,"关注成功！",Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResponseResult> call, Throwable t) {
+                                Log.e("关注出错啦！！",t.getMessage());
+                            }
+                        });
+                    }
+                }
+            });
         }
 
         //设置viewpager的背景图片
@@ -107,9 +177,9 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
             public Fragment getItem(int position) {
                 switch (position % TAPS) {
                     case 0:
-                        return ArticleFragment.newInstance();
+                        return ArticleFragment.newInstance(bundle);
                     default://热门文章页面
-                        return PostingsFragment.newInstance();
+                        return UserPostingsFragment.newInstance(bundle);
                 }
             }
 

@@ -37,6 +37,7 @@ import com.example.blogapplication.entity.UserInfo;
 import com.example.blogapplication.utils.RichUtils;
 import com.example.blogapplication.utils.TokenUtils;
 import com.example.blogapplication.vo.ArticleDetailVo;
+import com.example.blogapplication.vo.UserInfoVo;
 import com.jidcoo.android.widget.commentview.CommentView;
 import com.jidcoo.android.widget.commentview.callback.CustomCommentItemCallback;
 import com.jidcoo.android.widget.commentview.callback.CustomReplyItemCallback;
@@ -191,6 +192,17 @@ public class ArticleDetailActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent1 = new Intent(ArticleDetailActivity.this,HomePageActivity.class);
                 intent1.putExtra("isMe",isMe);//0是我自己的主页1是别人的主页
+                if (isMe==1){
+                    UserInfo author = articleDetailVo.getAuthor();
+                    intent1.putExtra("authorAvatar", author.getAvatar());
+                    intent1.putExtra("authorEmail", author.getEmail());
+                    intent1.putExtra("authorFans", author.getFans());
+                    intent1.putExtra("authorFollow", author.isFollow());
+                    intent1.putExtra("authorFollowers", author.getFollowers());
+                    intent1.putExtra("authorId", author.getId());
+                    intent1.putExtra("authorNickName", author.getNickName());
+
+                }
                 startActivity(intent1);
             }
         });

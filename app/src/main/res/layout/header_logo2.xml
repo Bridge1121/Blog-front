@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
+    android:layout_height="250dp"
     android:id="@+id/header"
     android:gravity="center"
-    android:padding="20dp"
+    android:padding="5dp"
     android:orientation="vertical">
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -12,9 +12,10 @@
         android:id="@+id/current_userAvater"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        android:background="@drawable/ic_default_avatar_grey_24dp"
+        android:background="@drawable/default_avatar"
         app:civ_border_width="0dp"
         app:civ_border_color="#FFFFFF"/>
+
 
     <TextView
         android:id="@+id/current_userName"
@@ -34,12 +35,22 @@
         android:textColor="@color/text__white"
         android:textSize="18sp"
         android:text="1670741014@qq.com"/>
+    <!-- 关注按钮 -->
+    <Button
+        android:id="@+id/follow_button"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:text="关注"
+        android:background="@color/red"
+        android:textColor="@color/white"/>
     <!-- 关注人数和粉丝数量 -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_margin="10dp"
+        android:layout_marginTop="5dp"
         android:gravity="center">
 
         <TextView

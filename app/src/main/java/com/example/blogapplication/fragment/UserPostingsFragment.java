@@ -54,15 +54,22 @@ public class UserPostingsFragment extends Fragment implements View.OnClickListen
     private int pageSize = 10;
     private List<UserPostingsVo> postingsVos = new ArrayList<>();
     private ApiService apiService;
+    private Long userId;//查询userid的动态
 
 
-    public static Fragment newInstance() {
-        return new UserPostingsFragment();
+    public static Fragment newInstance(Bundle bundle) {
+        UserPostingsFragment userPostingsFragment = new UserPostingsFragment();
+        userPostingsFragment.setArguments(bundle);
+        return userPostingsFragment;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_recyclerview, container, false);
+        Bundle bundle = getArguments();
+        if (bundle!=null){
+            userId = bundle.getLong("userId");
+        }
         NineGridView.setImageLoader(new PicassoImageLoader());//初始化图片加载器
         refreshLayout = view.findViewById(R.id.refreshLayout);
         mRecyclerView = view.findViewById(R.id.swiper_recycleview);
@@ -112,9 +119,9 @@ public class UserPostingsFragment extends Fragment implements View.OnClickListen
 
         @Override
         public void onDisplayImage(Context context, ImageView imageView, String url) {
-            Picasso.get().load(url)//
-                    .placeholder(R.drawable.default_img)//
-                    .error(R.drawable.default_img)//
+            Picasso.get().load(url)
+                    .placeholder(R.drawable.default_img)
+                    .error(R.drawable.default_img)
                     .into(imageView);
         }
 
@@ -201,7 +208,7 @@ public class UserPostingsFragment extends Fragment implements View.OnClickListen
     // 加载更多是调用此方法 添加更多数据
     protected List<UserPostingsVo> createDataList() {
         apiService = RetrofitClient.getInstance(null).create(ApiService.class);
-        apiService.listByUserId(1, pageSize,TokenUtils.getUserInfo(getContext()).getId()).enqueue(new Callback<ResponseResult<UserPostingsResponse>>() {
+        apiService.listByUserId(1, pageSize,userId).enqueue(new Callback<ResponseResult<UserPostingsResponse>>() {
             @Override
             public void onResponse(Call<ResponseResult<UserPostingsResponse>> call, Response<ResponseResult<UserPostingsResponse>> response) {
                 postingsVos = response.body().getData().getRows();
@@ -341,7 +348,7 @@ public class UserPostingsFragment extends Fragment implements View.OnClickListen
     private void loadMoreItems() {
         currentPage++; // 更新页数
 
-        apiService.listByUserId(currentPage, pageSize,TokenUtils.getUserInfo(getContext()).getId()).enqueue(new Callback<ResponseResult<UserPostingsResponse>>() {
+        apiService.listByUserId(currentPage, pageSize,userId).enqueue(new Callback<ResponseResult<UserPostingsResponse>>() {
             @Override
             public void onResponse(Call<ResponseResult<UserPostingsResponse>> call, Response<ResponseResult<UserPostingsResponse>> response) {
                 List<UserPostingsVo> moreArticles = response.body().getData().getRows();
@@ -367,7 +374,7 @@ public class UserPostingsFragment extends Fragment implements View.OnClickListen
 
     private void initView() {
         apiService = RetrofitClient.getInstance(TokenUtils.getToken(getActivity())).create(ApiService.class);
-        apiService.listByUserId(1, 10,TokenUtils.getUserInfo(getContext()).getId()).enqueue(new Callback<ResponseResult<UserPostingsResponse>>() {
+        apiService.listByUserId(1, 10,userId).enqueue(new Callback<ResponseResult<UserPostingsResponse>>() {
             @Override
             public void onResponse(Call<ResponseResult<UserPostingsResponse>> call, Response<ResponseResult<UserPostingsResponse>> response) {
                 postingsVos = response.body().getData().getRows();

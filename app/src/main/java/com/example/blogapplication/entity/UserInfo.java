@@ -7,6 +7,26 @@ public class UserInfo {
     private String nickName;
     private String sex;
     private boolean follow;//是否关注了该作者
+    //粉丝数量
+    private Long fans;
+    //关注的用户数量
+    private Long followers;
+
+    public Long getFans() {
+        return fans;
+    }
+
+    public void setFans(Long fans) {
+        this.fans = fans;
+    }
+
+    public Long getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(Long followers) {
+        this.followers = followers;
+    }
 
     public boolean isFollow() {
         return follow;
