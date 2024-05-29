@@ -131,6 +131,7 @@ public class ShowArtActivity extends AppCompatActivity {
                 intent.putExtra("content",articleDetailVo.getContent());
                 intent.putExtra("thumbnail",articleDetailVo.getThumbnail());
                 intent.putExtra("categoryId",articleDetailVo.getCategoryId());
+                intent.putExtra("tags",articleDetailVo.getTags());
                 intent.putExtra("id",articleDetailVo.getId());
                 startActivity(intent);
                 finish();

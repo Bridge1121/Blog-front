@@ -154,16 +154,17 @@ public class PostingsAdapter extends RecyclerView.Adapter<PostingsAdapter.ViewHo
             }
         });
         //todo 分享还没写！！！！
-        holder.share.setOnClickListener(new View.OnClickListener() {
-
-
-            @Override
-            public void onClick(View view) {
-                ShareBottomDialog dialog = new ShareBottomDialog();
-                dialog.show(fragmentManager);
-
-            }
-        });
+        holder.share.setVisibility(View.GONE);
+//        holder.share.setOnClickListener(new View.OnClickListener() {
+//
+//
+//            @Override
+//            public void onClick(View view) {
+//                ShareBottomDialog dialog = new ShareBottomDialog();
+//                dialog.show(fragmentManager);
+//
+//            }
+//        });
         holder.praise.setOnClickListener(new View.OnClickListener() {//给动态点赞
             @Override
             public void onClick(View view) {

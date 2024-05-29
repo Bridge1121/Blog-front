@@ -2,7 +2,9 @@ package com.example.blogapplication.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.text.Html;
 import android.text.SpannableString;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,12 +66,12 @@ public class DraftAdapter extends RecyclerView.Adapter<DraftAdapter.ViewHolder> 
         Article article = data.get(position);
 
         Picasso.get().load(article.getThumbnail()).into(holder.thumbnail);
-
+        String spannedText = article.getContent().replaceAll("<[^>]+>", "");
         //设置控件的值
         //搜索高亮显示
         if (searchContent!=null){
             if(article.getContent()!=null&&article.getContent().length()>0){
-                SpannableString content= KeyWordUtil.matcherSearchTitle(Color.parseColor("#df4277"), article.getContent()+"", searchContent);
+                SpannableString content= KeyWordUtil.matcherSearchTitle(Color.parseColor("#df4277"), spannedText+"", searchContent);
                 holder.articleThumb.setText(content);
             }
             if(article.getTitle()!=null&&article.getTitle().length()>0){
@@ -78,7 +80,7 @@ public class DraftAdapter extends RecyclerView.Adapter<DraftAdapter.ViewHolder> 
             }
         }else{
             holder.title.setText(article.getTitle());
-            holder.articleThumb.setText(article.getContent());
+            holder.articleThumb.setText(spannedText);
         }
 
     }

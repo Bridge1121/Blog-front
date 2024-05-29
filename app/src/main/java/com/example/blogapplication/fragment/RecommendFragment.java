@@ -70,6 +70,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        apiService = RetrofitClient.getInstance(TokenUtils.getToken(getContext())).create(ApiService.class);
         view = inflater.inflate(R.layout.fragment_recyclerview, container, false);
         refreshLayout = view.findViewById(R.id.refreshLayout);
         mRecyclerView = view.findViewById(R.id.swiper_recycleview);
@@ -115,11 +116,23 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     }
 
     private void onItemClick(int position) {
-        Intent intent = new Intent(getActivity(), ArticleDetailActivity.class);
-        intent.putExtra("id",articles.get(position).getId());
-        intent.putExtra("isMe",1);
-        startActivity(intent);
-        Toast.makeText(getActivity(),articles.get(position).getId().toString(),Toast.LENGTH_SHORT).show();
+        apiService.addViewCount(articles.get(position).getId()).enqueue(new Callback<ResponseResult>() {
+            @Override
+            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                Toast.makeText(getContext(),"浏览成功！",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(), ArticleDetailActivity.class);
+                intent.putExtra("id",articles.get(position).getId());
+                intent.putExtra("isMe",articles.get(position).getCreateBy()==TokenUtils.getUserInfo(getContext()).getId()?0:1);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onFailure(Call<ResponseResult> call, Throwable t) {
+                Log.e("浏览出错啦！！！",t.getMessage());
+            }
+        });
+
+//        Toast.makeText(getActivity(),articles.get(position).getId().toString(),Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -190,7 +203,6 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
     // 加载更多是调用此方法 添加更多数据
     protected List<Article> createDataList() {
-        apiService = RetrofitClient.getInstance(TokenUtils.getToken(getContext())).create(ApiService.class);
         apiService.getRecommandArticleList(1, 10,null).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
             @Override
             public void onResponse(Call<ResponseResult<ArticleResponse>> call, Response<ResponseResult<ArticleResponse>> response) {

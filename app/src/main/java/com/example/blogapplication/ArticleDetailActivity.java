@@ -1,6 +1,7 @@
 package com.example.blogapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.TargetApi;
@@ -39,6 +40,7 @@ import com.example.blogapplication.utils.RichUtils;
 import com.example.blogapplication.utils.TokenUtils;
 import com.example.blogapplication.vo.ArticleDetailVo;
 import com.example.blogapplication.vo.UserInfoVo;
+import com.google.android.flexbox.FlexboxLayout;
 import com.jidcoo.android.widget.commentview.CommentView;
 import com.jidcoo.android.widget.commentview.callback.CustomCommentItemCallback;
 import com.jidcoo.android.widget.commentview.callback.CustomReplyItemCallback;
@@ -56,6 +58,8 @@ import com.yinglan.keyboard.HideUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.MediaType;
@@ -89,11 +93,13 @@ public class ArticleDetailActivity extends AppCompatActivity {
     private TextView praiseCount;
     private Button follow;
     private int isMe;
+    private FlexboxLayout flexboxLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityArticleDetailBinding.inflate(getLayoutInflater());
+        flexboxLayout = binding.flexboxLayout;
         refreshLayout = binding.refreshLayout;
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -273,6 +279,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
 //        String content = sharedPreferences.getString("content", "");
         initData();
 
+
         binding.commentWrite.setOnClickListener(new View.OnClickListener() {//发表评论
             @Override
             public void onClick(View view) {
@@ -348,6 +355,21 @@ public class ArticleDetailActivity extends AppCompatActivity {
                 initWebView(articleDetailVo.getContent());
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 getSupportActionBar().setTitle(articleDetailVo.getTitle());
+                List<String> articleTags = Arrays.asList(articleDetailVo.getTags().split("#"));
+                flexboxLayout.removeAllViews();
+
+                for (String tag : articleTags) {
+                    TextView textView = new TextView(ArticleDetailActivity.this);
+                    textView.setText(tag);
+                    textView.setPadding(8, 4, 8, 4);
+                    textView.setTextColor(ContextCompat.getColor(ArticleDetailActivity.this, android.R.color.black));
+                    textView.setBackgroundResource(R.drawable.tag_background);
+                    FlexboxLayout.LayoutParams layoutParams = new FlexboxLayout.LayoutParams(
+                            FlexboxLayout.LayoutParams.WRAP_CONTENT, FlexboxLayout.LayoutParams.WRAP_CONTENT);
+                    layoutParams.setMargins(0, 0, 16, 16);
+                    textView.setLayoutParams(layoutParams);
+                    flexboxLayout.addView(textView);
+                }
 
             }
 

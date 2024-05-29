@@ -26,10 +26,19 @@ public class ArticleDetailVo {
     private Long praises;
     private boolean praise;
     private boolean star;
+    private String tags;
 
     private Date createTime;
 
     private UserInfo author;
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
 
     public boolean isPraise() {
         return praise;

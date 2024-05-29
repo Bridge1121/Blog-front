@@ -128,9 +128,21 @@ public class ArticleListActivity extends AppCompatActivity {
     }
 
     private void onItemClick(int position) {
-        Intent intent = new Intent(getApplicationContext(), ArticleDetailActivity.class);
-        intent.putExtra("id",articles.get(position).getId());
-        startActivity(intent);
+        apiService.addViewCount(articles.get(position).getId()).enqueue(new Callback<ResponseResult>() {
+            @Override
+            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                Toast.makeText(ArticleListActivity.this,"浏览成功！",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(ArticleListActivity.this, ArticleDetailActivity.class);
+                intent.putExtra("id",articles.get(position).getId());
+                intent.putExtra("isMe",articles.get(position).getCreateBy()==TokenUtils.getUserInfo(ArticleListActivity.this).getId()?0:1);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onFailure(Call<ResponseResult> call, Throwable t) {
+                Log.e("浏览出错啦！！！",t.getMessage());
+            }
+        });
         Toast.makeText(getApplicationContext(),articles.get(position).getId().toString(),Toast.LENGTH_SHORT).show();
     }
 

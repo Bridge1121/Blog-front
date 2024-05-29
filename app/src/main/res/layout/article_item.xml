@@ -42,13 +42,13 @@
                     android:orientation="horizontal">
                     <TextView
                         android:id="@+id/content_thumbnail"
-                        android:layout_width="100dp"
+                        android:layout_width="200dp"
                         android:layout_height="wrap_content"
                         android:maxLines="1"
                         android:ellipsize="end"
                         android:text="文章内容截取...."/>
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="50dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
                         android:orientation="horizontal">
@@ -58,10 +58,26 @@
                             android:layout_height="20dp"
                             android:background="@drawable/viewpoint"/>
                         <TextView
-                            android:id="@+id/text_viewpoint"
+                            android:id="@+id/text_viewpoints"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="10"/>
+                            android:text="0"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:id="@+id/img_praise"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:background="@drawable/praise"/>
+                        <TextView
+                            android:id="@+id/text_praises"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"/>
                     </LinearLayout>
 
                 </LinearLayout>

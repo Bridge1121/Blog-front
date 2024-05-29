@@ -33,6 +33,10 @@ public class ArticleDeserializer implements JsonDeserializer<ArticleResponse> {
             article.setThumbnail(jo.get("thumbnail").getAsString());
             article.setViewCount(jo.get("viewCount").getAsLong());
             article.setCreateTime(jo.get("createTime").toString());
+            article.setCreateBy(jo.get("createBy").getAsLong());
+            article.setPraises(jo.get("praises").getAsLong());
+            article.setStars(jo.get("stars").getAsLong());
+            article.setTags(jo.get("tags").getAsString());
             articles.add(article);
         }
 

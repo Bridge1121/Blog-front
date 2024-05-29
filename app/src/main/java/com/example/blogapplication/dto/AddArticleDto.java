@@ -27,11 +27,12 @@ public class AddArticleDto {
 
     //是否允许评论 1是，0否
     private String isComment;
+    private String tags;
 
-    private List<Long> tags;
 
-    public AddArticleDto(String thumbnail,String summary,String title, String content, Long categoryId, String isTop, String status, String isComment) {
+    public AddArticleDto(String thumbnail,String tags,String summary,String title, String content, Long categoryId, String isTop, String status, String isComment) {
         this.thumbnail=thumbnail;
+        this.tags = tags;
         this.summary = summary;
         this.title = title;
         this.content = content;
@@ -41,9 +42,10 @@ public class AddArticleDto {
         this.isComment = isComment;
     }
 
-    public AddArticleDto(Long id ,String thumbnail,String summary,String title, String content, Long categoryId, String isTop, String status, String isComment) {
+    public AddArticleDto(Long id ,String thumbnail,String tags,String summary,String title, String content, Long categoryId, String isTop, String status, String isComment) {
         this.id = id;
         this.thumbnail=thumbnail;
+        this.tags = tags;
         this.summary = summary;
         this.title = title;
         this.content = content;
@@ -145,11 +147,11 @@ public class AddArticleDto {
         this.isComment = isComment;
     }
 
-    public List<Long> getTags() {
+    public String getTags() {
         return tags;
     }
 
-    public void setTags(List<Long> tags) {
+    public void setTags(String tags) {
         this.tags = tags;
     }
 }

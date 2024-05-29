@@ -147,7 +147,6 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
 
                                         Toast.makeText(BlogEditActivity.this,"类别描述信息不能为空！",Toast.LENGTH_SHORT).show();
                                     }else{
-                                        //todo 调用新增分类接口
                                         apiService.addCategory(etName.getText().toString(),TokenUtils.getUserInfo(getApplicationContext()).getId(),etDescription.getText().toString()).enqueue(new Callback<ResponseResult<Long>>() {
                                             @Override
                                             public void onResponse(Call<ResponseResult<Long>> call, Response<ResponseResult<Long>> response) {
@@ -197,6 +196,7 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
             String title = getIntent().getStringExtra("title");
             String content = getIntent().getStringExtra("content");
             String imgPath = getIntent().getStringExtra("thumbnail");
+            String tags = getIntent().getStringExtra("tags");
             Long categoryId = getIntent().getLongExtra("categoryId",0);
             for (int i = 0;i<categoryResponses.size();i++){
                 if (categoryResponses.get(i).getId()==categoryId){
@@ -206,6 +206,7 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
 
             binding.editName.setText(title);
             binding.richEditor.setHtml(content);
+            binding.tag.setText(tags);
             Picasso.get().load(imgPath).into(binding.imageViewthumbnail);
             binding.txtPublish.setSelected(true);
             binding.txtPublish.setEnabled(true);
@@ -447,7 +448,7 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
     private void draftArticleAgain(){
 
         HideUtil.hideSoftKeyboard(BlogEditActivity.this);
-        addArticleDto = new AddArticleDto(getIntent().getLongExtra("id",0),getIntent().getStringExtra("thumbnail"),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","1","1");
+        addArticleDto = new AddArticleDto(getIntent().getLongExtra("id",0),getIntent().getStringExtra("thumbnail"),binding.tag.getText().toString(),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","1","1");
         Log.i("articleInfo", addArticleDto.toJson());
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
         apiService.updateArticle(requestBody).enqueue(new Callback<ResponseResult>() {
@@ -483,7 +484,7 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
                 Log.i("imgpath!!!!!!!",imgPath);
 
                 if (isFrom==1){//重新编辑，调用更新接口
-                    addArticleDto = new AddArticleDto(addArticleDto.getId(),imgPath,"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","1","1");
+                    addArticleDto = new AddArticleDto(addArticleDto.getId(),imgPath,binding.tag.getText().toString(),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","1","1");
                     Log.i("articleInfo", addArticleDto.toJson());
                     RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
                     apiService.updateArticle(requestBody).enqueue(new Callback<ResponseResult>() {
@@ -501,7 +502,7 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
                         }
                     });
                 }else{//新增，调用新增接口
-                    addArticleDto = new AddArticleDto(imgPath,"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","1","1");
+                    addArticleDto = new AddArticleDto(imgPath,binding.tag.getText().toString(),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","1","1");
                     Log.i("articleInfo", addArticleDto.toJson());
                     RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
                     apiService.add(requestBody).enqueue(new Callback<ResponseResult>() {
@@ -545,7 +546,7 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
                 Log.i("imgpath!!!!!!!",imgPath);
 
                 if (isFrom==1){//重新编辑
-                    addArticleDto = new AddArticleDto(addArticleDto.getId(),imgPath,"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","0","1");
+                    addArticleDto = new AddArticleDto(addArticleDto.getId(),imgPath,binding.tag.getText().toString(),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","0","1");
                     Log.i("articleInfo", addArticleDto.toJson());
                     RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
                     apiService.updateArticle(requestBody).enqueue(new Callback<ResponseResult>() {
@@ -564,7 +565,7 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
                     });
 
                 }else{
-                    addArticleDto = new AddArticleDto(imgPath,"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","0","1");
+                    addArticleDto = new AddArticleDto(imgPath,binding.tag.getText().toString(),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","0","1");
                     Log.i("articleInfo", addArticleDto.toJson());
                     RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
                     apiService.add(requestBody).enqueue(new Callback<ResponseResult>() {
@@ -596,7 +597,7 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
         apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
 //        KeyBoardUtils.closeKeybord(binding.richEditor,getApplicationContext());
         HideUtil.hideSoftKeyboard(BlogEditActivity.this);
-        addArticleDto = new AddArticleDto(getIntent().getLongExtra("id",0),getIntent().getStringExtra("thumbnail"),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","0","1");
+        addArticleDto = new AddArticleDto(getIntent().getLongExtra("id",0),getIntent().getStringExtra("thumbnail"),binding.tag.getText().toString(),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","0","1");
         Log.i("articleInfo", addArticleDto.toJson());
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
         apiService.updateArticle(requestBody).enqueue(new Callback<ResponseResult>() {

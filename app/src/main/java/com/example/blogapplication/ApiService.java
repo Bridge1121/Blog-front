@@ -93,6 +93,9 @@ public interface ApiService {
     @POST("article/add")
     Call<ResponseResult> add(@Body RequestBody requestBody);
 
+    @GET("article/addViewCount")
+    Call<ResponseResult> addViewCount(@Query("articleId") Long articleId);
+
     @PUT("article/updateArticle")
     Call<ResponseResult> updateArticle(@Body RequestBody requestBody);
 

@@ -2,7 +2,9 @@ package com.example.blogapplication.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.text.Html;
 import android.text.SpannableString;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -44,14 +47,16 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView title;
-        TextView viewpoint;
+        TextView praise;
+        TextView viewCount;
         ImageView thumbnail;
         TextView articleThumb;
 
         public ViewHolder(View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.article_title);
-            viewpoint = itemView.findViewById(R.id.text_viewpoint);
+            praise = itemView.findViewById(R.id.text_praises);
+            viewCount = itemView.findViewById(R.id.text_viewpoints);
             thumbnail = itemView.findViewById(R.id.thumbnail);
             articleThumb = itemView.findViewById(R.id.content_thumbnail);
         }
@@ -68,15 +73,17 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Article article = data.get(position);
-
-        holder.viewpoint.setText(String.valueOf(article.getViewCount()));
+        holder.praise.setText(article.getPraises().toString());
+        holder.viewCount.setText(article.getViewCount().toString());
         Picasso.get().load(article.getThumbnail()).into(holder.thumbnail);
-
+        String spannedText = article.getContent().replaceAll("<[^>]+>", "");
         //设置控件的值
         //搜索高亮显示
         if (searchContent!=null){
             if(article.getContent()!=null&&article.getContent().length()>0){
-                SpannableString content= KeyWordUtil.matcherSearchTitle(Color.parseColor("#df4277"), article.getContent()+"", searchContent);
+
+                SpannableString content= KeyWordUtil.matcherSearchTitle(Color.parseColor("#df4277"), spannedText+"", searchContent);
+
                 holder.articleThumb.setText(content);
             }
             if(article.getTitle()!=null&&article.getTitle().length()>0){
@@ -85,7 +92,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
             }
         }else{
             holder.title.setText(article.getTitle());
-            holder.articleThumb.setText(article.getContent());
+            holder.articleThumb.setText(spannedText);
         }
 
     }

@@ -80,6 +80,19 @@
                 android:gravity="right"
                 android:paddingRight="10dp"
                 android:orientation="horizontal">
+                <com.google.android.flexbox.FlexboxLayout
+                    android:id="@+id/flexboxLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:flexWrap="wrap"
+                    app:justifyContent="flex_start"
+                    app:alignItems="center"
+                    app:alignContent="stretch"
+                    android:padding="5dp"
+                    android:background="@color/white"
+                    android:layout_marginBottom="8dp">
+                    <!-- 动态生成的标签会添加到这里 -->
+                </com.google.android.flexbox.FlexboxLayout>
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

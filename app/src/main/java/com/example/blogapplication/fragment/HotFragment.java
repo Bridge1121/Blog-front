@@ -1,6 +1,7 @@
 package com.example.blogapplication.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -29,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.blogapplication.ApiService;
+import com.example.blogapplication.ArticleDetailActivity;
 import com.example.blogapplication.DraftListActivity;
 import com.example.blogapplication.R;
 import com.example.blogapplication.ResponseResult;
@@ -120,7 +122,23 @@ public class HotFragment extends Fragment implements View.OnClickListener {
     }
 
     private void onItemClick(int position) {
-        Toast.makeText(getActivity(),articles.get(position).getId().toString(),Toast.LENGTH_SHORT).show();
+        apiService.addViewCount(articles.get(position).getId()).enqueue(new Callback<ResponseResult>() {
+            @Override
+            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                Toast.makeText(getContext(),"浏览成功！",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(), ArticleDetailActivity.class);
+                intent.putExtra("id",articles.get(position).getId());
+                intent.putExtra("isMe",1);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onFailure(Call<ResponseResult> call, Throwable t) {
+                Log.e("浏览出错啦！！！",t.getMessage());
+            }
+        });
+
+//        Toast.makeText(getActivity(),articles.get(position).getId().toString(),Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -133,17 +151,6 @@ public class HotFragment extends Fragment implements View.OnClickListener {
 
         refreshLayout.setOnRefreshListener(mRefreshListener); // 刷新监听。
 
-
-        // 自定义的核心就是DefineLoadMoreView类。
-        DraftListActivity.DefineLoadMoreView loadMoreView = new DraftListActivity.DefineLoadMoreView(getContext());
-//        mRecyclerView.setAutoLoadMore(false); // 拉倒最下面时，是手动点击加载更多，还是自动加载更多，手动加载无加载更多动画
-
-//        mRecyclerView.addHeaderView(loadMoreView);  // 无效
-        mRecyclerView.addFooterView(loadMoreView); // 添加为Footer。
-        mRecyclerView.setLoadMoreView(loadMoreView); // 设置LoadMoreView更新监听。
-        mRecyclerView.setLoadMoreListener(mLoadMoreListener);
-
-        // 初始化，请求服务器加载数据。
         loadData();
     }
 
@@ -173,7 +180,6 @@ public class HotFragment extends Fragment implements View.OnClickListener {
     private SwipeRecyclerView.LoadMoreListener mLoadMoreListener = new SwipeRecyclerView.LoadMoreListener() {
         @Override
         public void onLoadMore() {
-            //todo bug未解决：加载更多之后，再下拉刷新的话不能继续加载更多
             mRecyclerView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
