@@ -21,6 +21,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.bigkoo.alertview.AlertView;
+import com.bigkoo.alertview.OnDismissListener;
 import com.example.blogapplication.ApiService;
 import com.example.blogapplication.ArticleDetailActivity;
 import com.example.blogapplication.DraftListActivity;
@@ -35,8 +37,10 @@ import com.github.florent37.materialviewpager.header.MaterialViewPagerHeaderDeco
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.yanzhenjie.loading.LoadingView;
 import com.yanzhenjie.recyclerview.SwipeRecyclerView;
+import com.yanzhenjie.recyclerview.touch.OnItemMoveListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -55,6 +59,7 @@ public class ArticleFragment extends Fragment implements View.OnClickListener {
     private int pageSize = 10;
     private int totalPage;
     private Long userId;
+    private AlertView mAlertView;
 
     public static Fragment newInstance(Bundle bundle) {
         ArticleFragment articleFragment = new ArticleFragment();
@@ -109,7 +114,70 @@ public class ArticleFragment extends Fragment implements View.OnClickListener {
                 return false;
             }
         });
+
+        if (userId==TokenUtils.getUserInfo(getContext()).getId()){
+            mRecyclerView.setItemViewSwipeEnabled(true);//侧滑删除
+            OnItemMoveListener mItemMoveListener = new OnItemMoveListener() {
+
+                @Override
+                public boolean onItemMove(RecyclerView.ViewHolder srcHolder, RecyclerView.ViewHolder targetHolder) {
+                    // 此方法在Item拖拽交换位置时被调用。
+                    // 第一个参数是要交换为之的Item，第二个是目标位置的Item。
+                    // 交换数据，并更新adapter。
+                    int fromPosition = srcHolder.getAdapterPosition();
+                    int toPosition = targetHolder.getAdapterPosition();
+                    Collections.swap(articles, fromPosition, toPosition);
+                    articleAdapter.notifyItemMoved(fromPosition, toPosition);
+                    // 返回true，表示数据交换成功，ItemView可以交换位置。
+                    return true;
+                }
+
+                @Override
+                public void onItemDismiss(RecyclerView.ViewHolder srcHolder) {//侧滑删除item
+                    // 此方法在Item在侧滑删除时被调用。
+                    // 从数据源移除该Item对应的数据，并刷新Adapter。
+                    int position1 = srcHolder.getAdapterPosition();
+                    Toast.makeText(getContext(), articles.get(position1).getId().toString(), Toast.LENGTH_SHORT).show();
+                    mAlertView = new AlertView("确认", "确定删除该文章吗？", "取消", new String[]{"确定"}, null, getContext(), AlertView.Style.Alert, new com.bigkoo.alertview.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(Object o, int position) {
+                            if(o == mAlertView && position != AlertView.CANCELPOSITION){//点击的是弹窗,而且是非取消按钮
+                                deleteArticle(position1);
+                            }else{
+                                loadData();
+                            }
+                        }
+                    }).setCancelable(true).setOnDismissListener(new OnDismissListener() {
+                        @Override
+                        public void onDismiss(Object o) {
+
+                        }
+                    });
+                    mAlertView.show();
+//                deleteDraft(position);
+                }
+            };
+
+            mRecyclerView.setOnItemMoveListener(mItemMoveListener);// 监听拖拽，更新UI。
+        }
         return view;
+    }
+
+    private void deleteArticle(int position) {
+        apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getContext())).create(ApiService.class);
+        apiService.deleteArticle(articles.get(position).getId()).enqueue(new Callback<ResponseResult>() {
+            @Override
+            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                articles.remove(position);
+                articleAdapter.notifyItemRemoved(position);
+                Toast.makeText(getContext(), "删除成功！", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<ResponseResult> call, Throwable t) {
+                Log.e("删除草稿出错啦！！！！", t.getMessage());
+            }
+        });
     }
 
     private void onItemClick(int position) {
@@ -351,7 +419,7 @@ public class ArticleFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onFailure(Call<ResponseResult<ArticleResponse>> call, Throwable t) {
-                Log.e("加载更多草稿出错啦！！！！", t.getMessage());
+                Log.e("加载更多文章出错啦！！！！", t.getMessage());
             }
         });
     }
