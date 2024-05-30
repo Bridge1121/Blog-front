@@ -100,14 +100,14 @@ public class ArticleDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityArticleDetailBinding.inflate(getLayoutInflater());
-        //注册广播
-        LikeReceiver likeReceiver = new LikeReceiver();
-        IntentFilter filter = new IntentFilter("com.example.ACTION_LIKE");
-        registerReceiver(likeReceiver, filter);
-
-        CommentReceiver commentReceiver = new CommentReceiver();
-        IntentFilter filter1 = new IntentFilter("com.example.ACTION_COMMENT");
-        registerReceiver(commentReceiver,filter1);
+//        //注册广播
+//        LikeReceiver likeReceiver = new LikeReceiver();
+//        IntentFilter filter = new IntentFilter("com.example.ACTION_LIKE");
+//        registerReceiver(likeReceiver, filter);
+//
+//        CommentReceiver commentReceiver = new CommentReceiver();
+//        IntentFilter filter1 = new IntentFilter("com.example.ACTION_COMMENT");
+//        registerReceiver(commentReceiver,filter1);
 
         flexboxLayout = binding.flexboxLayout;
         refreshLayout = binding.refreshLayout;
@@ -158,10 +158,10 @@ public class ArticleDetailActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
                             // 在点赞操作中发送广播
-                            Intent likeIntent = new Intent("com.example.ACTION_LIKE");
-                            likeIntent.putExtra("author", articleDetailVo.getAuthor().getId());
-                            likeIntent.putExtra("articleId",articleId);
-                            sendBroadcast(likeIntent);
+//                            Intent likeIntent = new Intent("com.example.ACTION_LIKE");
+//                            likeIntent.putExtra("author", articleDetailVo.getAuthor().getId());
+//                            likeIntent.putExtra("articleId",articleId);
+//                            sendBroadcast(likeIntent);
                             praiseButton.setBtnColor(Color.RED);
                             praiseButton.setBtnFillColor(Color.RED);
                             praiseCount.setText((int) (articleDetailVo.getPraises()+1)+"");
@@ -323,10 +323,10 @@ public class ArticleDetailActivity extends AppCompatActivity {
                                     Toast.makeText(view.getContext(), "发表评论成功",Toast.LENGTH_SHORT).show();
                                     HideUtil.hideSoftKeyboard(view);
                                     dialog.dismiss();
-                                    Intent commentIntent = new Intent("com.example.ACTION_COMMENT");
-                                    commentIntent.putExtra("author", articleDetailVo.getAuthor().getId());
-                                    commentIntent.putExtra("articleId",articleId);
-                                    sendBroadcast(commentIntent);
+//                                    Intent commentIntent = new Intent("com.example.ACTION_COMMENT");
+//                                    commentIntent.putExtra("author", articleDetailVo.getAuthor().getId());
+//                                    commentIntent.putExtra("articleId",articleId);
+//                                    sendBroadcast(commentIntent);
                                 }
 
                                 @Override

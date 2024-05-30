@@ -9,6 +9,7 @@ import com.example.blogapplication.entity.LoginUser;
 import com.example.blogapplication.entity.response.CategoryResponse;
 import com.example.blogapplication.entity.response.UserInfoResponse;
 import com.example.blogapplication.entity.response.UserPostingsResponse;
+import com.example.blogapplication.vo.AddPraiseVo;
 import com.example.blogapplication.vo.ArticleDetailVo;
 import com.example.blogapplication.entity.response.ArticleResponse;
 import com.example.blogapplication.vo.PageVo;
@@ -68,6 +69,9 @@ public interface ApiService {
     @POST("comment")
     Call<ResponseResult> addComment(@Body RequestBody requestBody);
 
+    @GET("comment/isAddComment")
+    Call<ResponseResult<AddPraiseVo>> isAddComment(@Query("currentUserId") Long currentUserId);
+
     @GET("comment/addPrize")
     Call<ResponseResult> addPrize(@Query("commentId") Long commentId,@Query("currentUserId") Long currentUserId);
 
@@ -92,6 +96,9 @@ public interface ApiService {
 
     @POST("article/add")
     Call<ResponseResult> add(@Body RequestBody requestBody);
+
+    @GET("article/isAddPraise")
+    Call<ResponseResult<AddPraiseVo>> isAddPraise(@Query("currentUserId")Long currentUserId);
 
     @GET("article/addViewCount")
     Call<ResponseResult> addViewCount(@Query("articleId") Long articleId);

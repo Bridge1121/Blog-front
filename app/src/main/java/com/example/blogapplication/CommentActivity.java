@@ -432,10 +432,10 @@ public class CommentActivity extends AppCompatActivity {
                                     HideUtil.hideSoftKeyboard(view);
                                     dialog.dismiss();
                                     initData();
-                                    Intent commentIntent = new Intent("com.example.ACTION_COMMENT");
-                                    commentIntent.putExtra("author", authorId);
-                                    commentIntent.putExtra("articleId",articleId);
-                                    sendBroadcast(commentIntent);
+//                                    Intent commentIntent = new Intent("com.example.ACTION_COMMENT");
+//                                    commentIntent.putExtra("author", authorId);
+//                                    commentIntent.putExtra("articleId",articleId);
+//                                    sendBroadcast(commentIntent);
 
                                 }
                                 @Override
@@ -580,10 +580,10 @@ public class CommentActivity extends AppCompatActivity {
                                     HideUtil.hideSoftKeyboard(view);
                                     dialog.dismiss();
                                     initData();
-                                    Intent commentIntent = new Intent("com.example.ACTION_COMMENT");
-                                    commentIntent.putExtra("author", authorId);
-                                    commentIntent.putExtra("articleId",articleId);
-                                    sendBroadcast(commentIntent);
+//                                    Intent commentIntent = new Intent("com.example.ACTION_COMMENT");
+//                                    commentIntent.putExtra("author", authorId);
+//                                    commentIntent.putExtra("articleId",articleId);
+//                                    sendBroadcast(commentIntent);
 //                                    loadMoreReplies(currentReplyPage,2,reply);
                                 }
                                 @Override

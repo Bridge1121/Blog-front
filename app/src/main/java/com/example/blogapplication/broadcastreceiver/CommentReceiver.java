@@ -10,38 +10,51 @@ import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
 
+import com.example.blogapplication.ApiService;
 import com.example.blogapplication.ArticleDetailActivity;
 import com.example.blogapplication.R;
+import com.example.blogapplication.ResponseResult;
+import com.example.blogapplication.RetrofitClient;
 import com.example.blogapplication.utils.TokenUtils;
+import com.example.blogapplication.vo.AddPraiseVo;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class CommentReceiver extends BroadcastReceiver {
-    private static Map<Long, Long> articleAuthorMap = new HashMap<>();
+    private ApiService apiService;
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(context)).create(ApiService.class);
         // 接收广播中的作者和文章信息
         Long author = intent.getLongExtra("author",0);
-        Long articleId = intent.getLongExtra("articleId", 0);
-
-        // 将文章和作者的对应关系存入Map中
-        articleAuthorMap.put(articleId, author);
 
         // 模拟当前登录账号
         Long currentUser = TokenUtils.getUserInfo(context).getId();
 
-        // 检查当前登录用户是否为文章作者，只有作者才发送通知
-        if (currentUser==author) {
-            // 发送通知给对应作者
-            sendNotification(articleId, context);
-        }
+        apiService.isAddComment(currentUser).enqueue(new Callback<ResponseResult<AddPraiseVo>>() {
+            @Override
+            public void onResponse(Call<ResponseResult<AddPraiseVo>> call, Response<ResponseResult<AddPraiseVo>> response) {
+                AddPraiseVo addPraiseVo = response.body().getData();
+                if (addPraiseVo.isPraise()){
+                    // 发送通知给对应作者
+                    sendNotification(addPraiseVo.getArticleId(), context);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseResult<AddPraiseVo>> call, Throwable t) {
+
+            }
+        });
     }
 
     private static void sendNotification(Long articleId, Context context) {
-        // 查找对应文章的作者
-        Long author = articleAuthorMap.get(articleId);
 
         // 创建通知渠道
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

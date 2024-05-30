@@ -2,10 +2,14 @@ package com.example.blogapplication;
 
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
@@ -34,6 +38,8 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.example.blogapplication.adapter.ContentPagerAdapter;
 import com.example.blogapplication.adapter.FragmentAdapter;
+import com.example.blogapplication.broadcastreceiver.CommentReceiver;
+import com.example.blogapplication.broadcastreceiver.LikeReceiver;
 import com.example.blogapplication.entity.User;
 import com.example.blogapplication.entity.response.CategoryResponse;
 import com.example.blogapplication.fragment.HotFragment;
@@ -104,13 +110,41 @@ public class MainActivity extends AppCompatActivity {
     private MaterialViewPager mViewPager;
     static final int TAPS = 3;
     private Toolbar toolbar;
+    private Long currentUserId;
 
     @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (TokenUtils.getUserInfo(MainActivity.this)!=null){
+            currentUserId = TokenUtils.getUserInfo(MainActivity.this).getId();
+        }
 
+        //注册广播
+        LikeReceiver likeReceiver = new LikeReceiver();
+        IntentFilter filter = new IntentFilter("com.example.ACTION_LIKE");
+        registerReceiver(likeReceiver, filter);
+
+        CommentReceiver commentReceiver = new CommentReceiver();
+        IntentFilter filter1 = new IntentFilter("com.example.ACTION_COMMENT");
+        registerReceiver(commentReceiver,filter1);
+        // 设置定时任务
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Intent intent = new Intent(this, LikeReceiver.class);
+        intent.putExtra("author",currentUserId );
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+        // 设置定时任务的触发时间，2s查一次
+        long triggerAtTime = SystemClock.elapsedRealtime();
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, triggerAtTime, 1, pendingIntent);
+//        sendBroadcast(intent);
+        Intent intent1 = new Intent(this, CommentReceiver.class);
+        intent1.putExtra("author",currentUserId );
+//        sendBroadcast(intent1);
+        PendingIntent pendingIntent1 = PendingIntent.getBroadcast(this, 0, intent1, 0);
+        // 设置定时任务的触发时间，2s查一次
+        long triggerAtTime1 = SystemClock.elapsedRealtime();
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, triggerAtTime1, 1, pendingIntent);
         // init
         ShareConfig config = ShareConfig.instance()
                 .qqId("1670741014")
