@@ -38,7 +38,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
         this.layoutInflater = LayoutInflater.from(context);
     }
 
-    public ArticleAdapter(List<Article> data,  Context context, String searchContent) {
+    public ArticleAdapter(Context context, List<Article> data, String searchContent) {
         this.data = data;
         this.layoutInflater = LayoutInflater.from(context);
         this.context = context;
