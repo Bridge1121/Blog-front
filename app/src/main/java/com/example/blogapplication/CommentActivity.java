@@ -402,7 +402,7 @@ public class CommentActivity extends AppCompatActivity {
             view.findViewById(R.id.comment_body).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(CommentActivity.this, "你点击的评论：" + comment.getContent(), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(CommentActivity.this, "你点击的评论：" + comment.getContent(), Toast.LENGTH_SHORT).show();
                     Long rootId = comment.getId();
                     Long toCommentId = comment.getId();//当前回复的评论id
                     Long toCommentUserId = comment.getCreateBy();//当前回复的评论发表者id
@@ -511,7 +511,7 @@ public class CommentActivity extends AppCompatActivity {
                                 List<CustomCommentModel.CustomComment> comments = customCommentModel.getComments();
                                 comments.get(position).setPraise(!comment.isPraise());
                                 refreshComment(currentCommentPage,10);
-                                Toast.makeText(CommentActivity.this,"取消点赞成功！",Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(CommentActivity.this,"取消点赞成功！",Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
@@ -530,7 +530,7 @@ public class CommentActivity extends AppCompatActivity {
                                 List<CustomCommentModel.CustomComment> comments = customCommentModel.getComments();
                                 comments.get(position).setPraise(!comment.isPraise());
                                 refreshComment(currentCommentPage,10);
-                                Toast.makeText(CommentActivity.this,"点赞成功！",Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(CommentActivity.this,"点赞成功！",Toast.LENGTH_SHORT).show();
 
                             }
 
@@ -550,7 +550,7 @@ public class CommentActivity extends AppCompatActivity {
             view.findViewById(R.id.reply_body).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(CommentActivity.this, "你点击的评论：" + reply.getContent(), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(CommentActivity.this, "你点击的评论：" + reply.getContent(), Toast.LENGTH_SHORT).show();
                     Long rootId = reply.getRootId();
                     Long toCommentId = reply.getId();//当前回复的评论id
                     Long toCommentUserId = reply.getCreateBy();//当前回复的评论发表者id
@@ -615,7 +615,7 @@ public class CommentActivity extends AppCompatActivity {
                                 comments.get(c_position).getReplies().get(r_position).setPrize(!reply.isPrize());
 //                                refreshComment(currentCommentPage,10);
 //                                loadMoreReplies(currentReplyPage,2,reply);
-                                Toast.makeText(CommentActivity.this,"取消点赞成功！",Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(CommentActivity.this,"取消点赞成功！",Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
@@ -635,7 +635,7 @@ public class CommentActivity extends AppCompatActivity {
                                 List<CustomCommentModel.CustomComment> comments = customCommentModel.getComments();
                                 comments.get(c_position).getReplies().get(r_position).setPrize(!reply.isPrize());
 //                                loadMoreReplies(currentReplyPage,2,reply);
-                                Toast.makeText(CommentActivity.this,"点赞成功！",Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(CommentActivity.this,"点赞成功！",Toast.LENGTH_SHORT).show();
                             }
 
                             @Override

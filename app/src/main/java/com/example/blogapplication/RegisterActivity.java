@@ -72,6 +72,10 @@ public class RegisterActivity extends AppCompatActivity {
                                 intent.putExtra("username",username.getText().toString());
                                 intent.putExtra("password",password.getText().toString());
                                 startActivity(intent);
+                            }else if (response.body().getCode() == 501){
+                                Toast.makeText(RegisterActivity.this,"用户名已存在！",Toast.LENGTH_SHORT).show();
+                            }else if (response.body().getCode() == 513){
+                                Toast.makeText(RegisterActivity.this,"该邮箱已注册！",Toast.LENGTH_SHORT).show();
                             }
                         }
 

@@ -42,6 +42,6 @@ public class SelectCategoryActivity extends AppCompatActivity {
         //将适配器与下拉列表框关联起来
         spinner_category.setAdapter(arrayAdapter);
         String s = spinner_category.getSelectedItem().toString();
-        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
 }

@@ -301,7 +301,7 @@ public class MainActivity extends AppCompatActivity {
         //android.R.id.home：是HomeAsUp按钮的默认id
         if (item.getItemId() == android.R.id.home) {
             mDrawerlayout.openDrawer(GravityCompat.START);  //点击按钮后打开这个滑动窗口
-            Toast.makeText(MainActivity.this, "打开了drawer", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(MainActivity.this, "打开了drawer", Toast.LENGTH_SHORT).show();
             User user = TokenUtils.getUserInfo(MainActivity.this);
             if (TokenUtils.getToken(MainActivity.this) != "" && !Objects.isNull(TokenUtils.getUserInfo(MainActivity.this))) {//已登录
                 username.setText(user.getNickName());
@@ -321,7 +321,7 @@ public class MainActivity extends AppCompatActivity {
         }
         if (item.getItemId() == R.id.action_search){
             Intent intent = new Intent(MainActivity.this,SearchActivity.class);
-            Toast.makeText(MainActivity.this,"跳转到搜索页面",Toast.LENGTH_SHORT).show();
+//            Toast.makeText(MainActivity.this,"跳转到搜索页面",Toast.LENGTH_SHORT).show();
             startActivity(intent);
         }
         return true;
@@ -353,7 +353,7 @@ public class MainActivity extends AppCompatActivity {
                             Intent intent = new Intent(MainActivity.this,HomePageActivity.class);
                             intent.putExtra("isMe",0);
                             startActivity(intent);
-                            Toast.makeText(MainActivity.this, "跳转到我的主页", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(MainActivity.this, "跳转到我的主页", Toast.LENGTH_SHORT).show();
                         }
                         break;
 
@@ -365,7 +365,7 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             Intent intent = new Intent(MainActivity.this, StarListActivity.class);
                             startActivity(intent);
-                            Toast.makeText(MainActivity.this, "跳转到我的收藏", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(MainActivity.this, "跳转到我的收藏", Toast.LENGTH_SHORT).show();
                         }
 
                         break;
@@ -416,7 +416,7 @@ public class MainActivity extends AppCompatActivity {
 //                                    bundle.putParcelableArrayList("categories", (ArrayList<? extends Parcelable>) categoryResponses);
 //                                    intent.putExtras(bundle);
                                     startActivity(intent);
-                                    Toast.makeText(MainActivity.this, "跳转到我的草稿", Toast.LENGTH_SHORT).show();
+//                                    Toast.makeText(MainActivity.this, "跳转到我的草稿", Toast.LENGTH_SHORT).show();
                                 }
 
                                 @Override
@@ -447,7 +447,7 @@ public class MainActivity extends AppCompatActivity {
 //                                    bundle.putParcelableArrayList("categories", (ArrayList<? extends Parcelable>) categoryResponses);
 //                                    intent.putExtras(bundle);
                                     startActivity(intent);
-                                    Toast.makeText(MainActivity.this, "跳转到写博客", Toast.LENGTH_SHORT).show();
+//                                    Toast.makeText(MainActivity.this, "跳转到写博客", Toast.LENGTH_SHORT).show();
                                 }
 
                                 @Override

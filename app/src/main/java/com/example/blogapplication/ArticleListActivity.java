@@ -121,7 +121,7 @@ public class ArticleListActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(ArticleListActivity.this,SearchActivity.class);
-                Toast.makeText(ArticleListActivity.this,"跳转到搜索页面",Toast.LENGTH_SHORT).show();
+//                Toast.makeText(ArticleListActivity.this,"跳转到搜索页面",Toast.LENGTH_SHORT).show();
                 startActivity(intent);
             }
         });
@@ -372,7 +372,7 @@ public class ArticleListActivity extends AppCompatActivity {
         apiService.addViewCount(articles.get(position).getId()).enqueue(new Callback<ResponseResult>() {
             @Override
             public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
-                Toast.makeText(ArticleListActivity.this,"浏览成功！",Toast.LENGTH_SHORT).show();
+//                Toast.makeText(ArticleListActivity.this,"浏览成功！",Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(ArticleListActivity.this, ArticleDetailActivity.class);
                 intent.putExtra("id",articles.get(position).getId());
                 intent.putExtra("isMe",articles.get(position).getCreateBy()==TokenUtils.getUserInfo(ArticleListActivity.this).getId()?0:1);
@@ -384,7 +384,7 @@ public class ArticleListActivity extends AppCompatActivity {
                 Log.e("浏览出错啦！！！",t.getMessage());
             }
         });
-        Toast.makeText(getApplicationContext(),articles.get(position).getId().toString(),Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getApplicationContext(),articles.get(position).getId().toString(),Toast.LENGTH_SHORT).show();
     }
 
     //搜索文章

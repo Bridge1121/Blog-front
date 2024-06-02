@@ -38,11 +38,11 @@ public class SearchActivity extends AppCompatActivity {
 
         searchLayout.setOnTextSearchListener(searchContent  -> {
             //搜索内容改变
-            Toast.makeText(SearchActivity.this,searchContent,Toast.LENGTH_SHORT).show();
+//            Toast.makeText(SearchActivity.this,searchContent,Toast.LENGTH_SHORT).show();
             return null;
         }, searchContent -> {
             //键盘点击了搜索
-            Toast.makeText(SearchActivity.this,searchContent,Toast.LENGTH_SHORT).show();
+//            Toast.makeText(SearchActivity.this,searchContent,Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(SearchActivity.this,ArticleListActivity.class);
             intent.putExtra("content",searchContent);
             startActivity(intent);
@@ -54,7 +54,7 @@ public class SearchActivity extends AppCompatActivity {
         searchList.setHotList(getHotList());
         //热门搜索条目点击事件
         searchList.setOnHotItemClickListener((searchContent, position) -> {
-            Toast.makeText(this, searchContent, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, searchContent, Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(SearchActivity.this,ArticleListActivity.class);
             intent.putExtra("content",searchContent);
             startActivity(intent);
@@ -62,7 +62,7 @@ public class SearchActivity extends AppCompatActivity {
         });
         //历史搜索条目点击事件
         searchList.setOnHistoryItemClickListener((searchContent, position) -> {
-            Toast.makeText(this, searchContent, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, searchContent, Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(SearchActivity.this,ArticleListActivity.class);
             intent.putExtra("content",searchContent);
             startActivity(intent);

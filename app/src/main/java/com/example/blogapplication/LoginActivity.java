@@ -62,10 +62,10 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this, "登录成功！！", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this,MainActivity.class);
                             startActivity(intent);
-                        } else {
+                        } else if (responseResult.getCode() == 505){
                             // 登录失败，处理错误信息
                             String errorMessage = responseResult.getMsg();
-                            Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "用户名或密码错误！", Toast.LENGTH_SHORT).show();
                             Log.e("登录出错啦！！！",errorMessage);
                         }
                         loadingProgressBar.setVisibility(View.GONE);

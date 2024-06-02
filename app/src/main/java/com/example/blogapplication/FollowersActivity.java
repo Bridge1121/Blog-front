@@ -74,7 +74,7 @@ public class FollowersActivity extends AppCompatActivity {
                 intent.putExtra("id",userInfos.get(position).getId());
                 intent.putExtra("isMe",1);
                 startActivity(intent);
-                Toast.makeText(getApplicationContext(), userInfos.get(position).getNickName(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), userInfos.get(position).getNickName(), Toast.LENGTH_SHORT).show();
             }
         });
         setContentView(binding.getRoot());

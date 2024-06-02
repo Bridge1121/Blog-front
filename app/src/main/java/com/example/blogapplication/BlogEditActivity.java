@@ -177,7 +177,7 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
                         mAlertViewExt.show();
 
                     }
-                    Toast.makeText(getApplicationContext(),categoryResponses.get(i).getName(),Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getApplicationContext(),categoryResponses.get(i).getName(),Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -644,8 +644,8 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
                         new String[]{"发布文章", "保存为草稿"},
                         this, AlertView.Style.ActionSheet, new OnItemClickListener(){
                     public void onItemClick(Object o,int position){
-                        Toast.makeText(getApplicationContext(), "点击了第" + position + "个",
-                                Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getApplicationContext(), "点击了第" + position + "个",
+//                                Toast.LENGTH_SHORT).show();
                         if (position == 0){//发布文章
                             if (imgPath==null){
                                 publishArticleAgain();

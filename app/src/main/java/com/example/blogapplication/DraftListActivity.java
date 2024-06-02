@@ -110,7 +110,7 @@ public class DraftListActivity extends AppCompatActivity {
                 Intent intent = new Intent(DraftListActivity.this,ShowArtActivity.class);
                 intent.putExtra("id",articles.get(position).getId());
                 startActivity(intent);
-                Toast.makeText(getApplicationContext(), articles.get(position).getTitle(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), articles.get(position).getTitle(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -143,7 +143,7 @@ public class DraftListActivity extends AppCompatActivity {
                 int direction = menuBridge.getDirection();
                 // 菜单在Item中的Position：
                 int menuPosition = menuBridge.getPosition();
-                Toast.makeText(getApplicationContext(), articles.get(position).getId().toString(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), articles.get(position).getId().toString(), Toast.LENGTH_SHORT).show();
             }
         };
         // 菜单点击监听。
@@ -173,7 +173,7 @@ public class DraftListActivity extends AppCompatActivity {
                 // 此方法在Item在侧滑删除时被调用。
                 // 从数据源移除该Item对应的数据，并刷新Adapter。
                 int position1 = srcHolder.getAdapterPosition();
-                Toast.makeText(getApplicationContext(), articles.get(position1).getId().toString(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), articles.get(position1).getId().toString(), Toast.LENGTH_SHORT).show();
                 mAlertView = new AlertView("确认", "确定删除该草稿吗？", "取消", new String[]{"确定"}, null, DraftListActivity.this, AlertView.Style.Alert, new com.bigkoo.alertview.OnItemClickListener() {
                     @Override
                     public void onItemClick(Object o, int position) {
@@ -262,7 +262,7 @@ public class DraftListActivity extends AppCompatActivity {
             swipeRecyclerView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(DraftListActivity.this, "" + i, Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(DraftListActivity.this, "" + i, Toast.LENGTH_SHORT).show();
                     loadMoreItems();
                 }
             }, 1000);//  延时1000ms，运行
