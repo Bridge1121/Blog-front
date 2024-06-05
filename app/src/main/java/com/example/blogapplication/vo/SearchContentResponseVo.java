@@ -1,21 +1,18 @@
 package com.example.blogapplication.vo;
 
+import com.example.blogapplication.entity.SearchContent;
+
 import java.util.List;
 
-public class PageVo {
-    private List rows;
+public class SearchContentResponseVo {
+    private List<SearchContent> rows;
     private Long total;
 
-    public PageVo(List rows, long total) {
-        this.rows= rows;
-        this.total = total;
-    }
-
-    public List getRows() {
+    public List<SearchContent> getRows() {
         return rows;
     }
 
-    public void setRows(List rows) {
+    public void setRows(List<SearchContent> rows) {
         this.rows = rows;
     }
 

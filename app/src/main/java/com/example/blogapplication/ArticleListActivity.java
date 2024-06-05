@@ -205,16 +205,21 @@ public class ArticleListActivity extends AppCompatActivity {
         apiService.searchArticle(1, 10, searchContent).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
             @Override
             public void onResponse(Call<ResponseResult<ArticleResponse>> call, Response<ResponseResult<ArticleResponse>> response) {
-                articles = response.body().getData().getRows();
-                articleAdapter = new ArticleAdapter(getApplicationContext(), articles,searchContent);
-                swipeRecyclerView.setAdapter(articleAdapter);
-                articleAdapter.notifyDataSetChanged();
-                mRefreshLayout.setRefreshing(false);
+                if (response.body().getData()!=null){
+                    articles = response.body().getData().getRows();
+                    articleAdapter = new ArticleAdapter(getApplicationContext(), articles,searchContent);
+                    swipeRecyclerView.setAdapter(articleAdapter);
+                    articleAdapter.notifyDataSetChanged();
+                    mRefreshLayout.setRefreshing(false);
 
-                // 第一次加载数据：一定要掉用这个方法。
-                // 第一个参数：表示此次数据是否为空，假如你请求到的list为空(== null || list.size == 0)，那么这里就要true。
-                // 第二个参数：表示是否还有更多数据，根据服务器返回给你的page等信息判断是否还有更多，这样可以提供性能，如果不能判断则传true。
-                swipeRecyclerView.loadMoreFinish(false, true);
+                    // 第一次加载数据：一定要掉用这个方法。
+                    // 第一个参数：表示此次数据是否为空，假如你请求到的list为空(== null || list.size == 0)，那么这里就要true。
+                    // 第二个参数：表示是否还有更多数据，根据服务器返回给你的page等信息判断是否还有更多，这样可以提供性能，如果不能判断则传true。
+                    swipeRecyclerView.loadMoreFinish(false, true);
+                }else{
+                    Toast.makeText(getApplicationContext(),"暂无该搜索内容相关的文章~",Toast.LENGTH_SHORT).show();
+                }
+
             }
 
             @Override

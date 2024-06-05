@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, LikeReceiver.class);
         intent.putExtra("author",currentUserId );
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-        // 设置定时任务的触发时间，2s查一次
+        // 设置定时任务的触发时间，每隔1毫秒查一次
         long triggerAtTime = SystemClock.elapsedRealtime();
         alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, triggerAtTime, 1, pendingIntent);
 //        sendBroadcast(intent);

@@ -14,6 +14,7 @@ import com.example.blogapplication.vo.ArticleDetailVo;
 import com.example.blogapplication.entity.response.ArticleResponse;
 import com.example.blogapplication.vo.PageVo;
 import com.example.blogapplication.vo.PagerRepliesEnableVo;
+import com.example.blogapplication.vo.SearchContentResponseVo;
 
 
 import java.io.File;
@@ -157,6 +158,7 @@ public interface ApiService {
     @GET("article/starList")
     Call<ResponseResult<ArticleResponse>> starList(@Query("pageNum") Integer pageNum,@Query("pageSize") Integer pageSize,@Query("userId") Long userId);
 
-
+    @GET("search/getHotList")
+    Call<ResponseResult<SearchContentResponseVo>> getHotSearchContentList(@Query("pageNum") Integer pageNum, @Query("pageSize")Integer pageSize);
 
 }

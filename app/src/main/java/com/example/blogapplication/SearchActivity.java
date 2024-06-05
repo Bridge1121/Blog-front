@@ -11,7 +11,11 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.blogapplication.entity.Article;
+import com.example.blogapplication.entity.SearchContent;
 import com.example.blogapplication.entity.response.ArticleResponse;
+import com.example.blogapplication.utils.TokenUtils;
+import com.example.blogapplication.vo.PageVo;
+import com.example.blogapplication.vo.SearchContentResponseVo;
 import com.vip.search.SearchBean;
 import com.vip.search.SearchLayout;
 import com.vip.search.SearchList;
@@ -37,12 +41,9 @@ public class SearchActivity extends AppCompatActivity {
         SearchList searchList = findViewById(R.id.search_list);
 
         searchLayout.setOnTextSearchListener(searchContent  -> {
-            //搜索内容改变
-//            Toast.makeText(SearchActivity.this,searchContent,Toast.LENGTH_SHORT).show();
             return null;
         }, searchContent -> {
             //键盘点击了搜索
-//            Toast.makeText(SearchActivity.this,searchContent,Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(SearchActivity.this,ArticleListActivity.class);
             intent.putExtra("content",searchContent);
             startActivity(intent);
@@ -50,8 +51,48 @@ public class SearchActivity extends AppCompatActivity {
             return null;
         });
 
-        //设置用于测试的热门搜索列表
-        searchList.setHotList(getHotList());
+        //设置热门搜索列表
+        ArrayList<SearchBean> hotList = new ArrayList<>();
+        List<String> hotContentList = new ArrayList<>();
+        apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(SearchActivity.this)).create(ApiService.class);
+        apiService.getHotSearchContentList(1,8).enqueue(new Callback<ResponseResult<SearchContentResponseVo>>() {
+            @Override
+            public void onResponse(Call<ResponseResult<SearchContentResponseVo>> call, Response<ResponseResult<SearchContentResponseVo>> response) {
+                if (response.body().getData()!=null){
+                    List<SearchContent> searchContents = response.body().getData().getRows();
+                    for (SearchContent content:searchContents){
+                        hotContentList.add(content.getContent());
+                    }
+                    for (int i = 0; i < hotContentList.size(); i++) {
+                        SearchBean bean = new SearchBean();
+                        bean.setContent(hotContentList.get(i));
+                        bean.setShowLeftIcon(true);
+                        Drawable drawable;
+                        if (i < 2) {
+                            drawable = ContextCompat.getDrawable(SearchActivity.this, R.drawable.shape_circle_select);
+                        } else if (i == 2) {
+                            drawable = ContextCompat.getDrawable(SearchActivity.this, R.drawable.shape_circle_ordinary);
+                        } else {
+                            drawable = ContextCompat.getDrawable(SearchActivity.this, R.drawable.shape_circle_normal);
+                        }
+                        if (drawable != null) {
+                            drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+                            bean.setLeftIcon(drawable);
+                        }
+
+                        hotList.add(bean);
+                    }
+                    searchList.setHotList(hotList);
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseResult<SearchContentResponseVo>> call, Throwable t) {
+                Log.e("获取热门搜索内容出错啦！！！",t.getMessage());
+            }
+        });
+
         //热门搜索条目点击事件
         searchList.setOnHotItemClickListener((searchContent, position) -> {
 //            Toast.makeText(this, searchContent, Toast.LENGTH_SHORT).show();
@@ -75,28 +116,47 @@ public class SearchActivity extends AppCompatActivity {
      */
     private ArrayList<SearchBean> getHotList() {
         ArrayList<SearchBean> hotList = new ArrayList<>();
-        String[] testHotList = {"二流小码农", "三流小可爱", "Android", "Kotlin", "iOS", "Java", "Python", "Php是世界上最好的语言"};
+        List<String> hotContentList = new ArrayList<>();
+        apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(SearchActivity.this)).create(ApiService.class);
+        apiService.getHotSearchContentList(1,8).enqueue(new Callback<ResponseResult<SearchContentResponseVo>>() {
+            @Override
+            public void onResponse(Call<ResponseResult<SearchContentResponseVo>> call, Response<ResponseResult<SearchContentResponseVo>> response) {
+                Log.e("获取热门搜索啦！！！","hhhhhhhhhhhhhh");
+                if (response.body().getData()!=null){
+                    List<SearchContent> searchContents = response.body().getData().getRows();
+                    for (SearchContent content:searchContents){
+                        hotContentList.add(content.getContent());
+                    }
+                    for (int i = 0; i < hotContentList.size(); i++) {
+                        SearchBean bean = new SearchBean();
+                        bean.setContent(hotContentList.get(i));
+                        bean.setShowLeftIcon(true);
 
-        for (int i = 0; i < testHotList.length; i++) {
-            SearchBean bean = new SearchBean();
-            bean.setContent(testHotList[i]);
-            bean.setShowLeftIcon(true);
+                        Drawable drawable;
+                        if (i < 2) {
+                            drawable = ContextCompat.getDrawable(SearchActivity.this, R.drawable.shape_circle_select);
+                        } else if (i == 2) {
+                            drawable = ContextCompat.getDrawable(SearchActivity.this, R.drawable.shape_circle_ordinary);
+                        } else {
+                            drawable = ContextCompat.getDrawable(SearchActivity.this, R.drawable.shape_circle_normal);
+                        }
+                        if (drawable != null) {
+                            drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+                            bean.setLeftIcon(drawable);
+                        }
 
-            Drawable drawable;
-            if (i < 2) {
-                drawable = ContextCompat.getDrawable(this, R.drawable.shape_circle_select);
-            } else if (i == 2) {
-                drawable = ContextCompat.getDrawable(this, R.drawable.shape_circle_ordinary);
-            } else {
-                drawable = ContextCompat.getDrawable(this, R.drawable.shape_circle_normal);
+                        hotList.add(bean);
+                    }
+                }
+
             }
-            if (drawable != null) {
-                drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
-                bean.setLeftIcon(drawable);
-            }
 
-            hotList.add(bean);
-        }
+            @Override
+            public void onFailure(Call<ResponseResult<SearchContentResponseVo>> call, Throwable t) {
+                Log.e("获取热门搜索内容出错啦！！！",t.getMessage());
+            }
+        });
+
 
         return hotList;
     }

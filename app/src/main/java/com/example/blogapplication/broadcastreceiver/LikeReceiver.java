@@ -35,7 +35,6 @@ public class LikeReceiver extends BroadcastReceiver {
         // 接收广播中的作者和文章信息
         Long author = intent.getLongExtra("author",0);
 
-        // 模拟当前登录账号
         Long currentUser = TokenUtils.getUserInfo(context).getId();
 //        Log.e("调用接口啦！！！","");
 
@@ -43,13 +42,10 @@ public class LikeReceiver extends BroadcastReceiver {
             @Override
             public void onResponse(Call<ResponseResult<AddPraiseVo>> call, Response<ResponseResult<AddPraiseVo>> response) {
                 AddPraiseVo addPraiseVo = response.body().getData();
-                Log.e("通知啦！！！",addPraiseVo.isPraise()+"");
 
                 if (addPraiseVo.isPraise()){
                     // 发送通知给对应作者
                     sendNotification(addPraiseVo.getArticleId(), context);
-                    Log.e("要发送通知啦！！！",addPraiseVo.getArticleId().toString());
-
                 }
             }
 
