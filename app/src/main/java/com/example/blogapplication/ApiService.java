@@ -7,6 +7,7 @@ import com.example.blogapplication.entity.Article;
 import com.example.blogapplication.entity.Comment;
 import com.example.blogapplication.entity.LoginUser;
 import com.example.blogapplication.entity.response.CategoryResponse;
+import com.example.blogapplication.entity.response.HistoryArticleResponse;
 import com.example.blogapplication.entity.response.UserInfoResponse;
 import com.example.blogapplication.entity.response.UserPostingsResponse;
 import com.example.blogapplication.vo.AddPraiseVo;
@@ -158,7 +159,12 @@ public interface ApiService {
     @GET("article/starList")
     Call<ResponseResult<ArticleResponse>> starList(@Query("pageNum") Integer pageNum,@Query("pageSize") Integer pageSize,@Query("userId") Long userId);
 
+    @GET("article/historyList")
+    Call<ResponseResult<HistoryArticleResponse>> historyList(@Query("pageNum") Integer pageNum, @Query("pageSize") Integer pageSize, @Query("userId") Long userId,@Query("date")String date);
+
     @GET("search/getHotList")
     Call<ResponseResult<SearchContentResponseVo>> getHotSearchContentList(@Query("pageNum") Integer pageNum, @Query("pageSize")Integer pageSize);
 
+    @GET("history/addHistory")
+    Call<ResponseResult> addHistory(@Query("articleId") Long articleId,@Query("userId") Long userId);
 }

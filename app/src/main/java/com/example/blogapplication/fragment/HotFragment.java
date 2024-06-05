@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import com.example.blogapplication.ApiService;
 import com.example.blogapplication.ArticleDetailActivity;
+import com.example.blogapplication.ArticleListActivity;
 import com.example.blogapplication.DraftListActivity;
 import com.example.blogapplication.R;
 import com.example.blogapplication.ResponseResult;
@@ -135,6 +136,17 @@ public class HotFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onFailure(Call<ResponseResult> call, Throwable t) {
                 Log.e("浏览出错啦！！！",t.getMessage());
+            }
+        });
+        apiService.addHistory(articles.get(position).getId(),TokenUtils.getUserInfo(getContext()).getId()).enqueue(new Callback<ResponseResult>() {
+            @Override
+            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseResult> call, Throwable t) {
+                Log.e("添加历史浏览出错啦！！！！",t.getMessage());
             }
         });
 

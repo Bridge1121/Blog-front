@@ -47,6 +47,11 @@
                         android:maxLines="1"
                         android:ellipsize="end"
                         android:text="文章内容截取...."/>
+                    <TextView
+                        android:id="@+id/time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="浏览于2024-05-30"/>
 
                 </LinearLayout>
 

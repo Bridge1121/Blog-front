@@ -25,6 +25,7 @@ import com.bigkoo.alertview.AlertView;
 import com.bigkoo.alertview.OnDismissListener;
 import com.example.blogapplication.ApiService;
 import com.example.blogapplication.ArticleDetailActivity;
+import com.example.blogapplication.ArticleListActivity;
 import com.example.blogapplication.DraftListActivity;
 import com.example.blogapplication.R;
 import com.example.blogapplication.ResponseResult;
@@ -181,6 +182,17 @@ public class ArticleFragment extends Fragment implements View.OnClickListener {
     }
 
     private void onItemClick(int position) {
+        apiService.addHistory(articles.get(position).getId(),TokenUtils.getUserInfo(getContext()).getId()).enqueue(new Callback<ResponseResult>() {
+            @Override
+            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseResult> call, Throwable t) {
+                Log.e("添加历史浏览出错啦！！！！",t.getMessage());
+            }
+        });
         Intent intent = new Intent(getActivity(), ArticleDetailActivity.class);
         intent.putExtra("id",articles.get(position).getId());
         intent.putExtra("isMe",0);//自己的主页

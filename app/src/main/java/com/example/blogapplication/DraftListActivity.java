@@ -86,21 +86,6 @@ public class DraftListActivity extends AppCompatActivity {
         swipeRecyclerView.setHasFixedSize(true);
         swipeRecyclerView.addItemDecoration(new MaterialViewPagerHeaderDecorator());
 
-//        apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
-//        apiService.draftArticleList(1,10,TokenUtils.getUserInfo(getApplicationContext()).getId()).enqueue(new Callback<ResponseResult<ArticleResponse>>() {
-//            @Override
-//            public void onResponse(Call<ResponseResult<ArticleResponse>> call, Response<ResponseResult<ArticleResponse>> response) {
-//                articles = response.body().getData().getArticles();
-//                adapter = new DraftAdapter(getApplicationContext(),articles);
-//                swipeRecyclerView.setAdapter(adapter);
-//                swipeRecyclerView.loadMoreFinish(false, true);//第一次加载数据时一定要写！！！！！
-//            }
-//
-//            @Override
-//            public void onFailure(Call<ResponseResult<ArticleResponse>> call, Throwable t) {
-//
-//            }
-//        });
         loadMore();
 
         swipeRecyclerView.setOnItemClickListener(new OnItemClickListener() {
@@ -190,21 +175,11 @@ public class DraftListActivity extends AppCompatActivity {
                     }
                 });
                 mAlertView.show();
-//                deleteDraft(position);
             }
         };
 
         swipeRecyclerView.setOnItemMoveListener(mItemMoveListener);// 监听拖拽，更新UI。
 
-//        swipeRecyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
-
-//        SwipeRecyclerView.LoadMoreListener mLoadMoreListener = new SwipeRecyclerView.LoadMoreListener() {
-//            @Override
-//            public void onLoadMore() {
-//                loadMoreItems();
-//            }
-//        };
-//        swipeRecyclerView.setLoadMoreListener(mLoadMoreListener); // 加载更多的监听。
 
 
         setContentView(binding.getRoot());
@@ -219,9 +194,6 @@ public class DraftListActivity extends AppCompatActivity {
 
         // 自定义的核心就是DefineLoadMoreView类。
         DefineLoadMoreView loadMoreView = new DefineLoadMoreView(getApplicationContext());
-//        mRecyclerView.setAutoLoadMore(false); // 拉倒最下面时，是手动点击加载更多，还是自动加载更多，手动加载无加载更多动画
-
-//        mRecyclerView.addHeaderView(loadMoreView);  // 无效
         swipeRecyclerView.addFooterView(loadMoreView); // 添加为Footer。
         swipeRecyclerView.setLoadMoreView(loadMoreView); // 设置LoadMoreView更新监听。
         swipeRecyclerView.setLoadMoreListener(mLoadMoreListener);

@@ -28,6 +28,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.example.blogapplication.ApiService;
 import com.example.blogapplication.ArticleDetailActivity;
+import com.example.blogapplication.ArticleListActivity;
 import com.example.blogapplication.DraftListActivity;
 import com.example.blogapplication.R;
 import com.example.blogapplication.ResponseResult;
@@ -131,7 +132,17 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                 Log.e("浏览出错啦！！！",t.getMessage());
             }
         });
+        apiService.addHistory(articles.get(position).getId(),TokenUtils.getUserInfo(getContext()).getId()).enqueue(new Callback<ResponseResult>() {
+            @Override
+            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
 
+            }
+
+            @Override
+            public void onFailure(Call<ResponseResult> call, Throwable t) {
+                Log.e("添加历史浏览出错啦！！！！",t.getMessage());
+            }
+        });
 //        Toast.makeText(getActivity(),articles.get(position).getId().toString(),Toast.LENGTH_SHORT).show();
     }
 
