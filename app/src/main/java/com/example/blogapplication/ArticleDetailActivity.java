@@ -25,6 +25,7 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -95,6 +96,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
     private Button follow;
     private int isMe;
     private FlexboxLayout flexboxLayout;
+    private ProgressBar loading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -372,7 +374,10 @@ public class ArticleDetailActivity extends AppCompatActivity {
                 time.setText("发布于"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(articleDetailVo.getCreateTime()));
                 starCount.setText(articleDetailVo.getStars()+"");
                 praiseCount.setText(articleDetailVo.getPraises()+"");
+                loading = binding.loading;
+                loading.setVisibility(View.VISIBLE);
                 initWebView(articleDetailVo.getContent());
+                loading.setVisibility(View.GONE);
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 getSupportActionBar().setTitle(articleDetailVo.getTitle());
                 List<String> articleTags = Arrays.asList(articleDetailVo.getTags().split("#"));
@@ -390,6 +395,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
                     textView.setLayoutParams(layoutParams);
                     flexboxLayout.addView(textView);
                 }
+
 
             }
 
