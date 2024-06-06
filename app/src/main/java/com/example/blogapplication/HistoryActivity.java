@@ -32,23 +32,27 @@ import com.example.blogapplication.entity.response.ArticleResponse;
 import com.example.blogapplication.entity.response.HistoryArticleResponse;
 import com.example.blogapplication.utils.TokenUtils;
 import com.github.florent37.materialviewpager.header.MaterialViewPagerHeaderDecorator;
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.yanzhenjie.loading.LoadingView;
 import com.yanzhenjie.recyclerview.OnItemClickListener;
 import com.yanzhenjie.recyclerview.SwipeMenuCreator;
 import com.yanzhenjie.recyclerview.SwipeRecyclerView;
 import com.yanzhenjie.recyclerview.touch.OnItemMoveListener;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class HistoryActivity extends AppCompatActivity {
+public class HistoryActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     private ActivityHistoryBinding binding;
     private SwipeRecyclerView swipeRecyclerView;
     private SwipeMenuCreator menuCreator;
@@ -241,6 +245,40 @@ public class HistoryActivity extends AppCompatActivity {
 
     }
 
+    //获取选择的日期的监听事件
+    @Override
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, monthOfYear, dayOfMonth);
+        date = sdf.format(calendar.getTime());
+        apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
+        apiService.historyList(1, 10, TokenUtils.getUserInfo(getApplicationContext()).getId(),date).enqueue(new Callback<ResponseResult<HistoryArticleResponse>>() {
+            @Override
+            public void onResponse(Call<ResponseResult<HistoryArticleResponse>> call, Response<ResponseResult<HistoryArticleResponse>> response) {
+                if (response.body().getData()!=null){
+                    articles = response.body().getData().getRows();
+                    adapter = new HistoryAdapter(getApplicationContext(), articles);
+                    swipeRecyclerView.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+                    mRefreshLayout.setRefreshing(false);
+                }
+
+
+                // 第一次加载数据：一定要掉用这个方法。
+                // 第一个参数：表示此次数据是否为空，假如你请求到的list为空(== null || list.size == 0)，那么这里就要true。
+                // 第二个参数：表示是否还有更多数据，根据服务器返回给你的page等信息判断是否还有更多，这样可以提供性能，如果不能判断则传true。
+                swipeRecyclerView.loadMoreFinish(false, true);
+            }
+
+            @Override
+            public void onFailure(Call<ResponseResult<HistoryArticleResponse>> call, Throwable t) {
+                Log.e("获取收藏列表出错啦！！！",t.getMessage());
+            }
+        });
+        Log.e("选择的日期如下：",year+"-"+monthOfYear+"-"+dayOfMonth+"");
+    }
+
     /**
      * 这是这个类的主角，如何自定义LoadMoreView。
      */
@@ -391,7 +429,15 @@ public class HistoryActivity extends AppCompatActivity {
 
             case R.id.calendar:
                 //todo 选择其他日期查询历史浏览记录，可以是弹窗或者跳转到另一个activity
-                finish();
+                Calendar now = Calendar.getInstance();
+                DatePickerDialog dpd = DatePickerDialog.newInstance(
+                        HistoryActivity.this,
+                        now.get(Calendar.YEAR), // Initial year selection
+                        now.get(Calendar.MONTH), // Initial month selection
+                        now.get(Calendar.DAY_OF_MONTH) // Inital day selection
+                );
+                dpd.show(getSupportFragmentManager(), "选择日期");
+//                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
