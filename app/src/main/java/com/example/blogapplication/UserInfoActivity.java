@@ -109,6 +109,7 @@ public class UserInfoActivity extends AppCompatActivity {
                                     TokenUtils.saveUserInfo(getApplicationContext(), userInfo);//更新保存的用户信息
                                     Intent intent = new Intent(UserInfoActivity.this, MainActivity.class);
                                     startActivity(intent);
+                                    Toast.makeText(UserInfoActivity.this,"个人信息修改成功！",Toast.LENGTH_SHORT).show();
                                     Log.i("修改个人信息成功", "hhhhhhhhhhhh");
                                 }
 

@@ -42,4 +42,7 @@
 
     <color name="yellow">#FFD700</color>
 
+    <color name="mdtp_accent_color">#0479CA</color>
+    <color name="mdtp_accent_color_dark">#0879CA</color>
+
 </resources>

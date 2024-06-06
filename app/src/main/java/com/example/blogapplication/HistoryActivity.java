@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -420,6 +421,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     }
 
 
+    @SuppressLint("ResourceAsColor")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -428,14 +430,14 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 return true;
 
             case R.id.calendar:
-                //todo 选择其他日期查询历史浏览记录，可以是弹窗或者跳转到另一个activity
                 Calendar now = Calendar.getInstance();
                 DatePickerDialog dpd = DatePickerDialog.newInstance(
                         HistoryActivity.this,
-                        now.get(Calendar.YEAR), // Initial year selection
-                        now.get(Calendar.MONTH), // Initial month selection
-                        now.get(Calendar.DAY_OF_MONTH) // Inital day selection
+                        now.get(Calendar.YEAR),
+                        now.get(Calendar.MONTH),
+                        now.get(Calendar.DAY_OF_MONTH)
                 );
+                dpd.setAccentColor(R.color.mdtp_accent_color);
                 dpd.show(getSupportFragmentManager(), "选择日期");
 //                finish();
                 return true;
