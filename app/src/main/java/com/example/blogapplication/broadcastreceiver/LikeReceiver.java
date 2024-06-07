@@ -41,12 +41,15 @@ public class LikeReceiver extends BroadcastReceiver {
         apiService.isAddPraise(currentUser).enqueue(new Callback<ResponseResult<AddPraiseVo>>() {
             @Override
             public void onResponse(Call<ResponseResult<AddPraiseVo>> call, Response<ResponseResult<AddPraiseVo>> response) {
-                AddPraiseVo addPraiseVo = response.body().getData();
+                if (response.body().getData()!=null){
+                    AddPraiseVo addPraiseVo = response.body().getData();
 
-                if (addPraiseVo.isPraise()){
-                    // 发送通知给对应作者
-                    sendNotification(addPraiseVo.getArticleId(), context);
+                    if (addPraiseVo.isPraise()){
+                        // 发送通知给对应作者
+                        sendNotification(addPraiseVo.getArticleId(), context);
+                    }
                 }
+
             }
 
             @Override
