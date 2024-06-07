@@ -485,14 +485,14 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
                 Log.i("imgpath!!!!!!!",imgPath);
 
                 if (isFrom==1){//重新编辑，调用更新接口
-                    addArticleDto = new AddArticleDto(addArticleDto.getId(),imgPath,binding.tag.getText().toString(),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","1","1");
+                    addArticleDto = new AddArticleDto(getIntent().getLongExtra("id",0),imgPath,binding.tag.getText().toString(),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","1","1");
                     Log.i("articleInfo", addArticleDto.toJson());
                     RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
                     apiService.updateArticle(requestBody).enqueue(new Callback<ResponseResult>() {
                         @Override
                         public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
                             Toast.makeText(BlogEditActivity.this, "保存草稿成功", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(BlogEditActivity.this, MainActivity.class);
+                            Intent intent = new Intent(BlogEditActivity.this, DraftListActivity.class);
                             startActivity(intent);
                             finish();
                         }
