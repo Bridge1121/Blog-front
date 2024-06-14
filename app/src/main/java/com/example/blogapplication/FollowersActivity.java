@@ -298,7 +298,6 @@ public class FollowersActivity extends AppCompatActivity {
 
     private void loadMoreItems() {
         currentPage++; // 更新页数
-
         apiService.followerList(currentPage, pageSize, TokenUtils.getUserInfo(getApplicationContext()).getId()).enqueue(new Callback<ResponseResult<UserInfoResponse>>() {
             @Override
             public void onResponse(Call<ResponseResult<UserInfoResponse>> call, Response<ResponseResult<UserInfoResponse>> response) {

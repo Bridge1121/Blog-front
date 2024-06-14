@@ -75,6 +75,11 @@ public class StarListActivity extends AppCompatActivity {
             public void onItemClick(View view, int position) {
                 // 设置item点击监听事件
                 Intent intent = new Intent(StarListActivity.this,ArticleDetailActivity.class);
+                if (articles.get(position).getCreateBy()==TokenUtils.getUserInfo(StarListActivity.this).getId()){
+                    intent.putExtra("isMe",0);//我自己的文章
+                }else{
+                    intent.putExtra("isMe",1);
+                }
                 intent.putExtra("id",articles.get(position).getId());
                 startActivity(intent);
 //                Toast.makeText(getApplicationContext(), articles.get(position).getTitle(), Toast.LENGTH_SHORT).show();

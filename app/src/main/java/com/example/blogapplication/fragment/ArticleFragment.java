@@ -138,7 +138,7 @@ public class ArticleFragment extends Fragment implements View.OnClickListener {
                     // 此方法在Item在侧滑删除时被调用。
                     // 从数据源移除该Item对应的数据，并刷新Adapter。
                     int position1 = srcHolder.getAdapterPosition();
-                    Toast.makeText(getContext(), articles.get(position1).getId().toString(), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getContext(), articles.get(position1).getId().toString(), Toast.LENGTH_SHORT).show();
                     mAlertView = new AlertView("确认", "确定删除该文章吗？", "取消", new String[]{"确定"}, null, getContext(), AlertView.Style.Alert, new com.bigkoo.alertview.OnItemClickListener() {
                         @Override
                         public void onItemClick(Object o, int position) {

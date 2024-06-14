@@ -62,8 +62,10 @@ import com.yinglan.keyboard.HideUtil;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import kotlin.random.FallbackThreadLocalRandom;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -447,25 +449,27 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
 
     //重新编辑且未编辑thumbnail时保存草稿
     private void draftArticleAgain(){
-
         HideUtil.hideSoftKeyboard(BlogEditActivity.this);
-        addArticleDto = new AddArticleDto(getIntent().getLongExtra("id",0),getIntent().getStringExtra("thumbnail"),binding.tag.getText().toString(),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","1","1");
-        Log.i("articleInfo", addArticleDto.toJson());
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
-        apiService.updateArticle(requestBody).enqueue(new Callback<ResponseResult>() {
-            @Override
-            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
-                Toast.makeText(BlogEditActivity.this, "保存草稿成功", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(BlogEditActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-            }
+        if (invalid(binding.tag.getText().toString())){
+            addArticleDto = new AddArticleDto(getIntent().getLongExtra("id",0),getIntent().getStringExtra("thumbnail"),binding.tag.getText().toString(),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","1","1");
+            Log.i("articleInfo", addArticleDto.toJson());
+            RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
+            apiService.updateArticle(requestBody).enqueue(new Callback<ResponseResult>() {
+                @Override
+                public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                    Toast.makeText(BlogEditActivity.this, "保存草稿成功", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(BlogEditActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
 
-            @Override
-            public void onFailure(Call<ResponseResult> call, Throwable t) {
-                Log.e("保存草稿出错啦！！！",t.getMessage());
-            }
-        });
+                @Override
+                public void onFailure(Call<ResponseResult> call, Throwable t) {
+                    Log.e("保存草稿出错啦！！！",t.getMessage());
+                }
+            });
+        }
+
     }
 
     //初次编辑保存草稿
@@ -483,43 +487,48 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
                 imgPath = response.body().getData();
                 Toast.makeText(getApplicationContext(),"图片上传成功",Toast.LENGTH_SHORT);
                 Log.i("imgpath!!!!!!!",imgPath);
-
                 if (isFrom==1){//重新编辑，调用更新接口
-                    addArticleDto = new AddArticleDto(getIntent().getLongExtra("id",0),imgPath,binding.tag.getText().toString(),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","1","1");
-                    Log.i("articleInfo", addArticleDto.toJson());
-                    RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
-                    apiService.updateArticle(requestBody).enqueue(new Callback<ResponseResult>() {
-                        @Override
-                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
-                            Toast.makeText(BlogEditActivity.this, "保存草稿成功", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(BlogEditActivity.this, DraftListActivity.class);
-                            startActivity(intent);
-                            finish();
-                        }
+                    if (invalid(binding.tag.getText().toString())){
+                        addArticleDto = new AddArticleDto(getIntent().getLongExtra("id",0),imgPath,binding.tag.getText().toString(),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","1","1");
+                        Log.i("articleInfo", addArticleDto.toJson());
+                        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
+                        apiService.updateArticle(requestBody).enqueue(new Callback<ResponseResult>() {
+                            @Override
+                            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                                Toast.makeText(BlogEditActivity.this, "保存草稿成功", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(BlogEditActivity.this, DraftListActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
 
-                        @Override
-                        public void onFailure(Call<ResponseResult> call, Throwable t) {
-                            Log.e("重新编辑草稿出错啦！！！",t.getMessage());
-                        }
-                    });
+                            @Override
+                            public void onFailure(Call<ResponseResult> call, Throwable t) {
+                                Log.e("重新编辑草稿出错啦！！！",t.getMessage());
+                            }
+                        });
+                    }
+
                 }else{//新增，调用新增接口
-                    addArticleDto = new AddArticleDto(imgPath,binding.tag.getText().toString(),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","1","1");
-                    Log.i("articleInfo", addArticleDto.toJson());
-                    RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
-                    apiService.add(requestBody).enqueue(new Callback<ResponseResult>() {
-                        @Override
-                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
-                            Toast.makeText(BlogEditActivity.this, "保存草稿成功", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(BlogEditActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                        }
+                    if (invalid(binding.tag.getText().toString())){
+                        addArticleDto = new AddArticleDto(imgPath,binding.tag.getText().toString(),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","1","1");
+                        Log.i("articleInfo", addArticleDto.toJson());
+                        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
+                        apiService.add(requestBody).enqueue(new Callback<ResponseResult>() {
+                            @Override
+                            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                                Toast.makeText(BlogEditActivity.this, "保存草稿成功", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(BlogEditActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
 
-                        @Override
-                        public void onFailure(Call<ResponseResult> call, Throwable t) {
-                            Log.e("保存草稿出错啦！！！",t.getMessage());
-                        }
-                    });
+                            @Override
+                            public void onFailure(Call<ResponseResult> call, Throwable t) {
+                                Log.e("保存草稿出错啦！！！",t.getMessage());
+                            }
+                        });
+                    }
+
                 }
 
             }
@@ -547,42 +556,48 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
                 Log.i("imgpath!!!!!!!",imgPath);
 
                 if (isFrom==1){//重新编辑
-                    addArticleDto = new AddArticleDto(getIntent().getLongExtra("id",0),imgPath,binding.tag.getText().toString(),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","0","1");
-                    Log.i("articleInfo", addArticleDto.toJson());
-                    RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
-                    apiService.updateArticle(requestBody).enqueue(new Callback<ResponseResult>() {
-                        @Override
-                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
-                            Toast.makeText(BlogEditActivity.this, "发布成功", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(BlogEditActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                        }
+                    if (invalid(binding.tag.getText().toString())){
+                        addArticleDto = new AddArticleDto(getIntent().getLongExtra("id",0),imgPath,binding.tag.getText().toString(),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","0","1");
+                        Log.i("articleInfo", addArticleDto.toJson());
+                        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
+                        apiService.updateArticle(requestBody).enqueue(new Callback<ResponseResult>() {
+                            @Override
+                            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                                Toast.makeText(BlogEditActivity.this, "发布成功", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(BlogEditActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
 
-                        @Override
-                        public void onFailure(Call<ResponseResult> call, Throwable t) {
-                            Log.e("重新编辑文章出错啦！！！",t.getMessage());
-                        }
-                    });
+                            @Override
+                            public void onFailure(Call<ResponseResult> call, Throwable t) {
+                                Log.e("重新编辑文章出错啦！！！",t.getMessage());
+                            }
+                        });
+                    }
+
 
                 }else{
-                    addArticleDto = new AddArticleDto(imgPath,binding.tag.getText().toString(),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","0","1");
-                    Log.i("articleInfo", addArticleDto.toJson());
-                    RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
-                    apiService.add(requestBody).enqueue(new Callback<ResponseResult>() {
-                        @Override
-                        public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
-                            Toast.makeText(BlogEditActivity.this, "发布成功", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(BlogEditActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                        }
+                    if (invalid(binding.tag.getText().toString())){
+                        addArticleDto = new AddArticleDto(imgPath,binding.tag.getText().toString(),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","0","1");
+                        Log.i("articleInfo", addArticleDto.toJson());
+                        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
+                        apiService.add(requestBody).enqueue(new Callback<ResponseResult>() {
+                            @Override
+                            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                                Toast.makeText(BlogEditActivity.this, "发布成功", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(BlogEditActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
 
-                        @Override
-                        public void onFailure(Call<ResponseResult> call, Throwable t) {
-                            Log.e("新增文章出错啦！！！",t.getMessage());
-                        }
-                    });
+                            @Override
+                            public void onFailure(Call<ResponseResult> call, Throwable t) {
+                                Log.e("新增文章出错啦！！！",t.getMessage());
+                            }
+                        });
+                    }
+
                 }
 
             }
@@ -598,23 +613,27 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
         apiService = RetrofitClient.getTokenInstance(TokenUtils.getToken(getApplicationContext())).create(ApiService.class);
 //        KeyBoardUtils.closeKeybord(binding.richEditor,getApplicationContext());
         HideUtil.hideSoftKeyboard(BlogEditActivity.this);
-        addArticleDto = new AddArticleDto(getIntent().getLongExtra("id",0),getIntent().getStringExtra("thumbnail"),binding.tag.getText().toString(),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","0","1");
-        Log.i("articleInfo", addArticleDto.toJson());
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
-        apiService.updateArticle(requestBody).enqueue(new Callback<ResponseResult>() {
-            @Override
-            public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
-                Toast.makeText(BlogEditActivity.this, "发布成功", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(BlogEditActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-            }
+        if (invalid(binding.tag.getText().toString())){
+            addArticleDto = new AddArticleDto(getIntent().getLongExtra("id",0),getIntent().getStringExtra("thumbnail"),binding.tag.getText().toString(),"hhhhhhhh",binding.editName.getText().toString().trim(),binding.richEditor.getHtml(),categoryId,"0","0","1");
+            Log.i("articleInfo", addArticleDto.toJson());
 
-            @Override
-            public void onFailure(Call<ResponseResult> call, Throwable t) {
-                Log.e("新增文章出错啦！！！",t.getMessage());
-            }
-        });
+            RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), addArticleDto.toJson());
+            apiService.updateArticle(requestBody).enqueue(new Callback<ResponseResult>() {
+                @Override
+                public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
+                    Toast.makeText(BlogEditActivity.this, "发布成功", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(BlogEditActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+
+                @Override
+                public void onFailure(Call<ResponseResult> call, Throwable t) {
+                    Log.e("新增文章出错啦！！！",t.getMessage());
+                }
+            });
+        }
+
     }
 
     @Override
@@ -727,6 +746,15 @@ public class BlogEditActivity extends AppCompatActivity implements View.OnClickL
 
         }
     }
+
+    public boolean invalid(String str){//判断输入是否合理
+//        if (Arrays.asList(str.split(" ")).size()>3){
+//            Toast.makeText(BlogEditActivity.this,"输入标签数量过多，请重新输入！",Toast.LENGTH_SHORT).show();
+//            return false;
+//        }
+        return true;
+    }
+
 
     private void againEdit() {
         //如果第一次点击例如加粗，没有焦点时，获取焦点并弹出软键盘

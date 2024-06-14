@@ -120,7 +120,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         apiService.addViewCount(articles.get(position).getId()).enqueue(new Callback<ResponseResult>() {
             @Override
             public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
-                Toast.makeText(getContext(),"浏览成功！",Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(),"浏览成功！",Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getActivity(), ArticleDetailActivity.class);
                 intent.putExtra("id",articles.get(position).getId());
                 intent.putExtra("isMe",articles.get(position).getCreateBy()==TokenUtils.getUserInfo(getContext()).getId()?0:1);
@@ -135,7 +135,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         apiService.addHistory(articles.get(position).getId(),TokenUtils.getUserInfo(getContext()).getId()).enqueue(new Callback<ResponseResult>() {
             @Override
             public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
-
+                Log.e("浏览成功！","浏览成功");
             }
 
             @Override

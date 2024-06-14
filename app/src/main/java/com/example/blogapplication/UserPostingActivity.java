@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.example.blogapplication.adapter.ImageAdapter;
 import com.example.blogapplication.databinding.ActivityUserPostingBinding;
 import com.example.blogapplication.fragment.PostingsFragment;
+import com.example.blogapplication.fragment.UserPostingsFragment;
 import com.example.blogapplication.utils.TokenUtils;
 import com.lzy.imagepicker.ImagePicker;
 import com.lzy.imagepicker.bean.ImageItem;
@@ -196,7 +197,7 @@ public class UserPostingActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<ResponseResult> call, Response<ResponseResult> response) {
                         Toast.makeText(UserPostingActivity.this, "动态发布成功!!", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(UserPostingActivity.this,MainActivity.class);
+                        Intent intent = new Intent(UserPostingActivity.this, MainActivity.class);
                         startActivity(intent);
                     }
 

@@ -36,6 +36,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
+import com.bumptech.glide.Glide;
 import com.example.blogapplication.adapter.ContentPagerAdapter;
 import com.example.blogapplication.adapter.FragmentAdapter;
 import com.example.blogapplication.broadcastreceiver.CommentReceiver;
@@ -257,11 +258,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 if (TokenUtils.getToken(MainActivity.this) != "") {//已登录
-                    //todo 已登录就跳转到主页,主页还没写
                     Intent intent = new Intent(MainActivity.this, UserInfoActivity.class);
                     startActivity(intent);
                 } else {//未登录
-                    Toast.makeText(MainActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(MainActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                     startActivity(intent);
                 }
@@ -274,9 +274,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (TokenUtils.getToken(MainActivity.this) != "") {//已登录
-                    //todo 已登录就跳转到个人中心
                 } else {//未登录
-                    Toast.makeText(MainActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(MainActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                     startActivity(intent);
                 }

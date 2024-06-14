@@ -380,7 +380,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
                 loading.setVisibility(View.GONE);
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 getSupportActionBar().setTitle(articleDetailVo.getTitle());
-                List<String> articleTags = Arrays.asList(articleDetailVo.getTags().split("#"));
+                List<String> articleTags = Arrays.asList(articleDetailVo.getTags().split(" "));
                 flexboxLayout.removeAllViews();
 
                 for (String tag : articleTags) {

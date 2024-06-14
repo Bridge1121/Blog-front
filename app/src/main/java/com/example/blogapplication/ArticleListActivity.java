@@ -131,8 +131,8 @@ public class ArticleListActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (TokenUtils.getToken(ArticleListActivity.this)!=""){//已登录
-                    //已登录就是修改个人信息
-                    Intent intent = new Intent(ArticleListActivity.this,UserInfoActivity.class);
+                    //已登录就是返回首页
+                    Intent intent = new Intent(ArticleListActivity.this,MainActivity.class);
                     startActivity(intent);
                 }else{//未登录
                     Toast.makeText(ArticleListActivity.this, "您尚未登录，请先登录。", Toast.LENGTH_SHORT).show();

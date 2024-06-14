@@ -43,7 +43,6 @@ public class LikeReceiver extends BroadcastReceiver {
             public void onResponse(Call<ResponseResult<AddPraiseVo>> call, Response<ResponseResult<AddPraiseVo>> response) {
                 if (response.body().getData()!=null){
                     AddPraiseVo addPraiseVo = response.body().getData();
-
                     if (addPraiseVo.isPraise()){
                         // 发送通知给对应作者
                         sendNotification(addPraiseVo.getArticleId(), context);

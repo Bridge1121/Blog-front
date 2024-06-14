@@ -108,7 +108,7 @@
                 android:id="@+id/tag"
                 android:layout_weight="4"
                 android:layout_width="0dp"
-                android:hint="最多三个，多个标签以#隔开"
+                android:hint="多个标签以空格隔开"
                 android:textColor="@color/black"
                 android:layout_height="wrap_content"
                 />
